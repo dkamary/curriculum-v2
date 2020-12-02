@@ -1,0 +1,28 @@
+{% extends "backoffice.html.twig" %}
+
+{% set isNew = user.id is null %}
+{% set title = isNew ? 'Création d\'un nouvel utilisateur' : 'Edition ' ~ user.firstname ~ ' ' ~ user.lastname %}
+
+{% block title %}
+    {{ isNew ? 'Inscription' : 'Edition' }} - Adresse
+{% endblock %}
+
+{% block backoffice_main %}
+    <div class="row">
+        <div class="col-12">
+            <h1>{{ title }} - Adresse</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {{ include('user/_form.html.twig') }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a class="btn btn-outline-secondary" href="{{ path('user_show', { id: user.id }) }}">Revenir</a>
+        </div>
+    </div>
+{% endblock %}

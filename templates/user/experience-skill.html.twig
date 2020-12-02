@@ -1,0 +1,33 @@
+{% extends "backoffice.html.twig" %}
+
+{% block title %}
+    Inscription - Experiences
+{% endblock %}
+
+{% block backoffice_main %}
+    <div class="row">
+        <div class="col-12">
+            <h1>Creation d'un nouvel utilisateur - Experiences</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {{ include('user/_form.html.twig') }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ path('user_index') }}">Revenir a la liste des utilisateurs</a>
+        </div>
+    </div>
+
+    <pre>
+        {{ dump(experience) }}
+    </pre>
+
+    <pre>
+        {{ dump(experienceSkill) }}
+    </pre>
+{% endblock %}

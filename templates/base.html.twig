@@ -1,12 +1,22 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<!doctype html>
+<html lang="fr">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
+    {% endblock %}
+    {% block javascript_head %}{% endblock %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+    {% block javascripts %}
+        <script src="{{ asset('assets/jquery/js/jquery-3.5.1.min.js') }}"></script>
+        <script src="{{ asset('assets/popper/js/popper.min.js') }}"></script>
+        <script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    {% endblock %}
+    {% block javascripts_footer %}{% endblock %}
+  </body>
 </html>

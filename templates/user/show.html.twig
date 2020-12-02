@@ -1,0 +1,190 @@
+{% extends 'backoffice.html.twig' %}
+
+{% block title %}Utilisateur - {{ user.firstname ~ ' ' ~ user.lastname }}{% endblock %}
+
+{% block backoffice_main %}
+    <div class="row">
+        <div class="col-12">
+            <h1>Utilisateur</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td>{{ user.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Identifiant</th>
+                        <td>{{ user.login }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    {# <tr>
+                        <th>Password</th>
+                        <td>{{ user.password }}</td>
+                    </tr> #}
+                    <tr>
+                        <th>Gender</th>
+                        <td>{{ user.gender == 1 ? 'Homme' : 'Femme' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prénom</th>
+                        <td>{{ user.firstname }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ user.lastname }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de naissance</th>
+                        <td>{{ user.birthdate ? user.birthdate|date('Y-m-d') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Lieu de naissance</th>
+                        <td>{{ user.birthplace }}</td>
+                    </tr>
+                    <tr>
+                        <th>Adresse</th>
+                        <td>{{ user.address }}</td>
+                    </tr>
+                    <tr>
+                        <th>Code postal</th>
+                        <td>{{ user.zipcode }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ville</th>
+                        <td>{{ user.town }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de création</th>
+                        <td>{{ user.createdAt ? user.createdAt|date('d/m/Y H:i:s') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Dernière mise à jour</th>
+                        <td>{{ user.updatedAt ? user.updatedAt|date('d/m/Y H:i:s') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de suppression</th>
+                        <td>{{ user.deletedAt ? user.deletedAt|date('d/m/Y H:i:s') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Actif</th>
+                        <td>{{ user.isActive ? 'Oui' : 'Non' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <h3 class="text-center">Adresse</h3>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Adresse</th>
+                        <td>{{ user.address }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ville</th>
+                        <td>{{ user.town }}</td>
+                    </tr>
+                    <tr>
+                        <th>Code Postal</th>
+                        <td>{{ user.zipcode }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pays</th>
+                        <td>{{ user.country.name }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-center" colspan="2">
+                            <a href="{{ path('user_address', { user: user.id }) }}" class="btn btn-outline-primary">Modifier</a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <h3 class="text-center">
+                                Expériences
+                            </h3>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for experience in user.experiences %}
+                        <tr>
+                            <td>
+                                <strong>Company</strong>: {{ experience.company }} <br>
+                                <strong>Description</strong>: {{ experience.longDescription }} <br>
+                                <strong>Debut</strong>: {{ experience.start ? experience.start|date('d/m/Y') : '' }} <br>
+                                <strong>Fin</strong>: {{ experience.end ? experience.end|date('d/m/Y') : '' }} <br>
+                                <strong>Compétences</strong>: <br>
+                                {% for expSkill in experience.experienceSkills %}
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {{ expSkill.skill.name }}
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <a class="dropdown-item" href="{{ path('user_experience_skill', { experience: experience.id,  experienceSkill: expSkill.id }) }}">Editer</a>
+                                            <a class="dropdown-item" href="#">Effacer</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column justify-content-center align-content-center h-100">
+                                    <a class="btn btn-primary" href="{{ path('user_experience', { user: user.id, experience: experience.id }) }}">Editer</a>
+                                    <a class="btn btn-dark" href="#">Effacer</a>
+                                    <a class="btn btn-info" href="{{ path('user_experience_skill', { experience: experience.id, experienceSkill: 0 }) }}">Ajouter une compétence</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-center">
+                            <a href="{{ path('user_experience', { user: user.id }) }}" class="btn btn-outline-primary">Ajouter une Experience</a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <a class="btn btn-primary" href="{{ path('user_index') }}">Revenir a la liste des utilisateurs</a>
+            <a class="btn btn-info" href="{{ path('user_edit', {'id': user.id}) }}">Editer</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {{ include('user/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

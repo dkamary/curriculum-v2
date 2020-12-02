@@ -1,0 +1,41 @@
+{% extends "backoffice.html.twig" %}
+
+{% block title %}
+    Inscription - Experience professionelle
+{% endblock %}
+
+{% block backoffice_main %}
+    <div class="row">
+        <div class="col-12">
+            <h1>Creation d'un nouvel utilisateur - Experience professionelle</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {{ include('user/_form.html.twig') }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% for expSkill in experience.experienceSkills %}
+                <div class="row">
+                    <div class="col-6">
+                        {{ expSkill.skill.name }}
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ path('user_experience_skill', {'experience': experience.id, 'experienceSkill': expSkill.id }) }}" class="btn btn-info">Editer</a>
+                        <button class="btn btn-dark">Effacer</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ path('user_show', { id: user.id }) }}">Revenir</a>
+        </div>
+    </div>
+{% endblock %}
