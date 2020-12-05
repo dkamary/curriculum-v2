@@ -1,0 +1,11 @@
+{# Post tag list template #}
+
+{% set tags = ['Art', 'Media', 'Design'] %}
+
+<ul class="tags">
+    {% for t in tags %}
+        <li>
+            <a href="#">{{ t }}</a>
+        </li>
+    {% endfor %}
+</ul>

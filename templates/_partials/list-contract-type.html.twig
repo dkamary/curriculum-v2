@@ -1,0 +1,9 @@
+{# post contract type list template #}
+
+{% set contracts = ['Recent', 'Full Time', 'Intern', 'part Time'] %}
+
+<ul class="cat-list">
+    {% for c in contracts %}
+        <li><a class="post-contract-type" href="#">{{ c }}</a></li>
+    {% endfor %}
+</ul>

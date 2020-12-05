@@ -6,16 +6,72 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
+      <link rel="stylesheet" href="{{ asset('assets/job/css/linearicons.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/job/css/font-awesome.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/job/css/bootstrap.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/job/css/magnific-popup.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/job/css/nice-select.css') }}">					
+			<link rel="stylesheet" href="{{ asset('assets/job/css/animate.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/job/css/owl.carousel.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/job/css/main.css') }}">
     {% endblock %}
-    {% block javascript_head %}{% endblock %}
+    {% block javascripts_head %}{% endblock %}
   </head>
   <body>
-    {% block body %}{% endblock %}
+    {% block body %}
+
+      {% block header %}{% endblock %}
+
+      {% block banner %}{% endblock %}
+
+      {% block features %}{% endblock %}
+
+      {% block popular %}{% endblock %}
+
+      {% block featured_category %}{% endblock %}
+
+      {% block main_content %}
+        <section class="post-area section-gap">
+          <div class="container">
+            <div class="row justify-content-center d-flex">
+              <div class="col-lg-8 post-list">
+                {% block left_content %}{% endblock %}
+              </div>
+              <div class="col-lg-4 sidebar">
+                {% block right_content %}{% endblock %}
+              </div>
+            </div>
+          </div>
+        </section>
+      {% endblock %}
+
+      {% block call2action %}{% endblock %}
+
+      {% block download %}{% endblock %}
+
+      {% block footer %}{% endblock %}
+
+    {% endblock %}
+
     {% block javascripts %}
-        <script src="{{ asset('assets/jquery/js/jquery-3.5.1.min.js') }}"></script>
-        <script src="{{ asset('assets/popper/js/popper.min.js') }}"></script>
-        <script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
+      <script src="{{ asset('assets/jquery/js/jquery-3.5.1.min.js') }}"></script>
+      <script src="{{ asset('assets/popper/js/popper.min.js') }}"></script>
+      {# <script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script> #}
+      {# <script src="js/vendor/jquery-2.2.4.min.js"></script> #}
+      {# <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script> #}
+      <script src="{{ asset('assets/job/js/vendor/bootstrap.min.js') }}"></script>			
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
+      <script src="{{ asset('assets/job/js/easing.min.js') }}"></script>			
+      <script src="{{ asset('assets/job/js/hoverIntent.js') }}"></script>
+      <script src="{{ asset('assets/job/js/superfish.min.js') }}"></script>	
+      <script src="{{ asset('assets/job/js/jquery.ajaxchimp.min.js') }}"></script>
+      <script src="{{ asset('assets/job/js/jquery.magnific-popup.min.js') }}"></script>	
+      <script src="{{ asset('assets/job/js/owl.carousel.min.js') }}"></script>			
+      <script src="{{ asset('assets/job/js/jquery.sticky.js') }}"></script>
+      <script src="{{ asset('assets/job/js/jquery.nice-select.min.js') }}"></script>			
+      <script src="{{ asset('assets/job/js/parallax.min.js') }}"></script>		
+      <script src="{{ asset('assets/job/js/mail-script.js') }}"></script>	
+      <script src="{{ asset('assets/job/js/main.js') }}"></script>
     {% endblock %}
     {% block javascripts_footer %}{% endblock %}
   </body>

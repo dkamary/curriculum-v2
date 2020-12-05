@@ -1,0 +1,21 @@
+{# call to action section template #}
+
+{% set title = title is defined ? title : 'Join us today without any hesitation' %}
+{% set content = content is defined ? content : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore  et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.' %}
+
+<!-- Start callto-action Area -->
+<section class="callto-action-area section-gap" id="join">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content col-lg-9">
+                <div class="title text-center">
+                    <h1 class="mb-10 text-white">{{ title }}</h1>
+                    <p class="text-white">{{ content|raw }}</p>
+                    <a class="primary-btn" href="#">I am a Candidate</a>
+                    <a class="primary-btn" href="#">Request Free Demo</a>
+                </div>
+            </div>
+        </div>
+    </div>	
+</section>
+<!-- End calto-action Area -->

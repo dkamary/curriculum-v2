@@ -1,0 +1,33 @@
+{# rated job list template #}
+
+{% set jobs = [1, 2, 3] %}
+
+<div class="active-relatedjob-carusel">
+    {% for j in jobs %}
+        {% include "_partials/single-rated-job.html.twig" %}
+    {% endfor %}
+    <div class="single-rated">
+        <img class="img-fluid" src="img/r1.jpg" alt="">
+        <a href="single.html"><h4>Creative Art Designer</h4></a>
+        <h6>Premium Labels Limited</h6>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut dolore magna aliqua.
+        </p>
+        <h5>Job Nature: Full time</h5>
+        <p class="address"><span class="lnr lnr-map"></span> 56/8, Panthapath Dhanmondi Dhaka</p>
+        <p class="address"><span class="lnr lnr-database"></span> 15k - 25k</p>
+        <a href="#" class="btns text-uppercase">Apply job</a>
+    </div>
+    <div class="single-rated">
+        <img class="img-fluid" src="img/r1.jpg" alt="">
+        <a href="single.html"><h4>Creative Art Designer</h4></a>
+        <h6>Premium Labels Limited</h6>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temporinc ididunt ut dolore magna aliqua.
+        </p>
+        <h5>Job Nature: Full time</h5>
+        <p class="address"><span class="lnr lnr-map"></span> 56/8, Panthapath Dhanmondi Dhaka</p>
+        <p class="address"><span class="lnr lnr-database"></span> 15k - 25k</p>
+        <a href="#" class="btns text-uppercase">Apply job</a>
+    </div>																		
+</div>

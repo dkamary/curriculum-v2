@@ -1,0 +1,9 @@
+{# Blog list template #}
+
+{% set blogs = [1, 2, 3, 4] %}
+
+<div class="blog-list">
+    {% for blog in blogs %}
+        {% include "_partials/single-blog.html.twig" %}
+    {% endfor %}
+</div>

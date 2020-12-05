@@ -1,0 +1,13 @@
+{# single slidebar template #}
+
+{% set title = title is defined ? title : 'Jobs by Location' %}
+{% set type = type is defined ? type : 'cat-list' %}
+
+<div class="single-slidebar">
+    <h4>{{ title }}</h4>
+    {% if 'list' == type %}
+        {% include "_partials/list-category.html.twig" %}
+    {% elseif 'rated-job' == type %}
+        {% include "_partials/list-rated-job.html.twig" %}
+    {% endif %}
+</div>
