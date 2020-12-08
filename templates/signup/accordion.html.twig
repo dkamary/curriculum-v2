@@ -1,0 +1,110 @@
+{# Accordion template #}
+
+<div class="accordion" id="inscription">
+    <div class="card">
+        <div class="card-header" id="informations">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#information-content" aria-expanded="true" aria-controls="information-content">
+                    Informations
+                </button>
+            </h2>
+        </div>
+        <div id="information-content" class="collapse show" aria-labelledby="headingOne" data-parent="#inscription">
+            <div class="card-body">
+                {% include "signup/form/information.html.twig" %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="addresses">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#address-content" aria-expanded="false" aria-controls="address-content">
+                    Adresse
+                </button>
+            </h2>
+        </div>
+        <div id="address-content" class="collapse" aria-labelledby="addresses" data-parent="#inscription">
+            <div class="card-body">
+                {# AJAX LOAD #}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="experiences">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#experience-content" aria-expanded="false" aria-controls="experience-content">
+                    Experiences professionelles
+                </button>
+            </h2>
+        </div>
+        <div id="experience-content" class="collapse" aria-labelledby="experiences" data-parent="#inscription">
+            <div class="card-body">
+                {# AJAX LOAD #}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="trainings">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#training-content" aria-expanded="false" aria-controls="training-content">
+                    Formations
+                </button>
+            </h2>
+        </div>
+        <div id="training-content" class="collapse" aria-labelledby="trainings" data-parent="#inscription">
+            <div class="card-body">
+                {# {% include "user/inscription-step-4.html.twig" %} #}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="knowledges">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#knowledge-content" aria-expanded="false" aria-controls="knowledge-content">
+                    Autres
+                </button>
+            </h2>
+        </div>
+        <div id="knowledge-content" class="collapse" aria-labelledby="knowledges" data-parent="#inscription">
+            <div class="card-body">
+                {# {% include "user/inscription-step-5.html.twig" %} #}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="languages">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#language-content" aria-expanded="false" aria-controls="language-content">
+                Connaissances linguistique
+                </button>
+            </h2>
+        </div>
+        <div id="language-content" class="collapse" aria-labelledby="languages" data-parent="#inscription">
+            <div class="card-body">
+                {# {% include "user/inscription-step-6.html.twig" %} #}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="motivations">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#motivation-content" aria-expanded="false" aria-controls="motivation-content">
+                Motivations
+                </button>
+            </h2>
+        </div>
+        <div id="motivation-content" class="collapse" aria-labelledby="motivations" data-parent="#inscription">
+            <div class="card-body">
+                {# {% include "user/inscription-step-7.html.twig" %} #}
+            </div>
+        </div>
+    </div>
+</div>
+{# <div class="form-group row my-3">
+    <div class="col-12 text-right">
+        <button class="btn btn-primary" type="submit">
+            <i class="fa fa-floppy-o" aria-hidden="true"></i>
+            Inscription
+        </button>
+    </div>
+</div> #}

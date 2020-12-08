@@ -1,0 +1,10 @@
+{# Breadcrumbs template #}
+
+{% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : [{text: 'Elements', href: '#'}] %}
+
+<p class="text-white link-nav">
+    <a href="{{ path('home') }}">Accueil </a>  <span class="lnr lnr-arrow-right"></span>  
+    {% for link in breadcrumbs %}
+        <a href="{{ link.href is defined ? link.href : '#' }}"> {{ link.text|raw }}</a>
+    {% endfor %}
+</p>

@@ -1,0 +1,30 @@
+{% extends '_layouts/page.html.twig' %}
+
+{% set title = 'Inscription' %}
+{% set pageTitle = title %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block header %}
+    {% include "_partials/section-header.html.twig" %}
+{% endblock %}
+
+{% block banner %}
+    {% include "_partials/banner-page.html.twig" %}
+{% endblock %}
+
+{% block main_content %}
+<section class="post-area section-gap">
+    <div class="container">
+        {% block content %}
+            {% include "signup/accordion.html.twig" %}
+        {% endblock %}
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts_footer %}
+    {% include "signup/signup.js.html" %}
+{% endblock %}

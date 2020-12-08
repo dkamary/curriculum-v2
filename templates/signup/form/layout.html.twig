@@ -1,0 +1,33 @@
+{# layout template for the form #}
+
+{% set imgUrl = imgUrl is defined ? imgUrl : 'https://fakeimg.pl/450x600/' %}
+
+{% set btnParameter = btnParameter is defined ? btnParameter : { class: 'btn-submit-ajax', style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
+{% set btnText = btnText is defined ? btnText : 'Enregistrer' %}
+
+{% block form_content %}
+    <div class="row">
+        <div class="col-7">
+            {% if form is defined and form is not null %}
+                {% block form %}
+                    {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <div class="row">
+                            <div class="col-12 text-right">
+                                {{ btnText|button(btnParameter) }}
+                            </div>
+                        </div>
+                    {{ form_end(form) }}
+                {% endblock %}
+            {% endif %}
+        </div>
+        <div class="col-5">
+            {% block img %}
+                <img src="{{ imgUrl }}" alt="">
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+
+

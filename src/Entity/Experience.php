@@ -57,6 +57,11 @@ class Experience
      */
     private $experienceSkills;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $jobTitle;
+
     public function __construct()
     {
         $this->experienceSkills = new ArrayCollection();
@@ -117,6 +122,18 @@ class Experience
                 $experienceSkill->setExperience(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getJobTitle(): ?string
+    {
+        return $this->jobTitle;
+    }
+
+    public function setJobTitle(string $jobTitle): self
+    {
+        $this->jobTitle = $jobTitle;
 
         return $this;
     }

@@ -9,7 +9,7 @@ trait LongDescriptionEntity
     /**
      *
      * @var string $longDescription
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $longDescription;
 
@@ -18,7 +18,7 @@ trait LongDescriptionEntity
      *
      * @return string
      */
-    public function getLongDescription(): string
+    public function getLongDescription(): ?string
     {
         return $this->longDescription;
     }
@@ -29,7 +29,7 @@ trait LongDescriptionEntity
      * @param string $longDescription
      * @return self
      */
-    public function setLongDescription(string $longDescription): self
+    public function setLongDescription(?string $longDescription): self
     {
         $this->longDescription = $longDescription;
 

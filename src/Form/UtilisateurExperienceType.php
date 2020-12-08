@@ -21,6 +21,12 @@ class UtilisateurExperienceType extends AbstractType
                     'placeholder' => 'Le nom de la société',
                 ],
             ])
+            ->add('jobTitle', TextType::class, [
+                'label' => 'Poste',
+                'attr' => [
+                    'placeholder' => 'Intitulé du poste',
+                ],
+            ])
             ->add('longDescription', TextareaType::class, [
                 'label' => 'Description',
                 'attr' => [
