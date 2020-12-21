@@ -1,41 +1,109 @@
-{% extends "backoffice.html.twig" %}
+{% set title = 'Edition de ' ~ user.firstname ~ ' ' ~ user.lastname %}
+{% set open = 'experience' %}
+{% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : [{text: 'Expérience', href: '#'}] %}
+{% set submitButton = { style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
 
-{% block title %}
-    Inscription - Experience professionelle
-{% endblock %}
+{% extends "_layouts/signup.html.twig" %}
 
-{% block backoffice_main %}
-    <div class="row">
-        <div class="col-12">
-            <h1>Creation d'un nouvel utilisateur - Experience professionelle</h1>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            {{ include('user/_form.html.twig') }}
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            {% for expSkill in experience.experienceSkills %}
-                <div class="row">
-                    <div class="col-6">
-                        {{ expSkill.skill.name }}
-                    </div>
-                    <div class="col-6">
-                        <a href="{{ path('user_experience_skill', {'experience': experience.id, 'experienceSkill': expSkill.id }) }}" class="btn btn-info">Editer</a>
-                        <button class="btn btn-dark">Effacer</button>
+{% block signup_experience %}
+    {% for frm in experiences %}
+        <div class="py-3 my-3 border-top border-bottom">
+            {{ form_start(frm) }}
+                {{ form_widget(frm) }}
+                <div class="form-group row">                    
+                    <label for="utilisateur_experience_end" class="col-lg-4 col-md-4 col-sm-12 col-12 control-label">Compétences</label>
+                    <div class="col-lg-8 col-md-8 col-sm-12 col-12" id="exp-skill-container">
+                        {% for expSkill in frm.vars.value.experienceSkills %}
+                            <span id="exp-skill-{{ expSkill.id }}" class="badge badge-secondary">
+                                {{ expSkill.name }} 
+                                <a class="text-danger btn-exp-skill-remove" href="#" title="Effacer la competences {{ expSkill.name|e }}" data-id="{{ expSkill.id }}">
+                                    &nbsp;&nbsp;<i class="fa fa-times-circle" aria-hidden="true"></i>
+                                </a>
+                            </span>
+                        {% endfor %}
+                        {{ 'Ajouter Compétences'|button( { style: 'info', icon_class: 'fa-plus', class: 'btn-skill-add', attr: { 'id': 'exp-skill-add-' ~ frm.vars.value.id, 'data-id': frm.vars.value.id, 'data-container': "body", 'data-toggle': "popover", 'data-placement': "bottom" } } ) }}
                     </div>
                 </div>
-            {% endfor %}
+                <div class="row">
+                    <div class="col-12 text-right save-container">
+                        {{ 'Supprimer'|button( { style: 'danger', icon_class: 'fa-trash', outline: true, class: 'pull-left btn-exp-suppr', attr: { 'data-id': frm.vars.value.id } } ) }}
+                        {{ 'Enregistrer'|button(submitButton) }}
+                    </div>
+                </div>
+            {{ form_end(frm) }}
         </div>
-    </div>
+    {% endfor %}
+    <h3 class="mt-5">Nouvelle expérience professionelle</h3>
+    <hr>
+    {# {{ dump(form.vars.value) }} #}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="row">
+            <div class="col-12 text-right save-container">
+                {{ 'Enregistrer'|button(submitButton) }}
+            </div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}
 
-    <div class="row">
-        <div class="col-12">
-            <a href="{{ path('user_show', { id: user.id }) }}">Revenir</a>
-        </div>
-    </div>
+{% block javascripts_footer %}
+    <script>
+        (function($, window, document){
+            $(function(){
+                const $container = $('#utilisateur_experience_experienceSkills');
+                const prototype = $container.data('prototype');
+                $container.data('index', $container.find('select.form-control').length);
+                $(document)
+                    {# .on('click', '.btn-skill-add', e => {
+                        e.preventDefault();
+                        const $this = $(e.currentTarget);
+                        const id = $this.data('id'); console.log({id});
+                        let index = $container.data('index'); console.log({index});
+                        $container.data('index', index + 1); console.log({index});
+                        $container.append(prototype.replaceAll(/__name__/g, index));
+                    }) #}
+                    .on('click', '.btn-exp-skill-remove', e => {
+                        e.preventDefault();
+                        const $this = $(e.currentTarget);
+                        const id = $this.data('id');
+                        const old = $this.html();
+                        if(!confirm($this.attr('title') + ' ?')) return false;
+                        $.ajax({
+                            type: 'POST',
+                            url: `/utilisateur/experience/skill/${ id }/delete`,
+                            beforeSend: () => {
+                                $this.html('&nbsp;&nbsp;<i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                            }
+                        }).done(response => {
+                            if(response.done) {
+                                $(`#exp-skill-${ id }`).remove();
+                            }
+                        }).fail(xhr => {
+                            alert(`${xhr.status} - ${xhr.statusText}`);
+                        }).always(() => {
+                            $this.html(old);
+                        });
+                    })
+                    {# .on('click', '.btn-skill-add', e => {
+                        e.preventDefault();
+                        const $this = $(e.currentTarget);
+                        $.ajax({
+                            type: 'GET',
+                            url: ``,
+                            beforeSend: () => {
+
+                            }
+                        }).done().fail();
+                    }) #}
+                    ;
+                $('.btn-skill-add').popover( {
+                    content: function() {
+                        const id = 'popover-content-' + Math.floor(Math.random() * Math.floor(128));
+                        $.ajax().done( response => {} ).fail( xhr => {} );
+                        return `<div id="${id}">Chargement du contenu <i class="fa fa-refresh" aria-hidden="true"></i></div>`;
+                    }
+                } );
+            });
+        }(window.jQuery, window, window.document));
+    </script>
 {% endblock %}

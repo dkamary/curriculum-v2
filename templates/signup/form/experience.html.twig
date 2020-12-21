@@ -1,5 +1,41 @@
 {# Experience template #}
 
-{% extends "signup/form/layout.html.twig" %}
+{# {% extends "signup/form/layout.html.twig" %} #}
 
 {% set imgUrl = 'https://fakeimg.pl/450x600/?text=Experience' %}
+
+{% set add = true %}
+{% set remove = false %}
+{% set deleteParameter = { class: 'btn-delete-ajax pull-left', style: 'danger', icon_class: 'fa-trash', type: 'button', attr: { exp: experienceId }, attr_prefix: 'data', attr_separator: '-' } %}
+{% set addParameter = { class: 'btn-add-ajax btn-block', style: 'info', icon_class: 'fa-plus', type: 'button', attr: { user: user.id }, attr_prefix: 'data', attr_separator: '-' } %}
+{% set btnParameter = btnParameter is defined ? btnParameter : { class: 'btn-submit-ajax', style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
+
+<div class="row">
+    <div class="col-7 form-content">
+        {% if form is defined and form is not null %}
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="row">
+                    <div class="col-12 text-right">
+                        {% if remove == true %}
+                            {{ 'Effacer'|button( deleteParameter ) }}
+                        {% endif %}
+                        {{ 'Enregistrer'|button(btnParameter) }}
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        {% endif %}
+        {% if add == true %}
+            <div class="row mt-3" id="add-experience-row">
+                <div class="col-12">
+                    {{ 'Ajouter'|button( addParameter ) }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-5">
+        {% block img %}
+            <img src="{{ imgUrl }}" alt="">
+        {% endblock %}
+    </div>
+</div>

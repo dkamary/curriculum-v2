@@ -1,12 +1,11 @@
-
-{% set title = 'Edition de ' ~ user.firstname ~ ' ' ~ user.lastname %}
-{% set open = 'address' %}
-{% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : [{text: 'Adresse', href: '#'}] %}
-{% set submitButton = { style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
-
 {% extends "_layouts/signup.html.twig" %}
 
-{% block signup_address %}
+{% set title = 'Inscription' %}
+{% set open = 'information' %}
+{% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : [{text: title, href: '#'}] %}
+{% set submitButton = { style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
+
+{% block signup_information %}
     {{ form_start(form) }}
         {{ form_widget(form) }}
         <div class="row">

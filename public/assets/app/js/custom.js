@@ -1,5 +1,17 @@
 // Custom function used by the application
 
+(function ($, window, document) {
+  $(function () {
+    const $document = $(document);
+    $document.on("click", ".accordion .card-header button.btn-link", (e) => {
+      e.preventDefault();
+      const $this = $(e.currentTarget);
+      const target = $this.attr("data-target");
+      scrollingTo($, $("html, body"), target);
+    });
+  });
+})(window.jQuery, window, window.document);
+
 const scrollingTo = (
   $,
   viewport,

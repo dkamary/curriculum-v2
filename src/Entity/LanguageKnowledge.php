@@ -35,6 +35,12 @@ class LanguageKnowledge
      */
     private $level;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Language::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $language;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +66,18 @@ class LanguageKnowledge
     public function setLevel(?LanguageLevel $level): self
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?Language
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?Language $language): self
+    {
+        $this->language = $language;
 
         return $this;
     }

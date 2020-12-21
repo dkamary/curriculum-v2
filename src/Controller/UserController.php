@@ -9,7 +9,9 @@ use App\Form\UtilisateurAddressType;
 use App\Form\UtilisateurExperienceSkillType;
 use App\Form\UtilisateurExperienceType;
 use App\Form\UtilisateurInfoType;
+use App\Repository\SkillCategoryRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,10 +21,48 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\VarDumper\VarDumper;
 
 /**
- * @Route("/user")
+ * @Route("/utilisateur")
  */
 class UserController extends AbstractController
 {
+    /**
+     * Get Experience Forms
+     *
+     * @param User $user
+     * @return UtilisateurExperienceType[]
+     */
+    private function getExperienceForms(User $user): array
+    {
+        $forms = [];
+        foreach ($user->getExperiences() as $exp) {
+            $f = $this->createForm(UtilisateurExperienceType::class, $exp, [
+                'action' => $this->generateUrl('user_experience', ['user' => $user->getId(), 'experience' => $exp->getId()]),
+                'attr' => [
+                    'id' => 'exp-' . $exp->getId()
+                ]
+            ]);
+            $forms[] = $f->createView();
+        }
+
+        return $forms;
+    }
+
+    /**
+     * Get Assoc experiences list
+     *
+     * @param User $user
+     * @return array
+     */
+    private function getExperiences(User $user): array
+    {
+        $experiences = [];
+        foreach ($user->getExperiences() as $exp) {
+            $experiences[$exp->getId()] = $exp;
+        }
+
+        return $experiences;
+    }
+
     /**
      * @Route("/", name="user_index", methods={"GET"})
      */
@@ -48,6 +88,7 @@ class UserController extends AbstractController
             $user->setPassword($encoded);
             $entityManager->persist($user);
             $entityManager->flush();
+            $this->addFlash('success', 'Nouvel utilsateur créé');
 
             return $request->isXmlHttpRequest() ?
                 new JsonResponse([
@@ -66,10 +107,8 @@ class UserController extends AbstractController
     /**
      * @Route("/address/{user}", name="user_address", methods={"GET", "POST"}, requirements={"user"="\d+"})
      */
-    public function address(
-        Request $request,
-        User $user
-    ): Response {
+    public function address(Request $request, User $user): Response
+    {
         $form = $this->createForm(UtilisateurAddressType::class, $user);
         $form->handleRequest($request);
 
@@ -77,13 +116,11 @@ class UserController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+            $this->addFlash('success', 'Adresse mis à jour');
 
-            return $request->isXmlHttpRequest() ?
-                new JsonResponse([
-                    'done' => true,
-                    'user' => $user,
-                ]) :
-                $this->redirectToRoute('user_show', ['id' => $user->getId()]);
+            return $this->redirectToRoute('user_experience', [
+                'user' => $user->getId(),
+            ]);
         }
 
         return $this->render('user/address.html.twig', [
@@ -96,13 +133,10 @@ class UserController extends AbstractController
      * @Route("/experience/{user}/{experience}", 
      *      name="user_experience", 
      *      methods={"GET", "POST"}, 
-     *      requirements={"user"="\d+", "experience"="\d*"})
+     *      requirements={"user"="\d+", "experience"="\d+"})
      */
-    public function experience(
-        Request $request,
-        User $user,
-        ?Experience $experience = null
-    ): Response {
+    public function experience(Request $request, User $user, ?Experience $experience = null): Response
+    {
         $experience = is_null($experience) ? new Experience() : $experience;
         $form = $this->createForm(UtilisateurExperienceType::class, $experience);
         $form->handleRequest($request);
@@ -112,26 +146,22 @@ class UserController extends AbstractController
             $experience->setOwner($user);
             $entityManager->persist($experience);
             $entityManager->flush();
-
-            return $request->isXmlHttpRequest() ?
-                new JsonResponse([
-                    'done' => true,
-                    'user' => $experience,
-                ]) :
-                $this->redirectToRoute('user_show', ['id' => $user->getId()]);
+            $this->addFlash('success', 'Expériences professionelles mis à jour');
         }
 
         return $this->render('user/experience.html.twig', [
             'user' => $user,
             'experience' => $experience,
             'form' => $form->createView(),
+            'experiences' => $this->getExperienceForms($user),
+            'experience_list' => $this->getExperiences($user),
         ]);
     }
 
     /**
      * @Route("/experience/skill/{experience}/{experienceSkill}",
      *      name="user_experience_skill",
-     *      requirements={"experience"="\d+", "experienceSkill"="\d*"}
+     *      requirements={"experience"="\d+", "experienceSkill"="\d+"}
      * )
      */
     public function experienceSkill(
@@ -164,6 +194,32 @@ class UserController extends AbstractController
             'experience' => $experience,
             'experienceSkill' => $experienceSkill,
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/experience/skill/{experienceSkill}/delete", name="user_experience_skill_delete", requirements={"experienceSkill": "\d+"})
+     */
+    public function experienceSkillDelete(EntityManagerInterface $manager, ExperienceSkill $experienceSkill): Response
+    {
+        $manager->remove($experienceSkill);
+        $manager->flush();
+
+        return $this->json([
+            'done' => true,
+            'expSkill' => $experienceSkill->getId(),
+        ]);
+    }
+
+    /**
+     * @Route("/experience/skill/{experience}/add", name="user_experience_skill_add", requirements={"experience": "\d+"})
+     */
+    public function experienceSkillAdd(Experience $experience, SkillCategoryRepository $skillCategoryRepository): Response
+    {
+        $categories = $skillCategoryRepository->findBy([], ['name' => 'ASC']);
+
+        return $this->render('user/experience-skill-add.html.twig', [
+            'categories' => $categories,
         ]);
     }
 

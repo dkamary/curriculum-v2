@@ -3,11 +3,15 @@
 namespace App\Form;
 
 use App\Entity\Experience;
+use App\Entity\ExperienceSkill;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UtilisateurExperienceType extends AbstractType
@@ -50,6 +54,24 @@ class UtilisateurExperienceType extends AbstractType
                 'widget' => 'single_text',
                 'required' => false,
             ]);
+
+        // $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+        //     /**
+        //      * @var Experience $experience
+        //      */
+        //     $experience = $event->getData();
+        //     $form = $event->getForm();
+        //     if ($experience && $experience->getId()) {
+        //         $form->add('experienceSkills', CollectionType::class, [
+        //             'label' => 'Compétences utilisées',
+        //             'entry_type' => UtilisateurExperienceSkillType::class,
+        //             'entry_options' => ['label' => false],
+        //             'allow_add' => true,
+        //             'allow_delete' => true,
+        //             'by_reference' => false,
+        //         ]);
+        //     }
+        // });
     }
 
     public function configureOptions(OptionsResolver $resolver)

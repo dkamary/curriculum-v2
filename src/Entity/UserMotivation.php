@@ -34,6 +34,11 @@ class UserMotivation
      */
     private $presentation;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isTraveller;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +76,18 @@ class UserMotivation
     public function setPresentation(?string $presentation): self
     {
         $this->presentation = $presentation;
+
+        return $this;
+    }
+
+    public function getIsTraveller(): ?bool
+    {
+        return $this->isTraveller;
+    }
+
+    public function setIsTraveller(bool $isTraveller): self
+    {
+        $this->isTraveller = $isTraveller;
 
         return $this;
     }

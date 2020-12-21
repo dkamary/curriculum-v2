@@ -1,0 +1,21 @@
+{# Popover template #}
+
+<div class="row">
+    <div class="col-12">
+        <select name="skills" id="skills" class="form-control">
+            {% for cat in categories %}
+                <optgroup label="{{ cat.name }}">
+                    {% for skill in cat.skills %}
+                        <option value="{{ skill.id }}">{{ skill.name }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-12">
+        <button type="button" name="btn-exp-submit-add" id="btn-exp-submit-add" class="genric-btn primary btn-lg btn-block">
+            <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
+            Ajouter
+        </button>
+    </div>
+</div>

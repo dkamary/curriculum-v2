@@ -53,7 +53,7 @@ class Experience
     private $company;
 
     /**
-     * @ORM\OneToMany(targetEntity=ExperienceSkill::class, mappedBy="experience")
+     * @ORM\OneToMany(targetEntity=ExperienceSkill::class, mappedBy="experience", cascade={"persist"})
      */
     private $experienceSkills;
 

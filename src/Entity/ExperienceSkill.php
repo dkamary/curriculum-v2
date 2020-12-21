@@ -57,4 +57,13 @@ class ExperienceSkill
 
         return $this;
     }
+
+    public function getName(): string
+    {
+        if ($skill = $this->getSkill()) {
+            return $skill->getName();
+        }
+
+        return '';
+    }
 }

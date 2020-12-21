@@ -1,113 +1,183 @@
 {# Sign Up JS #}
 
+{% set isUser = user is defined and user.id is not null %}
+
 <script>
     (function($, window, document){
-        $(function(){
-            const viewport = $('html, body');
+        $(function() {
             const $document = $(document);
             $document
-                // Scroll to element
-                .on('click', '.accordion .card-header button.btn-link', e => {
-                    e.preventDefault();
-                    const $this = $(e.currentTarget);
-                    const target = $this.data('target');
-                    scrollingTo($, viewport, target);
-                })
-                // load content
-                .on('click', '.btn-load-content', e => {
-                    e.preventDefault();
-                    const $this = $(e.currentTarget);
-                    const content = $this.data('content');
-                    if(content && $this.data('content-loaded') !== 'true'){
-                        const target = $($this.data('target') + ' .card-body');
-                        $.ajax({
-                            type: 'GET',
-                            url: content,
-                            beforeSend: () => {
-                                target.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
-                            }
-                        }).done(response => {
-                            target.html(response);
-                            $this.attr('data-content-loaded', 'true');
-                        }).fail(xhr => {
-                            target.html(xhr.responseText);
-                            $this.removeAttr('data-content-loaded');
-                        });
-                    } else {
-                        alert("Veuillez d'abord remplir la section information. Merci");
-                        setTimeout(() => {
-                            $('#informations button.btn-link').click();
-                        }, 1000);
-                    }
-                })
-                // submit event on form
-                .on('submit', '.ajax-form-submit', e => {
-                    console.log('AJAX Form Submit');
+                .on('submit', '#information-form', e => {
                     e.preventDefault();
                     const form = $(e.currentTarget);
-                    const formId = '#' + form.attr('id');
                     const submitBtn = form.find('button[type="submit"]');
                     const oldHtml = submitBtn.html();
-                    const ajax = ajaxFormSubmit($, formId, () => {
-                        submitBtn.html('Mise a jour de la base de donnee en cours <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>')
-                    });
-                    ajax
-                        .done(response => {
-                            if(response.done) {
-                                const target = form.data('target');
-                                const nextBtn = $(`${target} button.btn-link`);
-                                const nextContent = $(nextBtn.data('target') + ' .card-body');
-                                nextContent.html($('<div>', {
-                                    class: 'row',
-                                    html: $('<div>', {
-                                        class: 'col-12',
-                                        html: 'Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>'
-                                    })
-                                }));
-                                nextBtn.click();
-                                if(response.next) {
-                                    $.ajax({
-                                        type: 'GET',
-                                        url: response.next
-                                    }).done(nextResponse => {
-                                        nextContent.html(nextResponse);
-                                    }).fail(xhr => { 
-                                        alert(`${xhr.status} - ${xhr.statusText}`); 
-                                    });
-                                }
-                                $('.btn-load-content').each((index, element) => {
-                                    const elt = $(element);
-                                    if(!elt.data('content')) {
-                                        const target = elt.data('target');
-                                        const content = {
-                                            experience: `/inscription/experiences/${response.user.id}`,
-                                            training: `/inscription/trainings/${response.user.id}`,
-                                            knowledge: `/inscription/knowledges/${response.user.id}`,
-                                            language: `/inscription/languages/${response.user.id}`,
-                                            motivation: `/inscription/motivation/${response.user.id}`
-                                        };
-                                        if('#experience-content' === target) {
-                                            elt.attr('data-content', content.experience);
-                                        } else if ('#training-content' === target) {
-                                            elt.attr('data-content', content.training);
-                                        } else if ('#knowledge-content' === target) {
-                                            elt.attr('data-content', content.knowledge);
-                                        } else if ('#language-content' === target) {
-                                            elt.attr('data-content', content.language);
-                                        } else if('#motivation-content' === target) {
-                                            elt.attr('data-content', content.motivation)
-                                        }
-                                    }
-                                });
-                            }
-                        })
-                        .fail(xhr => {
-                            alert(`${xhr.status} - ${xhr.statusText}`);
-                        })
-                        .always(() => {
-                            submitBtn.html(oldHtml);
-                        });
+                    $.ajax( {
+                        type: 'POST',
+                        url: form.attr('action'),
+                        data: form.serialize(),
+                        beforeSend: () => {
+                            submitButton.html('Enregistrement en cours <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                        }
+                    } ).done( response => {
+                        if(response.done) {
+                            // Load all content: address, experiences, trainings, others, languages, motivations
+                            addressContent(reponse.user.id);
+                            experienceContent(response.user.id);
+                            trainingContent(response.user.id);
+                            otherContent(response.user.id);
+                        }
+                    } ).fail( xhr => {
+                        alert(`${xhr.status} - ${xhr.statusText}`);
+                    } );
+                })
+                .on('submit', '#experience-form', e => { submitExperience(e); } )
+                .on('click', '#add-experience-row .btn-add-ajax', e => { addExperience(e); } );
+
+            // Load address content
+            const addressContent = (userId) => {
+                const container = $('#address-content .card-body');
+                $.ajax( {
+                    type: 'GET',
+                    url: `/inscription/adresse/${userId}`,
+                    beforeSend: () => {
+                        container.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                    }
+                } ).done( response => {
+                    container.html(response);
+                } ).fail( xhr => {
+                    container.html(xhr.responseText);
+                } );
+            };
+
+            // Load Experience Content
+            const experienceContent = (userId, experienceId = 0) => {
+                const container = $('#experience-content .card-body');
+                $.ajax( {
+                    type: 'GET',
+                    url: `/inscription/experiences/${userId}/${experienceId}`,
+                    beforeSend: () => {
+                        container.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                    }
+                } ).done( response => {
+                    container.html(response);
+                } ).fail( xhr => {
+                    container.html(xhr.responseText);
+                } );
+            };
+
+            // Load Training Content
+            const trainingContent = (userId, trainingId = 0) => {
+                const container = $('#training-content .card-body');
+                $.ajax( {
+                    type: 'GET',
+                    url: `/inscription/training/${userId}/${trainingId}`,
+                    beforeSend: () => {
+                        container.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                    }
+                } ).done( response => {
+                    container.html(response);
+                } ).fail( xhr => {
+                    container.html(xhr.responseText);
+                } );
+            };
+            
+            // Load Other Content
+            const otherontent = (userId, otherId = 0) => {
+                const container = $('#other-content .card-body');
+                $.ajax( {
+                    type: 'GET',
+                    url: `/inscription/other/${userId}/${otherId}`,
+                    beforeSend: () => {
+                        container.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                    }
+                } ).done( response => {
+                    container.html(response);
+                } ).fail( xhr => {
+                    container.html(xhr.responseText);
+                } );
+            };
+
+            // Load Language content
+            const languageContent = (userId, languageId = 0) => {
+                const container = $('#language-content .card-body');
+                $.ajax( {
+                    type: 'GET',
+                    url: `/inscription/language/${userId}/${languageId}`,
+                    beforeSend: () => {
+                        container.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                    }
+                } ).done( response => {
+                    container.html(response);
+                } ).fail( xhr => {
+                    container.html(xhr.responseText);
+                } );
+            };
+
+            // Load Motivation content
+            const motivationContent = (userId, languageId = 0) => {
+                const container = $('#motivation-content .card-body');
+                $.ajax( {
+                    type: 'GET',
+                    url: `/inscription/motivation/${userId}/${languageId}`,
+                    beforeSend: () => {
+                        container.html('Chargement du contenu <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>');
+                    }
+                } ).done( response => {
+                    container.html(response);
+                } ).fail( xhr => {
+                    container.html(xhr.responseText);
+                } );
+            };
+
+            // Submit Experience form
+            const submitExperience = e => {
+                e.preventDefault();
+                const form = $(e.currentTarget);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    beforeSend: function(){}
+                }).done(response => {
+                    if(response.done) {
+                        // Add button delete
+                    }
+                }).fail(xhr => {
+                    alert(`${xhr.status} - ${xhr.statusText}`);
                 });
+            };
+
+            // Add Experience
+            const addExperience = e => {
+                e.preventDefault();
+                const btn = $(e.currentTarget);
+                const old = btn.html();
+                const id = btn.attr('data-user');
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/inscription/experiences/new/${id}`,
+                    beforeSend: () => {
+                        btn.html(`${old} <i class="fa fa-refresh animated infinite rotateIn" aria-hidden="true"></i>`);
+                    }
+                }).done( response => {
+                    $('#add-row').before( response );
+                } ).fail( xhr => {
+                    alert( `${xhr.status} - ${xhr.statusText}` );
+                } ).always( () => {
+                    btn.html(old);
+                } );
+            };
+
+            {% if isUser %}
+                addressContent({{ user.id }});
+                experienceContent({{ user.id }});
+                {# trainingContent({{ user.id }});
+                otherontent({{ user.id }});
+                languageContent({{ user.id }});
+                motivationContent({{ user.id }}); #}
+            {% endif %}
         });
     }(window.jQuery, window, window.document));
 </script>

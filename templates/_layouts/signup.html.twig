@@ -1,0 +1,164 @@
+{% extends "_layouts/page.html.twig" %}
+
+{% set pageTitle = title is defined ? title : 'Inscription' %}
+{% set open = open is defined ? open : 'information' %}
+{% set route = app.request.get('_route') %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="accordion" id="inscription">
+        <div class="card">
+            <div class="card-header" id="informations">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#information-content" aria-expanded="true" aria-controls="information-content">
+                        Informations
+                    </button>
+                </h2>
+            </div>
+            <div id="information-content" class="collapse{{ open == 'information' ? ' show' : '' }}" aria-labelledby="headingOne" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_information %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            {% block img %}
+                                <img src="https://fakeimg.pl/450x600/?text=Information" alt="Information" class="img-fluid">
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="addresses">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#address-content" aria-expanded="false" aria-controls="address-content"{{ route == 'user_inscription' ? ' disabled' : '' }}>
+                        Adresse
+                    </button>
+                </h2>
+            </div>
+            <div id="address-content" class="collapse{{ open == 'address' ? ' show' : '' }}" aria-labelledby="addresses" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_address %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            <img src="https://fakeimg.pl/450x600/?text=Adresse" alt="Information" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="experiences">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed btn-load-content" id="load-experiences" type="button" data-toggle="collapse" data-target="#experience-content" aria-expanded="false" aria-controls="experience-content"{{ route == 'user_inscription' ? ' disabled' : '' }}>
+                        Experiences professionelles
+                    </button>
+                </h2>
+            </div>
+            <div id="experience-content" class="collapse{{ open == 'experience' ? ' show' : '' }}" aria-labelledby="experiences" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_experience %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            <img src="https://fakeimg.pl/450x600/?text=Experience" alt="Information" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="trainings">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#training-content" aria-expanded="false" aria-controls="training-content"{{ route == 'user_inscription' ? ' disabled' : '' }}>
+                        Formations
+                    </button>
+                </h2>
+            </div>
+            <div id="training-content" class="collapse{{ open == 'formation' ? ' show' : '' }}" aria-labelledby="trainings" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_formation %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            <img src="https://fakeimg.pl/450x600/?text=Formation" alt="Information" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="knowledges">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#knowledge-content" aria-expanded="false" aria-controls="knowledge-content"{{ route == 'user_inscription' ? ' disabled' : '' }}>
+                        Autres
+                    </button>
+                </h2>
+            </div>
+            <div id="knowledge-content" class="collapse{{ open == 'other' ? ' show' : '' }}" aria-labelledby="knowledges" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_other %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            <img src="https://fakeimg.pl/450x600/?text=Connaissances" alt="Information" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="languages">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#language-content" aria-expanded="false" aria-controls="language-content"{{ route == 'user_inscription' ? ' disabled' : '' }}>
+                    Connaissances linguistique
+                    </button>
+                </h2>
+            </div>
+            <div id="language-content" class="collapse{{ open == 'language' ? ' show' : '' }}" aria-labelledby="languages" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_languages %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            <img src="https://fakeimg.pl/450x600/?text=Langues" alt="Information" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="motivations">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed btn-load-content" type="button" data-toggle="collapse" data-target="#motivation-content" aria-expanded="false" aria-controls="motivation-content"{{ route == 'user_inscription' ? ' disabled' : '' }}>
+                    Motivations
+                    </button>
+                </h2>
+            </div>
+            <div id="motivation-content" class="collapse{{ open == 'motivation' ? ' show' : '' }}" aria-labelledby="motivations" data-parent="#inscription">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-7">
+                            {% block signup_motivation %}{% endblock %}
+                        </div>
+                        <div class="col-5">
+                            <img src="https://fakeimg.pl/450x600/?text=Motivation" alt="Information" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

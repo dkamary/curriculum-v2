@@ -1,0 +1,23 @@
+{# Experience template #}
+
+{# {% extends "signup/form/layout.html.twig" %} #}
+
+{% set imgUrl = 'https://fakeimg.pl/450x600/?text=Experience' %}
+
+{% set add = true %}
+{% set remove = false %}
+{% set deleteParameter = { class: 'btn-delete-ajax pull-left', style: 'danger', icon_class: 'fa-trash', type: 'button', attr: { exp: experienceId }, attr_prefix: 'data', attr_separator: '-' } %}
+{% set addParameter = { class: 'btn-add-ajax btn-block', style: 'info', icon_class: 'fa-plus', type: 'button', attr: { user: user.id }, attr_prefix: 'data', attr_separator: '-' } %}
+{% set btnParameter = btnParameter is defined ? btnParameter : { class: 'btn-submit-ajax', style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="row">
+        <div class="col-12 text-right">
+            {% if remove == true %}
+                {{ 'Effacer'|button( deleteParameter ) }}
+            {% endif %}
+            {{ 'Enregistrer'|button(btnParameter) }}
+        </div>
+    </div>
+{{ form_end(form) }}
