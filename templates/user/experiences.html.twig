@@ -1,0 +1,79 @@
+{# User Experiences Template #}
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Expériences professionnelles' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: pageTitle, href: ''}] %}
+
+{% block title %}{{ pageTitle }}{% endblock %}
+
+{% block dashboard_content %}
+    {% for exp in user.experiences %}
+        <div class="row border-top mb-4 pt-3">
+            <div class="col-9">
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="text-info">
+                            {{ exp.jobTitle }}
+                        </h4>
+                    </div>
+                    <div class="col-12">
+                        <p class="text-secondary">
+                            {{ exp.start|date('d/m/Y') }}
+                            {% if exp.end is not null and exp.end != '0000-00-00' %}
+                                au <strong>{{ exp.end|date('d/m/Y') }}</strong>
+                            {% else %}
+                                jusqu'à présent
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <strong><em>{{ exp.company }}</em></strong>
+                    </div>
+                    <div class="col-12">
+                        <pre>{{ exp.longDescription }}</pre>
+                    </div>
+                    {% if exp.experienceSkills|length %}
+                        <div class="col-12">
+                            {% include "user/_skills.html.twig" with { experience: exp } %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-3 d-flex justify-content-center align-items-center">
+                <a href="{{ path('user_experience_edit', { id: exp.id }) }}" class="genric-btn primary small">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>&nbsp;
+                <button class="genric-btn danger-border btn-delete-exp small" data-id="{{ exp.id }}">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>            
+        </div>        
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <em>Aucune expérience professionelle enregistrée</em>
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
+    <div class="row my-5">
+        <div class="col-12 mb-5">
+            <h2>Ajouter une nouvelle expérience professionelle</h2>
+        </div>
+        <div class="col-12">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="row">
+                    <div class="col-12 text-right">
+                        <button class="genric-btn primary radius"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;{{ button_label|default('Enregistrer') }}</button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% include "user/experience-edit.js.twig" %}
+{% endblock %}

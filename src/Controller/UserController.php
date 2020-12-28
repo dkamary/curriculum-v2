@@ -12,6 +12,7 @@ use App\Form\UtilisateurInfoType;
 use App\Repository\SkillCategoryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -130,6 +131,30 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/adresse", name="user_address2", methods={"GET", "POST"})
+     */
+    public function address2(Request $request): Response
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(UtilisateurAddressType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+            $this->addFlash('success', 'Adresse mis à jour');
+
+            return $this->redirectToRoute('user_address2');
+        }
+
+        return $this->render('user/address.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("/experience/{user}/{experience}", 
      *      name="user_experience", 
      *      methods={"GET", "POST"}, 
@@ -155,6 +180,72 @@ class UserController extends AbstractController
             'form' => $form->createView(),
             'experiences' => $this->getExperienceForms($user),
             'experience_list' => $this->getExperiences($user),
+        ]);
+    }
+
+    /**
+     * @Route("/experiences", name="user_experiences")
+     */
+    public function experiences(Request $request): Response
+    {
+        $user = $this->getUser();
+        $experience = new Experience();
+        $form = $this->createForm(UtilisateurExperienceType::class, $experience);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $experience->setOwner($user);
+            $entityManager->persist($experience);
+            $entityManager->flush();
+            $this->addFlash('success', 'Expérience professionelle ajoutée');
+        }
+
+        return $this->render('user/experiences.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * @Route("/experiences/{id}/edit", name="user_experience_edit", requirements={"id"="\d+"})
+     */
+    public function experienceEdit(Request $request, Experience $experience): Response
+    {
+        $form = $this->createForm(UtilisateurExperienceType::class, $experience);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $manager->flush();
+            $this->addFlash('success', 'Expérience professionelle mis à jour');
+        }
+
+        $skill = new ExperienceSkill();
+        $skillForm = $this->createForm(UtilisateurExperienceSkillType::class, $skill);
+        $skillForm->handleRequest($request);
+
+        if ($skillForm->isSubmitted() && $skillForm->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $skill->setExperience($experience);
+            $manager->persist($skill);
+            try {
+                $manager->flush();
+                $this->addFlash('success', 'Nouvelle compétence ajoutée');
+            } catch (Exception $ex) {
+                $previous = $ex->getPrevious();
+                if (23000 == $previous->getCode()) {
+                    $this->addFlash('warning', 'Une compétence ne peut pas apparaitre 2 fois dans une expérience professionnelle');
+                } else {
+                    $this->addFlash('danger', 'Une erreur est survenue lors de l\'enregistrement de la nouvelle compétence ' . $previous->getCode());
+                }
+            }
+        }
+
+        return $this->render('user/experience-edit.html.twig', [
+            'form' => $form->createView(),
+            'skill_form' => $skillForm->createView(),
+            'experience' => $experience,
         ]);
     }
 
@@ -202,12 +293,15 @@ class UserController extends AbstractController
      */
     public function experienceSkillDelete(EntityManagerInterface $manager, ExperienceSkill $experienceSkill): Response
     {
+        $id = $experienceSkill->getId();
         $manager->remove($experienceSkill);
         $manager->flush();
 
         return $this->json([
             'done' => true,
-            'expSkill' => $experienceSkill->getId(),
+            'skill' => [
+                'id' => $id,
+            ],
         ]);
     }
 
@@ -224,7 +318,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="user_show", methods={"GET"})
+     * @Route("/{id}", name="user_show", methods={"GET"}, requirements={ "id" : "\d+" })
      */
     public function show(User $user): Response
     {
@@ -254,6 +348,27 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/edition", name="user_edition", methods={"GET","POST"})
+     */
+    public function edit2(Request $request): Response
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(UtilisateurInfoType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('user_index');
+        }
+
+        return $this->render('user/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("/{id}", name="user_delete", methods={"DELETE"})
      */
     public function delete(Request $request, User $user): Response
@@ -265,5 +380,32 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('user_index');
+    }
+
+    /**
+     * @Route("/", name="user_experience_2")
+     */
+    public function experience2(Request $request): Response
+    {
+        $user = $this->getUser();
+        $experience = new Experience();
+        $form = $this->createForm(UtilisateurExperienceType::class, $experience, [
+            'action' => $this->generateUrl('signup_experience_save', [
+                'user' => $user->getId(),
+                'experience' => $experience->getId(),
+            ]),
+            'method' => 'POST',
+            'attr' => [
+                'class' => 'ajax-form-submit',
+                'id' => 'experience-form',
+            ],
+        ]);
+        $form->handleRequest($request);
+
+        return $this->render('signup/form/experience.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+            'experienceId' => $experience->getId(),
+        ]);
     }
 }

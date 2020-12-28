@@ -1,0 +1,48 @@
+{# Custom script for user experience edit #}
+<script>
+    ( function($, window, document) {
+        $( function() {
+            const $document = $( document );
+            $document
+                .on( 'click', '.remove-skill', e => {
+                    e.preventDefault();
+                    if( !confirm("Voulez-vous effacer cette compétence ?") ) return false;
+
+                    const $this = $( e.currentTarget );
+                    const url = $this.data('url');
+                    const old = $this.html();
+                    const ajax = $.ajax( {
+                        type: 'post',
+                        url : url,
+                        beforeSend: () => {
+                            $this.html('<i class="fa fa-refresh rotateIn infinite animated slow" aria-hidden="true"></i>');
+                        }
+                    } );
+                    ajax.done( response => {
+                        if( response.done ) {
+                            $(`#skill-${response.skill.id}`).parent().remove();
+                            setTimeout(() => {
+                                verifyExperienceSkills();
+                            }, 1000);
+                        }
+                    } );
+                    ajax.fail();
+                    ajax.always(() => {
+                        $this.html(old);
+                    });
+                } )
+                ;
+            const verifyExperienceSkills = () => {
+                const $container = $('#exp-skill-container');
+                const count = $container.find('span.badge').length;
+                console.log({count});
+                if( count < 1 ) {
+                    const $em = $('<em>', {
+                        html: 'Aucune compétence enregistrée'
+                    });
+                    $container.append($em);
+                }
+            };
+        } );
+    } (window.jQuery, window, window.document) );
+</script>

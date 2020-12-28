@@ -7,6 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ExperienceSkillRepository::class)
+ * @ORM\Table(
+ *      name="experience_skill",
+ *      uniqueConstraints={
+ *          @ORM\UniqueConstraint(name="U_user_exp_skill", columns={"experience_id", "skill_id"})
+ *      }
+ * )
  */
 class ExperienceSkill
 {

@@ -178,6 +178,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Experience::class, mappedBy="owner")
+     * @ORM\OrderBy({"start" = "DESC", "end" = "DESC"})
      */
     private $experiences;
 

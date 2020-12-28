@@ -1,0 +1,21 @@
+{# user experience skills template #}
+
+<div class="row pt-4">
+	<div class="col-12">
+		<h6 class="text-muted text-underline">Compétences utilisées <hr></h6>
+	</div>
+	<hr>
+	<div class="col-12" id="exp-skill-container">
+		{% for skill in experience.experienceSkills %}
+			<span class="badge badge-info mr-2 my-2 p-1">
+				{{ skill.name }}
+				&nbsp;
+				<a href="#" class="ml-3 mr-1 remove-skill text-danger" id="skill-{{ skill.id }}" data-url="{{ path('user_experience_skill_delete', { experienceSkill: skill.id }) }}">
+					<i class="fa fa-times-circle" aria-hidden="true"></i>
+				</a>
+			</span>
+		{% else %}
+			<em>Aucune compétence enregistrée</em>
+		{% endfor %}
+	</div>
+</div>

@@ -1,17 +1,15 @@
+{% extends "_layouts/dashboard.html.twig" %}
 
-{% set title = 'Edition de ' ~ user.firstname ~ ' ' ~ user.lastname %}
-{% set open = 'address' %}
-{% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : [{text: 'Adresse', href: '#'}] %}
-{% set submitButton = { style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Adresse utilisateur', href: ''}] %}
+{% set btnParams = { class: 'primary radius', type: 'submit', icon_class: 'fa-check', attr: [ { 'aria-hidde': 'true' } ] } %}
 
-{% extends "_layouts/signup.html.twig" %}
-
-{% block signup_address %}
+{% block dashboard_content %}
     {{ form_start(form) }}
         {{ form_widget(form) }}
         <div class="row">
-            <div class="col-12 text-right" id="save-container">
-                {{ 'Enregistrer'|button(submitButton) }}
+            <div class="col-12 text-right">
+                <button class="genric-btn primary radius"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;{{ button_label|default('Enregistrer') }}</button>
             </div>
         </div>
     {{ form_end(form) }}

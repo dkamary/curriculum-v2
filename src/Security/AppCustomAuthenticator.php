@@ -18,6 +18,7 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Component\VarDumper\VarDumper;
 
 class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
 {
@@ -47,13 +48,13 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
     public function getCredentials(Request $request)
     {
         $credentials = [
-            'username' => $request->request->get('username'),
+            'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
         $request->getSession()->set(
             Security::LAST_USERNAME,
-            $credentials['username']
+            $credentials['email']
         );
 
         return $credentials;
@@ -65,14 +66,16 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
         }
-
-        // $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
-        $qb = $this->entityManager->createQueryBuilder()
-            ->from(User::class, 'u');
-        $user = $qb->where($qb->expr()->literal('u.login LIKE :username OR u.email LIKE :username'))
-            ->andWhere($qb->expr()->eq('u.isActive', true))
-            ->getQuery()
-            ->getOneOrNullResult();
+        VarDumper::dump($credentials);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
+        // $qb = $this->entityManager->createQueryBuilder()
+        //     ->from(User::class, 'u');
+        // $user = $qb->where('u.login LIKE :username OR u.email LIKE :username')
+        //     ->andWhere('u.isActive = :isActive')
+        //     ->setParameter('email', $credentials['email'])
+        //     ->setParameter('isActive', true)
+        //     ->getQuery()
+        //     ->getOneOrNullResult();
 
         if (!$user) {
             // fail authentication with a custom error
@@ -94,7 +97,8 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
         }
 
         // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        throw new \Exception('TODO: provide a valid redirect inside ' . __FILE__);
+        return new RedirectResponse($this->urlGenerator->generate('dashboard_index'));
+        // throw new \Exception('TODO: provide a valid redirect inside ' . __FILE__);
     }
 
     protected function getLoginUrl()

@@ -23,6 +23,22 @@
 {% block main_content %}
 <section class="post-area section-gap">
     <div class="container">
+        {% for label, messages in app.flashes %}
+            <div class="row mb-3">
+                <div class="col-12">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                            <p class="text-center mb-0">
+                                {{ message|raw }}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
         {% block content %}{% endblock %}
     </div>
 </section>

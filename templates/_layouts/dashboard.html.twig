@@ -1,0 +1,79 @@
+{# Dashboard template #}
+
+{% extends "_layouts/page.html.twig" %}
+
+{% set route = app.request.get('_route') %}
+
+{% block title %}
+    Tableau de bord
+{% endblock %}
+
+{% block header %}
+    {% include "_partials/section-header.html.twig" %}
+{% endblock %}
+
+{% block banner %}
+    {% include "_partials/banner-page.html.twig" %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-header">
+                    Menu
+                </div>
+                <div class="card-body">
+                    <ul class="card-text">
+                        <li>
+                            <i class="fa fa-tachometer" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('dashboard_index') }}" {{ 'dashboard_index' == route ? 'class="text-danger"' : '' }}>Tableau de bord</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_edition') }}" {{ 'user_edition' == route ? 'class="text-danger"' : '' }}>Profil</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-address-book" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_address2') }}" {{ 'user_address2' == route ? 'class="text-danger"' : '' }}>Adresse</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-briefcase" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_experiences') }}" {{ 'user_experiences' == route or 'user_experience_edit' == route ? 'class="text-danger"' : '' }}>Expériences professionelles</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>&nbsp;
+                            <a href="#" {{ 'user_trainings' == route ? 'class="text-danger"' : '' }}>Formations professionelles</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-star" aria-hidden="true"></i>&nbsp;
+                            <a href="#" {{ 'user_others' == route ? 'class="text-danger"' : '' }}>Autres connaissances</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-language" aria-hidden="true"></i>&nbsp;
+                            <a href="#" {{ 'user_languages' == route ? 'class="text-danger"' : '' }}>Connaissances linguistiques</a>
+                        </li>
+                        <hr>
+                        <li>
+                            <i class="fa fa-id-badge" aria-hidden="true"></i>&nbsp;
+                            <a href="#" {{ 'user_cvc' == route ? 'class="text-danger"' : '' }}>Voir mon CV</a>
+                        </li>
+                        <hr>
+                        <li>
+                            <i class="fa fa-tags" aria-hidden="true"></i>&nbsp;
+                            <a href="#" {{ 'user_applies' == route ? 'class="text-danger"' : '' }}>Emplois postulés</a>
+                        </li>
+                        <hr>
+                        <li>
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('app_logout') }}" class="text-danger">Déconnexion</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 col-12">
+            {% block dashboard_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
