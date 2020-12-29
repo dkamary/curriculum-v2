@@ -1,0 +1,74 @@
+{# User Training Template #}
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Formation professionnelles' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: pageTitle, href: ''}] %}
+
+{% block title %}{{ pageTitle }}{% endblock %}
+
+{% block dashboard_content %}
+    {% for formation in user.trainings %}
+        <div class="row border-top mb-4 pt-3" id="training-{{ formation.id }}">
+            <div class="col-9">
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="text-info">
+                            {{ formation.diploma }}
+                        </h4>
+                    </div>
+                    <div class="col-12">
+                        <p class="text-secondary">
+                            {{ formation.start|date('d/m/Y') }}
+                            {% if formation.end is not null and formation.end != '0000-00-00' %}
+                                au <strong>{{ formation.end|date('d/m/Y') }}</strong>
+                            {% else %}
+                                jusqu'à présent
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <strong><em>{{ formation.school }}</em></strong>
+                    </div>
+                    <div class="col-12">
+                        <pre>{{ formation.note }}</pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 d-flex justify-content-center align-items-center">
+                <a href="{{ path('user_training_edit', { id: formation.id }) }}" class="genric-btn primary small">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>&nbsp;
+                <button class="genric-btn danger-border btn-delete-trainning small" data-id="{{ formation.id }}" data-url="{{ path('user_training_delete', { id : formation.id }) }}">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>            
+        </div>        
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <em>Aucune formation professionelle enregistrée</em>
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
+    <div class="row my-5">
+        <div class="col-12 mb-5">
+            <h2>Ajouter une nouvelle formation professionelle</h2>
+        </div>
+        <div class="col-12">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="row">
+                    <div class="col-12 text-right">
+                        <button class="genric-btn primary radius"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;{{ button_label|default('Enregistrer') }}</button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% include "user/training-edit.js.twig" %}
+{% endblock %}

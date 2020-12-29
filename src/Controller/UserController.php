@@ -4,11 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Experience;
 use App\Entity\ExperienceSkill;
+use App\Entity\Other;
+use App\Entity\OtherSkill;
+use App\Entity\Training;
 use App\Entity\User;
+use App\Form\UserOtherType;
+use App\Form\UserTrainingType;
 use App\Form\UtilisateurAddressType;
 use App\Form\UtilisateurExperienceSkillType;
 use App\Form\UtilisateurExperienceType;
 use App\Form\UtilisateurInfoType;
+use App\Repository\OtherSkillRepository;
 use App\Repository\SkillCategoryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -406,6 +412,141 @@ class UserController extends AbstractController
             'form' => $form->createView(),
             'user' => $user,
             'experienceId' => $experience->getId(),
+        ]);
+    }
+
+    /**
+     * @Route("/formations", name="user_training")
+     */
+    public function trainings(Request $request): Response
+    {
+        $user = $this->getUser();
+        $training = new Training();
+        $form = $this->createForm(UserTrainingType::class, $training);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $training->setOwner($user);
+            $manager->persist($training);
+            $manager->flush();
+            $this->addFlash('success', 'Nouvelle formation professionnelle ajoutée');
+
+            return $this->redirectToRoute('user_training');
+        }
+
+        return $this->render('user/trainings.html.twig', [
+            'form' => $form->createView(),
+            'training' => $training,
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * @Route("/formation/{id}/edit", name="user_training_edit", requirements={ "id" = "\d+" })
+     */
+    public function trainingEdit(Request $request, Training $training): Response
+    {
+        $form = $this->createForm(UserTrainingType::class, $training);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($training);
+            $manager->flush();
+            $this->addFlash('success', 'Formation professionnelle mis à jour avec succès');
+
+            return $this->redirectToRoute('user_training_edit', ['id' => $training->getId()]);
+        }
+
+        return $this->render('user/training-edit.html.twig', [
+            'form' => $form->createView(),
+            'training' => $training,
+        ]);
+    }
+
+    /**
+     * @Route("/training/{id}/delete", name="user_training_delete", requirements={ "id" = "\d+" })
+     */
+    public function trainingDelete(Training $training): Response
+    {
+        $id = $training->getId();
+        $manager = $this->getDoctrine()->getManager();
+        $manager->remove($training);
+        $manager->flush();
+
+        return $this->json([
+            'done' => true,
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * @Route("/others", name="user_others")
+     */
+    public function others(Request $request, OtherSkillRepository $otherSkillRepository): Response
+    {
+        $user = $this->getUser();
+        $otherSkill = new OtherSkill();
+        $form  = $this->createForm(UserOtherType::class, $otherSkill);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $other = new Other();
+            $other->setOwner($user);
+            $manager->persist($other);
+            $manager->flush();
+            $otherSkill->setOther($other);
+            $manager->persist($otherSkill);
+            $manager->flush();
+            $this->addFlash('success', 'Nouvelle connaissance ajoutée');
+
+            return $this->redirectToRoute('user_others');
+        }
+
+        return $this->render('user/others.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+            'others' => $otherSkillRepository->getOthers($user),
+        ]);
+    }
+
+    /**
+     * @Route("/other/{id}/edit", name="user_other_edit", requirements={ "id" = "\d+" })
+     */
+    public function otherEdit(Request $request, OtherSkill $otherSkill): Response
+    {
+        $form  = $this->createForm(UserOtherType::class, $otherSkill);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $manager->flush();
+            $this->addFlash('success', 'Connaissance mis à jour');
+
+            return $this->redirectToRoute('user_other_edit', ['id' => $otherSkill->getId()]);
+        }
+
+        return $this->render('user/others.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/other/{id}/delete", name="user_other_delete", requirements={ "id" = "\d+" })
+     */
+    public function otherDelete(EntityManagerInterface $manager, OtherSkill $otherSkill): Response
+    {
+        $id = $otherSkill->getId();
+        $other = $otherSkill->getOther();
+        $manager->remove($otherSkill);
+        $manager->remove($other);
+        $manager->flush();
+
+        return $this->json([
+            'done' => true,
+            'id' => $id,
         ]);
     }
 }

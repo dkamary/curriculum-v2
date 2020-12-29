@@ -43,11 +43,11 @@
                         </li>
                         <li>
                             <i class="fa fa-graduation-cap" aria-hidden="true"></i>&nbsp;
-                            <a href="#" {{ 'user_trainings' == route ? 'class="text-danger"' : '' }}>Formations professionelles</a>
+                            <a href="{{ path('user_training') }}" {{ 'user_training' == route or 'user_training_edit' == route ? 'class="text-danger"' : '' }}>Formations professionelles</a>
                         </li>
                         <li>
                             <i class="fa fa-star" aria-hidden="true"></i>&nbsp;
-                            <a href="#" {{ 'user_others' == route ? 'class="text-danger"' : '' }}>Autres connaissances</a>
+                            <a href="{{ path('user_others') }}" {{ 'user_others' == route or 'user_other_edit' == route ? 'class="text-danger"' : '' }}>Autres connaissances</a>
                         </li>
                         <li>
                             <i class="fa fa-language" aria-hidden="true"></i>&nbsp;

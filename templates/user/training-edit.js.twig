@@ -1,0 +1,35 @@
+{# Custom script for user experience edit #}
+<script>
+    ( function($, window, document) {
+        $( function() {
+            const $document = $( document );
+            $document
+                .on( 'click', '.btn-delete-trainning', e => {
+                    e.preventDefault();
+                    if( !confirm("Voulez-vous effacer cette formation ?") ) return false;
+
+                    const $this = $( e.currentTarget );
+                    const url = $this.data('url');
+                    const id = $this.data('id');
+                    const old = $this.html();
+                    const ajax = $.ajax( {
+                        type: 'post',
+                        url : url,
+                        beforeSend: () => {
+                            $this.html('<i class="fa fa-refresh rotateIn infinite animated slow" aria-hidden="true"></i>');
+                        }
+                    } );
+                    ajax.done( response => {
+                        if( response.done ) {
+                            $(`#training-${id}`).remove();
+                        }
+                    } );
+                    ajax.fail();
+                    ajax.always(() => {
+                        $this.html(old);
+                    });
+                } )
+                ;
+        } );
+    } (window.jQuery, window, window.document) );
+</script>

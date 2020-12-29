@@ -1,0 +1,55 @@
+{# User Training Template #}
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Connaissances' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: pageTitle, href: ''}] %}
+
+{% block title %}{{ pageTitle }}{% endblock %}
+
+{% block dashboard_content %}
+    {% set category = { id: null } %}
+    {% for kb in others %}
+        {% if category.id != kb.skill.category.id %}
+            {% set category = kb.skill.category %}
+            <h5 {% if not loop.first %}class="mt-5"{% endif %}>{{ kb.skill.category.name }}</h5>
+            <hr>
+        {% endif %}
+        <div class="row my-1">
+            <div class="col-7">
+                <strong class="text-info">{{ kb.skill.name }}</strong>
+            </div>
+            <div class="col-2">
+                <em>{{ kb.level.name }}</em>
+            </div>
+            <div class="col-3">
+                <a href="{{ path('user_other_edit', { id: kb.id }) }}" class="genric-btn primary small">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>&nbsp;
+                <button class="genric-btn danger-border btn-delete-other small" data-id="{{ kb.id }}" data-url="{{ path('user_other_delete', { id : kb.id }) }}">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
+    <div class="row my-5">
+        <div class="col-12 mb-5">
+            <h2>Ajouter une nouvelle formation professionelle</h2>
+        </div>
+        <div class="col-12">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="row">
+                    <div class="col-12 text-right">
+                        <button class="genric-btn primary radius"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;{{ button_label|default('Enregistrer') }}</button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% include "user/training-edit.js.twig" %}
+{% endblock %}

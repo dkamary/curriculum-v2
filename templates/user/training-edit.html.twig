@@ -1,0 +1,23 @@
+{# User experience edit template #}
+
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Edition formation professionnelle' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Formation professionnelle', href: ''}] %}
+{% set btnParams = { class: 'primary radius', type: 'submit', icon_class: 'fa-check', attr: [ { 'aria-hidde': 'true' } ] } %}
+
+{% block dashboard_content %}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="row">
+            <div class="col-12 text-right">
+                <button class="genric-btn primary radius"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;{{ button_label|default('Enregistrer') }}</button>
+            </div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% include "user/training-edit.js.twig" %}
+{% endblock %}

@@ -2,8 +2,14 @@
 
 namespace App\Repository;
 
+use App\Entity\Other;
 use App\Entity\OtherSkill;
+use App\Entity\Skill;
+use App\Entity\SkillCategory;
+use App\Entity\SkillLevel;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -47,4 +53,27 @@ class OtherSkillRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * Get User'other knowledge order by Skill category and skill level desc
+     *
+     * @param User $user
+     * @return array
+     */
+    public function getOthers(User $user): array
+    {
+        $otherSkills = $this->createQueryBuilder('os')
+            ->join(Skill::class, 's', Join::WITH, 'os.skill = s.id')
+            ->join(SkillCategory::class, 'sc', Join::WITH, 's.category = sc.id')
+            ->join(SkillLevel::class, 'sl', Join::WITH, 'os.level = sl.id')
+            ->join(Other::class, 'o', Join::WITH, 'os.other = o.id')
+            ->where('o.owner = :user')
+            ->orderBy('sc.name', 'ASC')
+            ->addOrderBy('sl.rank', 'DESC')
+            ->setParameter('user', $user->getId())
+            ->getQuery()
+            ->getResult();
+
+        return $otherSkills;
+    }
 }
