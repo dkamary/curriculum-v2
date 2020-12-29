@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.1
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 21 déc. 2020 à 16:31
--- Version du serveur :  10.4.11-MariaDB
--- Version de PHP : 7.3.14
+-- Généré le : mar. 29 déc. 2020 à 07:40
+-- Version du serveur :  10.4.17-MariaDB
+-- Version de PHP : 7.3.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -21,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de données : `curriculum_v2`
 --
-CREATE DATABASE IF NOT EXISTS `curriculum_v2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `curriculum_v2`;
 
 -- --------------------------------------------------------
 
@@ -30,7 +27,6 @@ USE `curriculum_v2`;
 -- Structure de la table `applier`
 --
 
-DROP TABLE IF EXISTS `applier`;
 CREATE TABLE `applier` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -46,7 +42,6 @@ CREATE TABLE `applier` (
 -- Structure de la table `asset`
 --
 
-DROP TABLE IF EXISTS `asset`;
 CREATE TABLE `asset` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED DEFAULT NULL,
@@ -64,7 +59,6 @@ CREATE TABLE `asset` (
 -- Structure de la table `asset_type`
 --
 
-DROP TABLE IF EXISTS `asset_type`;
 CREATE TABLE `asset_type` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `mime` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -98,7 +92,6 @@ INSERT INTO `asset_type` (`id`, `mime`, `extensions`, `name`, `description`, `is
 -- Structure de la table `company_type`
 --
 
-DROP TABLE IF EXISTS `company_type`;
 CREATE TABLE `company_type` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -120,7 +113,6 @@ INSERT INTO `company_type` (`id`, `name`) VALUES
 -- Structure de la table `contract_type`
 --
 
-DROP TABLE IF EXISTS `contract_type`;
 CREATE TABLE `contract_type` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -142,7 +134,6 @@ INSERT INTO `contract_type` (`id`, `name`, `is_active`) VALUES
 -- Structure de la table `country`
 --
 
-DROP TABLE IF EXISTS `country`;
 CREATE TABLE `country` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -181,7 +172,7 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 (27, 'Île Bouvet', 'BV', 'BVT'),
 (28, 'Brésil', 'BR', 'BRA'),
 (29, 'Belize', 'BZ', 'BLZ'),
-(30, 'Territoire Britannique de l\'Océan Indien', 'IO', 'IOT'),
+(30, "Territoire Britannique de l'Océan Indien", 'IO', 'IOT'),
 (31, 'Îles Salomon', 'SB', 'SLB'),
 (32, 'Îles Vierges Britanniques', 'VG', 'VGB'),
 (33, 'Brunéi Darussalam', 'BN', 'BRN'),
@@ -259,12 +250,12 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 (105, 'Islande', 'IS', 'ISL'),
 (106, 'Inde', 'IN', 'IND'),
 (107, 'Indonésie', 'ID', 'IDN'),
-(108, 'République Islamique d\'Iran', 'IR', 'IRN'),
+(108, "République Islamique d'Iran", 'IR', 'IRN'),
 (109, 'Iraq', 'IQ', 'IRQ'),
 (110, 'Irlande', 'IE', 'IRL'),
 (111, 'Israël', 'IL', 'ISR'),
 (112, 'Italie', 'IT', 'ITA'),
-(113, 'Côte d\'Ivoire', 'CI', 'CIV'),
+(113, "Côte d'Ivoire", 'CI', 'CIV'),
 (114, 'Jamaïque', 'JM', 'JAM'),
 (115, 'Japon', 'JP', 'JPN'),
 (116, 'Kazakhstan', 'KZ', 'KAZ'),
@@ -380,7 +371,7 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 (226, 'Tuvalu', 'TV', 'TUV'),
 (227, 'Ouganda', 'UG', 'UGA'),
 (228, 'Ukraine', 'UA', 'UKR'),
-(229, 'L\'ex-République Yougoslave de Macédoine', 'MK', 'MKD'),
+(229, "L'ex-République Yougoslave de Macédoine", 'MK', 'MKD'),
 (230, 'Égypte', 'EG', 'EGY'),
 (231, 'Royaume-Uni', 'GB', 'GBR'),
 (232, 'Île de Man', 'IM', 'IMN'),
@@ -403,7 +394,6 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 -- Structure de la table `doctrine_migration_versions`
 --
 
-DROP TABLE IF EXISTS `doctrine_migration_versions`;
 CREATE TABLE `doctrine_migration_versions` (
   `version` varchar(191) COLLATE utf8_unicode_ci NOT NULL,
   `executed_at` datetime DEFAULT NULL,
@@ -422,7 +412,8 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 ('DoctrineMigrations\\Version20201208155427', '2020-12-08 16:54:53', 794),
 ('DoctrineMigrations\\Version20201208155610', '2020-12-08 16:56:18', 369),
 ('DoctrineMigrations\\Version20201210114533', '2020-12-10 12:45:53', 221),
-('DoctrineMigrations\\Version20201210122711', '2020-12-10 13:27:17', 88);
+('DoctrineMigrations\\Version20201210122711', '2020-12-10 13:27:17', 88),
+('DoctrineMigrations\\Version20201227231349', '2020-12-28 00:14:28', 833);
 
 -- --------------------------------------------------------
 
@@ -430,7 +421,6 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 -- Structure de la table `experience`
 --
 
-DROP TABLE IF EXISTS `experience`;
 CREATE TABLE `experience` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -452,7 +442,10 @@ INSERT INTO `experience` (`id`, `owner_id`, `company`, `start`, `end`, `long_des
 (2, 1, 'DCLICK', '2009-08-20 00:00:00', '2013-02-28 00:00:00', 'Administrateur Parc informatique', '2020-12-01 08:03:40', NULL, ''),
 (3, 1, 'IIS Madagascar', '2008-06-01 00:00:00', '2009-01-01 00:00:00', 'Developpeur Backend', '2020-12-01 08:38:23', NULL, ''),
 (4, 18, 'Societe fictive', '2019-01-01 00:00:00', NULL, NULL, '2020-12-08 16:59:54', NULL, 'Poste fictive'),
-(5, 20, 'Societe fictive', '2019-01-01 00:00:00', '2020-01-01 00:00:00', 'TESTIMONY', '2020-12-14 16:36:20', '2020-12-15 08:21:08', 'Poste fictive');
+(5, 20, 'Societe fictive', '2019-01-01 00:00:00', '2020-01-01 00:00:00', 'TESTIMONY', '2020-12-14 16:36:20', '2020-12-15 08:21:08', 'Poste fictive'),
+(6, 19, 'Societe fictive', '2013-01-01 00:00:00', '2013-02-28 00:00:00', 'TEST', '2020-12-27 21:29:35', '2020-12-27 23:06:47', 'Poste fictif'),
+(7, 19, 'Societe fictive II', '2012-01-01 00:00:00', '2012-12-31 00:00:00', 'TESTIMONY', '2020-12-27 21:41:39', NULL, 'Poste fictif II'),
+(8, 19, 'Societe fictive III', '2013-03-01 00:00:00', '2020-01-18 00:00:00', 'TESTIMONY 3rd', '2020-12-27 21:49:35', NULL, 'Poste fictif III');
 
 -- --------------------------------------------------------
 
@@ -460,7 +453,6 @@ INSERT INTO `experience` (`id`, `owner_id`, `company`, `start`, `end`, `long_des
 -- Structure de la table `experience_skill`
 --
 
-DROP TABLE IF EXISTS `experience_skill`;
 CREATE TABLE `experience_skill` (
   `id` int(10) UNSIGNED NOT NULL,
   `experience_id` int(10) UNSIGNED NOT NULL,
@@ -472,14 +464,21 @@ CREATE TABLE `experience_skill` (
 --
 
 INSERT INTO `experience_skill` (`id`, `experience_id`, `skill_id`) VALUES
-(1, 1, 51),
-(2, 2, 29),
-(3, 1, 53),
 (4, 1, 8),
 (5, 1, 9),
-(6, 3, 52),
+(1, 1, 51),
+(3, 1, 53),
+(2, 2, 29),
 (7, 2, 30),
-(8, 3, 8);
+(8, 3, 8),
+(6, 3, 52),
+(31, 6, 8),
+(30, 6, 22),
+(28, 6, 51),
+(29, 6, 53),
+(35, 7, 11),
+(34, 7, 12),
+(33, 8, 29);
 
 -- --------------------------------------------------------
 
@@ -487,7 +486,6 @@ INSERT INTO `experience_skill` (`id`, `experience_id`, `skill_id`) VALUES
 -- Structure de la table `language`
 --
 
-DROP TABLE IF EXISTS `language`;
 CREATE TABLE `language` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `icon_id` int(10) UNSIGNED DEFAULT NULL,
@@ -519,7 +517,6 @@ INSERT INTO `language` (`id`, `icon_id`, `name`, `alpha2`, `alpha3`, `is_active`
 -- Structure de la table `language_knowledge`
 --
 
-DROP TABLE IF EXISTS `language_knowledge`;
 CREATE TABLE `language_knowledge` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -535,7 +532,6 @@ CREATE TABLE `language_knowledge` (
 -- Structure de la table `language_level`
 --
 
-DROP TABLE IF EXISTS `language_level`;
 CREATE TABLE `language_level` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -560,7 +556,6 @@ INSERT INTO `language_level` (`id`, `name`, `score`, `rank`) VALUES
 -- Structure de la table `nationality`
 --
 
-DROP TABLE IF EXISTS `nationality`;
 CREATE TABLE `nationality` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `country_id` smallint(5) UNSIGNED NOT NULL,
@@ -820,7 +815,6 @@ INSERT INTO `nationality` (`id`, `country_id`, `name`) VALUES
 -- Structure de la table `other`
 --
 
-DROP TABLE IF EXISTS `other`;
 CREATE TABLE `other` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -828,13 +822,25 @@ CREATE TABLE `other` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `other`
+--
+
+INSERT INTO `other` (`id`, `owner_id`, `created_at`, `updated_at`) VALUES
+(1, 19, '2020-12-29 07:06:01', NULL),
+(2, 19, '2020-12-29 07:06:12', NULL),
+(3, 19, '2020-12-29 07:11:32', NULL),
+(4, 19, '2020-12-29 07:12:06', NULL),
+(5, 19, '2020-12-29 07:16:56', NULL),
+(6, 19, '2020-12-29 07:17:20', NULL),
+(7, 19, '2020-12-29 07:17:33', NULL);
+
 -- --------------------------------------------------------
 
 --
 -- Structure de la table `other_skill`
 --
 
-DROP TABLE IF EXISTS `other_skill`;
 CREATE TABLE `other_skill` (
   `id` int(10) UNSIGNED NOT NULL,
   `other_id` int(10) UNSIGNED NOT NULL,
@@ -842,13 +848,25 @@ CREATE TABLE `other_skill` (
   `level_id` smallint(5) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `other_skill`
+--
+
+INSERT INTO `other_skill` (`id`, `other_id`, `skill_id`, `level_id`) VALUES
+(1, 1, 8, 3),
+(2, 2, 51, 3),
+(3, 3, 22, 3),
+(4, 4, 24, 2),
+(5, 5, 10, 2),
+(6, 6, 44, 1),
+(7, 7, 45, 2);
+
 -- --------------------------------------------------------
 
 --
 -- Structure de la table `proposal`
 --
 
-DROP TABLE IF EXISTS `proposal`;
 CREATE TABLE `proposal` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -869,7 +887,6 @@ CREATE TABLE `proposal` (
 -- Structure de la table `proposal_attachment`
 --
 
-DROP TABLE IF EXISTS `proposal_attachment`;
 CREATE TABLE `proposal_attachment` (
   `id` int(10) UNSIGNED NOT NULL,
   `proposal_id` int(10) UNSIGNED NOT NULL,
@@ -883,7 +900,6 @@ CREATE TABLE `proposal_attachment` (
 -- Structure de la table `proposal_favorite`
 --
 
-DROP TABLE IF EXISTS `proposal_favorite`;
 CREATE TABLE `proposal_favorite` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -896,7 +912,6 @@ CREATE TABLE `proposal_favorite` (
 -- Structure de la table `skill`
 --
 
-DROP TABLE IF EXISTS `skill`;
 CREATE TABLE `skill` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `category_id` smallint(5) UNSIGNED DEFAULT NULL,
@@ -953,7 +968,6 @@ INSERT INTO `skill` (`id`, `category_id`, `name`, `description`) VALUES
 -- Structure de la table `skill_category`
 --
 
-DROP TABLE IF EXISTS `skill_category`;
 CREATE TABLE `skill_category` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `icon_id` int(10) UNSIGNED DEFAULT NULL,
@@ -985,7 +999,6 @@ INSERT INTO `skill_category` (`id`, `icon_id`, `banner_id`, `name`, `description
 -- Structure de la table `skill_level`
 --
 
-DROP TABLE IF EXISTS `skill_level`;
 CREATE TABLE `skill_level` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1009,7 +1022,6 @@ INSERT INTO `skill_level` (`id`, `name`, `score`, `rank`) VALUES
 -- Structure de la table `training`
 --
 
-DROP TABLE IF EXISTS `training`;
 CREATE TABLE `training` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -1028,7 +1040,6 @@ CREATE TABLE `training` (
 -- Structure de la table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_type_id` smallint(5) UNSIGNED DEFAULT NULL,
@@ -1076,7 +1087,7 @@ INSERT INTO `user` (`id`, `user_type_id`, `company_type_id`, `nationality_id`, `
 (16, 2, 4, 131, 4, 1, NULL, NULL, 'dummy12', 'dummy12@yopmail.com', '$2y$13$uCsPlAyl5ui3zmWXMF29qOvARVRPzRRpgR4QfBZYxQ8NUkoKNTY.i', 1, 'Dummy 12', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 10:03:06', '2020-12-08 10:04:53', NULL, 1),
 (17, 2, 4, 131, 7, 1, NULL, NULL, 'dummy13', 'dummy13@yopmail.com', '$2y$13$1gWCq29oeatLJ0w1WIf0MubLW/xeVnRYC2KJCQwQKKui2GyVpX1PS', 1, 'Dummy 13', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 16:31:32', '2020-12-08 16:31:55', NULL, 1),
 (18, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy14', 'dummy14@yopmail.com', '$2y$13$cVeWmWrujqAdA2NBXvIg2elrta1NV5ifXIqbiHit45DaJP.58KiTe', 1, 'Dummy 14', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 16:51:08', NULL, NULL, 1),
-(19, 2, 4, 131, NULL, 1, NULL, NULL, 'user1', 'user1@yopmail.com', '$2y$13$nqhYhSMC99Y3E/hRUgKlLeQ2Xxchye/qYKxfMuFK97ynf5/h3pRwm', 1, 'User One', 'TEST', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-14 13:06:08', NULL, NULL, 1),
+(19, 2, 4, 131, 133, 1, NULL, NULL, 'user1', 'user1@yopmail.com', '$2y$13$nqhYhSMC99Y3E/hRUgKlLeQ2Xxchye/qYKxfMuFK97ynf5/h3pRwm', 1, 'User One', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:06:08', '2020-12-27 17:51:32', NULL, 1),
 (20, 2, 4, 131, 133, 1, NULL, NULL, 'user2', 'user2@yopmail.com', '$2y$13$gsID1.D4Mts9yBdzcV4GFeHkmYtIHkw2s1rIF9POY2/tPrZkdC3DS', 1, 'User Two', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:08:58', '2020-12-14 13:35:40', NULL, 1);
 
 -- --------------------------------------------------------
@@ -1085,7 +1096,6 @@ INSERT INTO `user` (`id`, `user_type_id`, `company_type_id`, `nationality_id`, `
 -- Structure de la table `user_attachment`
 --
 
-DROP TABLE IF EXISTS `user_attachment`;
 CREATE TABLE `user_attachment` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -1099,7 +1109,6 @@ CREATE TABLE `user_attachment` (
 -- Structure de la table `user_destination`
 --
 
-DROP TABLE IF EXISTS `user_destination`;
 CREATE TABLE `user_destination` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -1112,7 +1121,6 @@ CREATE TABLE `user_destination` (
 -- Structure de la table `user_favorite`
 --
 
-DROP TABLE IF EXISTS `user_favorite`;
 CREATE TABLE `user_favorite` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -1126,7 +1134,6 @@ CREATE TABLE `user_favorite` (
 -- Structure de la table `user_motivation`
 --
 
-DROP TABLE IF EXISTS `user_motivation`;
 CREATE TABLE `user_motivation` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -1141,7 +1148,6 @@ CREATE TABLE `user_motivation` (
 -- Structure de la table `user_stat`
 --
 
-DROP TABLE IF EXISTS `user_stat`;
 CREATE TABLE `user_stat` (
   `id` int(10) UNSIGNED NOT NULL,
   `owner_id` int(10) UNSIGNED NOT NULL,
@@ -1156,7 +1162,6 @@ CREATE TABLE `user_stat` (
 -- Structure de la table `user_type`
 --
 
-DROP TABLE IF EXISTS `user_type`;
 CREATE TABLE `user_type` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1248,6 +1253,7 @@ ALTER TABLE `experience` ADD FULLTEXT KEY `IDX_experience_description` (`long_de
 --
 ALTER TABLE `experience_skill`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `U_user_exp_skill` (`experience_id`,`skill_id`),
   ADD KEY `IDX_3D6F986146E90E27` (`experience_id`),
   ADD KEY `IDX_3D6F98615585C142` (`skill_id`);
 
@@ -1476,13 +1482,13 @@ ALTER TABLE `country`
 -- AUTO_INCREMENT pour la table `experience`
 --
 ALTER TABLE `experience`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `experience_skill`
 --
 ALTER TABLE `experience_skill`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT pour la table `language`
@@ -1512,13 +1518,13 @@ ALTER TABLE `nationality`
 -- AUTO_INCREMENT pour la table `other`
 --
 ALTER TABLE `other`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `other_skill`
 --
 ALTER TABLE `other_skill`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `proposal`
@@ -1560,7 +1566,7 @@ ALTER TABLE `skill_level`
 -- AUTO_INCREMENT pour la table `training`
 --
 ALTER TABLE `training`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `user`
