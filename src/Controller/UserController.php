@@ -528,7 +528,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('user_other_edit', ['id' => $otherSkill->getId()]);
         }
 
-        return $this->render('user/others.html.twig', [
+        return $this->render('user/other-edit.html.twig', [
             'form' => $form->createView(),
         ]);
     }
