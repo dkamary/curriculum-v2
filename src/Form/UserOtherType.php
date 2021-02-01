@@ -11,6 +11,8 @@ use Doctrine\ORM\Query\Expr;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserOtherType extends AbstractType
@@ -42,7 +44,17 @@ class UserOtherType extends AbstractType
                     return $entityRepository->createQueryBuilder('sl')
                         ->orderBy('sl.rank', 'ASC');
                 }
-            ]);
+            ])
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+                /**
+                 * @var OtherSkill $otherSkill
+                 */
+                $OtherSkill = $event->getData();
+                if (!is_null($otherSkill->getId())) {
+                    $form = $event->getForm();
+                    // $form->get('skill')->set
+                }
+            });
     }
 
     public function configureOptions(OptionsResolver $resolver)
