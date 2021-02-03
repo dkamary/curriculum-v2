@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
@@ -32,9 +33,12 @@ class InscriptionController extends AbstractController
             $this->addFlash('success', 'Nouvel utilsateur créé');
 
             if ($user->getId()) {
-                return $this->redirectToRoute('user_address', [
-                    'user' => $user->getId(),
-                ]);
+                $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+                $this->get('security.token_storage')->setToken($token);
+                $this->get('session')->set('_security_main', serialize($token));
+                $this->addFlash('info', sprintf('Vous êtes connecté en tant que <b>"%s"</b><br>Veuillez continuer à remplir vos informations', $user->getEmail()));
+
+                return $this->redirectToRoute('user_address2');
             }
         }
 

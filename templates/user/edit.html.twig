@@ -3,6 +3,8 @@
 {% set pageTitle = 'Tableau de bord' %}
 {% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Edition utilisateur', href: ''}] %}
 
+{% set section_title = 'Informations générales' %}
+
 {% block title %}Edition utilisateur{% endblock %}
 
 {% block dashboard_content %}
@@ -10,5 +12,5 @@
 
     {# <a href="{{ path('user_index') }}">back to list</a> #}
 
-    {{ include('user/_delete_form.html.twig') }}
+    {# {{ include('user/_delete_form.html.twig') }} #}
 {% endblock %}

@@ -2,6 +2,7 @@
 {% extends "_layouts/dashboard.html.twig" %}
 
 {% set pageTitle = 'Connaissances' %}
+{% set section_title = 'Autres connaissances' %}
 {% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: pageTitle, href: ''}] %}
 
 {% block title %}{{ pageTitle }}{% endblock %}
@@ -12,7 +13,7 @@
         {% if category.id != kb.skill.category.id %}
             {% set category = kb.skill.category %}
             <h5 {% if not loop.first %}class="mt-5"{% endif %}>{{ kb.skill.category.name }}</h5>
-            <hr>
+            <hr class="border-dark">
         {% endif %}
         <div class="row my-1">
             <div class="col-7">
@@ -41,7 +42,7 @@
                 {{ form_widget(form) }}
                 <div class="row">
                     <div class="col-12 text-right">
-                        <button class="genric-btn primary radius"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;{{ button_label|default('Enregistrer') }}</button>
+                        <button class="genric-btn success radius"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;{{ button_label|default('Ajouter') }}</button>
                     </div>
                 </div>
             {{ form_end(form) }}

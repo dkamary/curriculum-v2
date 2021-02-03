@@ -1,17 +1,31 @@
-{% extends "_layouts/signup.html.twig" %}
+{% extends "_layouts/page.html.twig" %}
 
 {% set title = 'Inscription' %}
+{% set pageTitle = title %}
 {% set open = 'information' %}
 {% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : [{text: title, href: '#'}] %}
 {% set submitButton = { style: 'primary', 'icon_class': 'fa-check', type: 'submit' } %}
 
-{% block signup_information %}
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <div class="row">
-            <div class="col-12 text-right" id="save-container">
-                {{ 'Enregistrer'|button(submitButton) }}
-            </div>
-        </div>
-    {{ form_end(form) }}
+{% block content %}
+	<div class="row">
+		<div class="col-sm-6 col-12 mx-auto">
+            <p class="text-center fa-2x">
+                Veuillez remplir les informations ci-dessous
+            </p>
+			<div class="card">
+				<div class="card-body">
+					<p class="card-text">
+						{{ form_start(form) }}
+						{{ form_widget(form) }}
+						<div class="row">
+							<div class="col-12 text-right" id="save-container">
+								{{ 'Enregistrer'|button(submitButton) }}
+							</div>
+						</div>
+						{{ form_end(form) }}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

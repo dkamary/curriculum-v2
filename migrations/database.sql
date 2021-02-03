@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 29 déc. 2020 à 07:40
+-- Généré le : mer. 03 fév. 2021 à 23:27
 -- Version du serveur :  10.4.17-MariaDB
--- Version de PHP : 7.3.25
+-- Version de PHP : 7.4.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -172,7 +172,7 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 (27, 'Île Bouvet', 'BV', 'BVT'),
 (28, 'Brésil', 'BR', 'BRA'),
 (29, 'Belize', 'BZ', 'BLZ'),
-(30, "Territoire Britannique de l'Océan Indien", 'IO', 'IOT'),
+(30, 'Territoire Britannique de l\'Océan Indien', 'IO', 'IOT'),
 (31, 'Îles Salomon', 'SB', 'SLB'),
 (32, 'Îles Vierges Britanniques', 'VG', 'VGB'),
 (33, 'Brunéi Darussalam', 'BN', 'BRN'),
@@ -250,12 +250,12 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 (105, 'Islande', 'IS', 'ISL'),
 (106, 'Inde', 'IN', 'IND'),
 (107, 'Indonésie', 'ID', 'IDN'),
-(108, "République Islamique d'Iran", 'IR', 'IRN'),
+(108, 'République Islamique d\'Iran', 'IR', 'IRN'),
 (109, 'Iraq', 'IQ', 'IRQ'),
 (110, 'Irlande', 'IE', 'IRL'),
 (111, 'Israël', 'IL', 'ISR'),
 (112, 'Italie', 'IT', 'ITA'),
-(113, "Côte d'Ivoire", 'CI', 'CIV'),
+(113, 'Côte d\'Ivoire', 'CI', 'CIV'),
 (114, 'Jamaïque', 'JM', 'JAM'),
 (115, 'Japon', 'JP', 'JPN'),
 (116, 'Kazakhstan', 'KZ', 'KAZ'),
@@ -371,7 +371,7 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 (226, 'Tuvalu', 'TV', 'TUV'),
 (227, 'Ouganda', 'UG', 'UGA'),
 (228, 'Ukraine', 'UA', 'UKR'),
-(229, "L'ex-République Yougoslave de Macédoine", 'MK', 'MKD'),
+(229, 'L\'ex-République Yougoslave de Macédoine', 'MK', 'MKD'),
 (230, 'Égypte', 'EG', 'EGY'),
 (231, 'Royaume-Uni', 'GB', 'GBR'),
 (232, 'Île de Man', 'IM', 'IMN'),
@@ -445,7 +445,9 @@ INSERT INTO `experience` (`id`, `owner_id`, `company`, `start`, `end`, `long_des
 (5, 20, 'Societe fictive', '2019-01-01 00:00:00', '2020-01-01 00:00:00', 'TESTIMONY', '2020-12-14 16:36:20', '2020-12-15 08:21:08', 'Poste fictive'),
 (6, 19, 'Societe fictive', '2013-01-01 00:00:00', '2013-02-28 00:00:00', 'TEST', '2020-12-27 21:29:35', '2020-12-27 23:06:47', 'Poste fictif'),
 (7, 19, 'Societe fictive II', '2012-01-01 00:00:00', '2012-12-31 00:00:00', 'TESTIMONY', '2020-12-27 21:41:39', NULL, 'Poste fictif II'),
-(8, 19, 'Societe fictive III', '2013-03-01 00:00:00', '2020-01-18 00:00:00', 'TESTIMONY 3rd', '2020-12-27 21:49:35', NULL, 'Poste fictif III');
+(8, 19, 'Societe fictive III', '2013-03-01 00:00:00', '2020-01-18 00:00:00', 'TESTIMONY 3rd', '2020-12-27 21:49:35', NULL, 'Poste fictif III'),
+(9, 21, 'Societe fictive', '2020-01-01 00:00:00', NULL, 'TEST', '2021-02-03 20:41:02', '2021-02-03 20:41:42', 'Poste fictif'),
+(10, 21, 'Societe fictive II', '2021-01-01 00:00:00', NULL, 'TEST 2', '2021-02-03 20:42:46', NULL, 'Poste fictif II');
 
 -- --------------------------------------------------------
 
@@ -478,7 +480,10 @@ INSERT INTO `experience_skill` (`id`, `experience_id`, `skill_id`) VALUES
 (29, 6, 53),
 (35, 7, 11),
 (34, 7, 12),
-(33, 8, 29);
+(33, 8, 29),
+(37, 9, 34),
+(38, 9, 35),
+(39, 10, 24);
 
 -- --------------------------------------------------------
 
@@ -525,6 +530,14 @@ CREATE TABLE `language_knowledge` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `language_knowledge`
+--
+
+INSERT INTO `language_knowledge` (`id`, `owner_id`, `language_id`, `level_id`, `created_at`, `updated_at`) VALUES
+(1, 19, 1, 4, '2021-02-03 22:29:41', NULL),
+(2, 19, 2, 2, '2021-02-03 22:29:54', NULL);
 
 -- --------------------------------------------------------
 
@@ -1088,7 +1101,8 @@ INSERT INTO `user` (`id`, `user_type_id`, `company_type_id`, `nationality_id`, `
 (17, 2, 4, 131, 7, 1, NULL, NULL, 'dummy13', 'dummy13@yopmail.com', '$2y$13$1gWCq29oeatLJ0w1WIf0MubLW/xeVnRYC2KJCQwQKKui2GyVpX1PS', 1, 'Dummy 13', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 16:31:32', '2020-12-08 16:31:55', NULL, 1),
 (18, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy14', 'dummy14@yopmail.com', '$2y$13$cVeWmWrujqAdA2NBXvIg2elrta1NV5ifXIqbiHit45DaJP.58KiTe', 1, 'Dummy 14', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 16:51:08', NULL, NULL, 1),
 (19, 2, 4, 131, 133, 1, NULL, NULL, 'user1', 'user1@yopmail.com', '$2y$13$nqhYhSMC99Y3E/hRUgKlLeQ2Xxchye/qYKxfMuFK97ynf5/h3pRwm', 1, 'User One', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:06:08', '2020-12-27 17:51:32', NULL, 1),
-(20, 2, 4, 131, 133, 1, NULL, NULL, 'user2', 'user2@yopmail.com', '$2y$13$gsID1.D4Mts9yBdzcV4GFeHkmYtIHkw2s1rIF9POY2/tPrZkdC3DS', 1, 'User Two', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:08:58', '2020-12-14 13:35:40', NULL, 1);
+(20, 2, 4, 131, 133, 1, NULL, NULL, 'user2', 'user2@yopmail.com', '$2y$13$gsID1.D4Mts9yBdzcV4GFeHkmYtIHkw2s1rIF9POY2/tPrZkdC3DS', 1, 'User Two', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:08:58', '2020-12-14 13:35:40', NULL, 1),
+(21, 2, 4, 131, 133, 1, NULL, NULL, 'user3', 'user3@yopmail.com', '$2y$13$3XyP.Gvj96tT3.5UNOMY8eseVJqGVoWwKyheMbeaxSUlYoyv.MKfO', 1, 'Candidat 3', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2021-02-03 20:34:46', '2021-02-03 20:37:55', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -1482,13 +1496,13 @@ ALTER TABLE `country`
 -- AUTO_INCREMENT pour la table `experience`
 --
 ALTER TABLE `experience`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `experience_skill`
 --
 ALTER TABLE `experience_skill`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT pour la table `language`
@@ -1500,7 +1514,7 @@ ALTER TABLE `language`
 -- AUTO_INCREMENT pour la table `language_knowledge`
 --
 ALTER TABLE `language_knowledge`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `language_level`
@@ -1572,7 +1586,7 @@ ALTER TABLE `training`
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT pour la table `user_attachment`

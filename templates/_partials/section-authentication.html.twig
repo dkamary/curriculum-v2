@@ -1,4 +1,9 @@
 {# Authentication template #}
 
-<li><a class="ticker-btn" href="{{ path('signup') }}">Inscription</a></li>
-<li><a class="ticker-btn" href="{{ path('app_login') }}">Connexion</a></li>
+{% if app.user is defined and app.user is not null %}
+    <li><a href="{{ path('user_edition') }}" style="text-transform: lowercase; font-weight: bold;">{{ app.user.email }}</a></li>
+    <li><a class="btn-danger" href="{{ path('app_logout') }}">Déconnexion</a></li>
+{% else %}
+    <li><a class="ticker-btn" href="{{ path('user_inscription') }}">Inscription</a></li>
+    <li><a class="ticker-btn" href="{{ path('app_login') }}">Connexion</a></li>
+{% endif %}

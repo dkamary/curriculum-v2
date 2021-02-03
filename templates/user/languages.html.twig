@@ -1,0 +1,49 @@
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Connaissances linguistiques', href: ''}] %}
+
+{% set section_title = 'Connaissances linguistiques' %}
+
+{% block title %}Connaissances linguistiques{% endblock %}
+
+{% block dashboard_content %}
+    {% for lang in languages %}
+        <div class="row my-1">
+            <div class="col-7">
+                <strong class="text-info">{{ lang.language.name }}</strong>
+            </div>
+            <div class="col-2">
+                <em>{{ lang.level.name }}</em>
+            </div>
+            <div class="col-3">
+                <a href="{{ path('user_language_edit', { id: lang.id }) }}" class="genric-btn primary small">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>&nbsp;
+                <button class="genric-btn danger-border btn-delete-language small" data-id="{{ lang.id }}" data-url="{{ path('user_language_delete', { id : lang.id }) }}">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    {% else %}
+        <div class="row my-1">
+            <div class="col-12"><em>Aucune connaissance linguistique enregistrée</em></div>
+        </div>
+    {% endfor %}
+    <hr>
+    <div class="row my-5">
+        <div class="col-12 mb-5">
+            <h2>Ajouter une nouvelle connaissances linguistiques</h2>
+        </div>
+        <div class="col-12">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="row">
+                    <div class="col-12 text-right">
+                        <button class="genric-btn success radius"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;{{ button_label|default('Ajouter') }}</button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

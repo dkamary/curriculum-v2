@@ -19,61 +19,71 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-4 col-12">
-            <div class="card">
-                <div class="card-header">
+            <div class="card bg-dark border-dark text-white">
+                <div class="card-header font-weight-bold fa-2x">
                     Menu
                 </div>
                 <div class="card-body">
                     <ul class="card-text">
                         <li>
-                            <i class="fa fa-tachometer" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('dashboard_index') }}" {{ 'dashboard_index' == route ? 'class="text-danger"' : '' }}>Tableau de bord</a>
+                            <i class="fa fa-tachometer{{ 'dashboard_index' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('dashboard_index') }}" {{ 'dashboard_index' == route ? 'class="text-danger font-weight-bold"' : '' }}>Tableau de bord</a>
                         </li>
                         <li>
-                            <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('user_edition') }}" {{ 'user_edition' == route ? 'class="text-danger"' : '' }}>Profil</a>
+                            <i class="fa fa-user-circle{{ 'user_edition' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_edition') }}" {{ 'user_edition' == route ? 'class="text-danger font-weight-bold"' : '' }}>Informations</a>
                         </li>
                         <li>
-                            <i class="fa fa-address-book" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('user_address2') }}" {{ 'user_address2' == route ? 'class="text-danger"' : '' }}>Adresse</a>
+                            <i class="fa fa-address-book{{ 'user_address2' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_address2') }}" {{ 'user_address2' == route ? 'class="text-danger font-weight-bold"' : '' }}>Adresse</a>
                         </li>
                         <li>
-                            <i class="fa fa-briefcase" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('user_experiences') }}" {{ 'user_experiences' == route or 'user_experience_edit' == route ? 'class="text-danger"' : '' }}>Expériences professionelles</a>
+                            <i class="fa fa-briefcase{{ 'user_experiences' == route or 'user_experience_edit' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_experiences') }}" {{ 'user_experiences' == route or 'user_experience_edit' == route ? 'class="text-danger font-weight-bold"' : '' }}>Expériences professionelles</a>
                         </li>
                         <li>
-                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('user_training') }}" {{ 'user_training' == route or 'user_training_edit' == route ? 'class="text-danger"' : '' }}>Formations professionelles</a>
+                            <i class="fa fa-graduation-cap{{ 'user_training' == route or 'user_training_edit' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_training') }}" {{ 'user_training' == route or 'user_training_edit' == route ? 'class="text-danger font-weight-bold"' : '' }}>Formations professionelles</a>
                         </li>
                         <li>
-                            <i class="fa fa-star" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('user_others') }}" {{ 'user_others' == route or 'user_other_edit' == route ? 'class="text-danger"' : '' }}>Autres connaissances</a>
+                            <i class="fa fa-star{{ 'user_others' == route or 'user_other_edit' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_others') }}" {{ 'user_others' == route or 'user_other_edit' == route ? 'class="text-danger font-weight-bold"' : '' }}>Autres connaissances</a>
                         </li>
                         <li>
-                            <i class="fa fa-language" aria-hidden="true"></i>&nbsp;
-                            <a href="#" {{ 'user_languages' == route ? 'class="text-danger"' : '' }}>Connaissances linguistiques</a>
-                        </li>
-                        <hr>
-                        <li>
-                            <i class="fa fa-id-badge" aria-hidden="true"></i>&nbsp;
-                            <a href="#" {{ 'user_cvc' == route ? 'class="text-danger"' : '' }}>Voir mon CV</a>
+                            <i class="fa fa-language{{ 'user_languages' == route ? 'text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_languages') }}" {{ 'user_languages' == route ? 'class="text-danger font-weight-bold"' : '' }}>Connaissances linguistiques</a>
                         </li>
                         <hr>
                         <li>
-                            <i class="fa fa-tags" aria-hidden="true"></i>&nbsp;
-                            <a href="#" {{ 'user_applies' == route ? 'class="text-danger"' : '' }}>Emplois postulés</a>
+                            <i class="fa fa-id-badge{{ 'user_cv' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_cv') }}" {{ 'user_cv' == route ? 'class="text-danger font-weight-bold"' : '' }}>Voir mon CV</a>
+                        </li>
+                        <hr>
+                        <li>
+                            <i class="fa fa-tags{{ 'user_applies' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="#" {{ 'user_applies' == route ? 'class="text-danger font-weight-bold"' : '' }}>Emplois postulés</a>
                         </li>
                         <hr>
                         <li>
                             <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ path('app_logout') }}" class="text-danger">Déconnexion</a>
+                            <a href="{{ path('app_logout') }}" class="text-danger font-weight-bold">Déconnexion</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="col-sm-8 col-12">
-            {% block dashboard_content %}{% endblock %}
+            <div class="card bg-light border-primary">
+                <div class="card-header bg-primary text-white font-weight-bold fa-2x">
+                    {{ section_title is defined ? section_title : 'Tableau de bord' }}
+                </div>
+                <div class="card-body">
+                    {% block dashboard_content %}{% endblock %}
+                </div>
+                <div class="card-footer text-muted">
+                    &nbsp;
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

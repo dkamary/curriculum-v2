@@ -49,7 +49,7 @@ class UserOtherType extends AbstractType
                 /**
                  * @var OtherSkill $otherSkill
                  */
-                $OtherSkill = $event->getData();
+                $otherSkill = $event->getData();
                 if (!is_null($otherSkill->getId())) {
                     $form = $event->getForm();
                     // $form->get('skill')->set

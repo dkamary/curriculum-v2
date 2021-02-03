@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Experience;
 use App\Entity\ExperienceSkill;
+use App\Entity\LanguageKnowledge;
 use App\Entity\Other;
 use App\Entity\OtherSkill;
 use App\Entity\Training;
 use App\Entity\User;
+use App\Form\UserLanguageKnowledgeType;
 use App\Form\UserOtherType;
 use App\Form\UserTrainingType;
 use App\Form\UtilisateurAddressType;
@@ -547,6 +549,85 @@ class UserController extends AbstractController
         return $this->json([
             'done' => true,
             'id' => $id,
+        ]);
+    }
+
+    /**
+     * @Route("/langages", name="user_languages")
+     */
+    public function languages(Request $request): Response
+    {
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $languageKb = new LanguageKnowledge();
+        $form = $this->createForm(UserLanguageKnowledgeType::class, $languageKb);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $languageKb->setOwner($user);
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($languageKb);
+            $manager->flush();
+
+            if ($languageKb->getId()) {
+                $this->addFlash('success', 'Nouvelle connaissance linguistique ajoutée');
+
+                return $this->redirectToRoute('user_languages');
+            }
+        }
+
+        return $this->render('user/languages.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+            'languages' => $user->getLanguageKnowledges(),
+        ]);
+    }
+
+    /**
+     * @Route("/langage/{id}/edition", name="user_language_edit", requirements={ "id" = "\d+" })
+     */
+    public function languageEdit(Request $request, LanguageKnowledge $languageKnowledge): Response
+    {
+        $form = $this->createForm(UserLanguageKnowledgeType::class, $languageKnowledge);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'Connaissance linguistique mis à jour');
+
+            return $this->redirectToRoute('user_language_edit', ['id' => $languageKnowledge->getId()]);
+        }
+
+        return $this->render('user/language-edit.html.twig', [
+            'form' => $form->createView(),
+            'language' => $languageKnowledge,
+        ]);
+    }
+
+    /**
+     * @Route("/langage/{id}/suppression", name="user_language_delete", requirements={ "id" = "\d+" })
+     */
+    public function languageDelete(EntityManagerInterface $entityManagerInterface, LanguageKnowledge $languageKnowledge): Response
+    {
+        $id = $languageKnowledge->getId();
+        $entityManagerInterface->remove($languageKnowledge);
+        $entityManagerInterface->flush();
+
+        return $this->json([
+            'done' => true,
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * @Route("/curriculum", name="user_cv")
+     */
+    public function cv(): Response
+    {
+        $user = $this->getUser();
+
+        return $this->render('user/cv.html.twig', [
+            'user' => $user,
         ]);
     }
 }

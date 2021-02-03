@@ -1,0 +1,16 @@
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Curriculum Vitae', href: ''}] %}
+
+{% set section_title = 'Mon CV' %}
+
+{% block title %}Curriculum Vitae{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row d-flex">
+        <div class="col-sm-3 col-12">
+            <a href="{{ path('curriculum_render', { model: 'model1' }) }}">Model n°1</a>
+        </div>
+    </div>
+{% endblock %}
