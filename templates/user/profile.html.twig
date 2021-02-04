@@ -1,0 +1,54 @@
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Profil utilisateur', href: ''}] %}
+
+{% set section_title = 'Profile utilisateur' %}
+
+{% block title %}Profil utilisateur{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row">
+        <div class="col-12">
+            {{ include('user/_form.html.twig', {'button_label': 'Mise à jour', form : motivationForm }) }}
+        </div>
+    </div>
+
+    <div class="row mt-5 d-none" id="destination">
+        <h4 class="col-12">Destination</h4>
+        <div class="col-12">
+            {% for dest in user.userDestinations %}
+                <span class="badge badge-info mr-2 my-2 p-1" id="destination-{{ dest.id }}">
+                    {{ dest.country.name|title }}
+                    &nbsp;&nbsp;
+                    <a href="#" class="ml-3 mr-1 remove-destination text-danger" data-id="{{ dest.id }}">
+                        <i class="fa fa-times-circle" aria-hidden="true"></i>
+                    </a>
+                </span>
+            {% endfor %}
+        </div>
+        <div class="col-12">
+            {{ include('user/_form.html.twig', {'button_label': 'Ajouter', form : destinationForm }) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function($, window, document) {
+            $(function() {
+                const $document = $(document);
+                $document.on('change', '#user_motivation_isTraveller', e => {
+                    const $this = $(e.currentTarget);
+                    const value = parseInt($this.val());
+                    if(value == 1) {
+                        $('#destination').removeClass('d-none');
+                    } else {
+                        $('#destination').addClass('d-none');
+                    }
+                });
+            });
+        } (window.jQuery, window, window.document));
+    </script>
+{% endblock %}

@@ -9,7 +9,11 @@ use App\Entity\Other;
 use App\Entity\OtherSkill;
 use App\Entity\Training;
 use App\Entity\User;
+use App\Entity\UserDestination;
+use App\Entity\UserMotivation;
+use App\Form\UserDestinationType;
 use App\Form\UserLanguageKnowledgeType;
+use App\Form\UserMotivationType;
 use App\Form\UserOtherType;
 use App\Form\UserTrainingType;
 use App\Form\UtilisateurAddressType;
@@ -627,6 +631,47 @@ class UserController extends AbstractController
         $user = $this->getUser();
 
         return $this->render('user/cv.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * @Route("/profile", name="user_profile")
+     */
+    public function profile(Request $request): Response
+    {
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+
+        $userMotivation = $user->getUserMotivation();
+        $motivationForm = $this->createForm(UserMotivationType::class, $userMotivation);
+        $motivationForm->handleRequest($request);
+        if ($motivationForm->isSubmitted() && $motivationForm->isValid()) {
+            $userMotivation->setOwner($user);
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($userMotivation);
+            $manager->flush();
+
+            $this->addFlash('success', 'Motivation mis a jour');
+        }
+
+        $userDestination = new UserDestination();
+        $destinationForm = $this->createForm(UserDestinationType::class, $userDestination);
+        $destinationForm->handleRequest($request);
+        if ($destinationForm->isSubmitted() && $destinationForm->isValid()) {
+            $userDestination->setOwner($user);
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($userDestination);
+            $manager->flush();
+
+            $this->addFlash('success', 'Destination mis a jour');
+        }
+
+        return $this->render('user/profile.html.twig', [
+            'motivationForm' => $motivationForm->createView(),
+            'destinationForm' => $destinationForm->createView(),
             'user' => $user,
         ]);
     }

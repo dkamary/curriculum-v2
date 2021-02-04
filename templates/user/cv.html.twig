@@ -9,8 +9,17 @@
 
 {% block dashboard_content %}
     <div class="row d-flex">
-        <div class="col-sm-3 col-12">
-            <a href="{{ path('curriculum_render', { model: 'model1' }) }}">Model n°1</a>
+        <div class="col-sm-6 col-12">
+            <div class="card">
+                <a href="{{ path('curriculum_render', { model: 'model1' }) }}" target="_blank">
+                    <img class="card-img-top" src="https://fakeimg.pl/200x300/" alt="">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">
+                        <a href="{{ path('curriculum_render', { model: 'model1' }) }}" target="_blank">Model n°1</a>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -46,6 +46,7 @@ class UserMotivationType extends AbstractType
                     'Oui' => true,
                     'Non' => false,
                 ],
+                'data' => false,
             ]);
     }
 }

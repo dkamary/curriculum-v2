@@ -34,6 +34,10 @@
                             <a href="{{ path('user_edition') }}" {{ 'user_edition' == route ? 'class="text-danger font-weight-bold"' : '' }}>Informations</a>
                         </li>
                         <li>
+                            <i class="fa fa-user{{ 'user_profile' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ path('user_profile') }}" {{ 'user_profile' == route ? 'class="text-danger font-weight-bold"' : '' }}>Profil</a>
+                        </li>
+                        <li>
                             <i class="fa fa-address-book{{ 'user_address2' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
                             <a href="{{ path('user_address2') }}" {{ 'user_address2' == route ? 'class="text-danger font-weight-bold"' : '' }}>Adresse</a>
                         </li>

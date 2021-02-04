@@ -192,6 +192,21 @@ class User implements UserInterface
      */
     private $userStat;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="string", length=512, nullable=true)
+     */
+    private $qualities;
+
+    /**
+     * @ORM\Column(type="string", length=512, nullable=true)
+     */
+    private $interests;
+
     public function __construct()
     {
         $this->userFavorites = new ArrayCollection();
@@ -519,6 +534,18 @@ class User implements UserInterface
     }
 
     /**
+     * Get the User Motivation
+     *
+     * @return UserMotivation
+     */
+    public function getUserMotivation(): UserMotivation
+    {
+        $motivations = $this->getUserMotivations();
+
+        return $motivations->first() ? $motivations->first() : (new UserMotivation())->setOwner($this);
+    }
+
+    /**
      * @return Collection|UserAttachment[]
      */
     public function getUserAttachments(): Collection
@@ -832,5 +859,41 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         //
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getQualities(): ?string
+    {
+        return $this->qualities;
+    }
+
+    public function setQualities(?string $qualities): self
+    {
+        $this->qualities = $qualities;
+
+        return $this;
+    }
+
+    public function getInterests(): ?string
+    {
+        return $this->interests;
+    }
+
+    public function setInterests(?string $interests): self
+    {
+        $this->interests = $interests;
+
+        return $this;
     }
 }

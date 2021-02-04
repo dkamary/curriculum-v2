@@ -76,4 +76,23 @@ class OtherSkillRepository extends ServiceEntityRepository
 
         return $otherSkills;
     }
+
+    /**
+     * Undocumented function
+     *
+     * @param OtherSkill[] $others
+     * @return array
+     */
+    public function formatToArray(array $others): array
+    {
+        $array = [];
+        foreach ($others as $os) {
+            if (!isset($array[$os->getSkill()->getCategory()->getName()])) {
+                $array[$os->getSkill()->getCategory()->getName()] = [];
+            }
+            $array[$os->getSkill()->getCategory()->getName()][] = $os;
+        }
+
+        return $array;
+    }
 }
