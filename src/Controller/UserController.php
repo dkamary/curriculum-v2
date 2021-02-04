@@ -22,6 +22,7 @@ use App\Form\UtilisateurExperienceType;
 use App\Form\UtilisateurInfoType;
 use App\Repository\OtherSkillRepository;
 use App\Repository\SkillCategoryRepository;
+use App\Repository\UserDestinationRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -34,7 +35,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\VarDumper\VarDumper;
 
 /**
- * @Route("/utilisateur")
+ * @Route("/dashboard/utilisateur")
  */
 class UserController extends AbstractController
 {
@@ -646,6 +647,7 @@ class UserController extends AbstractController
         $user = $this->getUser();
 
         $userMotivation = $user->getUserMotivation();
+        $userMotivation->setOwner($user);
         $motivationForm = $this->createForm(UserMotivationType::class, $userMotivation);
         $motivationForm->handleRequest($request);
         if ($motivationForm->isSubmitted() && $motivationForm->isValid()) {
@@ -655,6 +657,8 @@ class UserController extends AbstractController
             $manager->flush();
 
             $this->addFlash('success', 'Motivation mis a jour');
+
+            return $this->redirectToRoute('user_profile');
         }
 
         $userDestination = new UserDestination();
@@ -667,12 +671,30 @@ class UserController extends AbstractController
             $manager->flush();
 
             $this->addFlash('success', 'Destination mis a jour');
+
+            return $this->redirectToRoute('user_profile');
         }
 
         return $this->render('user/profile.html.twig', [
             'motivationForm' => $motivationForm->createView(),
             'destinationForm' => $destinationForm->createView(),
             'user' => $user,
+        ]);
+    }
+
+    /**
+     * @Route("/destination/delete", name="user_destination_delete")
+     */
+    public function destinationDelete(Request $request, UserDestinationRepository $userDestinationRepository, EntityManagerInterface $manager): Response
+    {
+        $id = $request->request->get('id');
+        $destination = $userDestinationRepository->findOneBy(['id' => $id]);
+        $manager->remove($destination);
+        $manager->flush();
+
+        return $this->json([
+            'done' => true,
+            'id' => $id,
         ]);
     }
 }

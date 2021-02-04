@@ -15,8 +15,8 @@
     </div>
 
     <div class="row mt-5 d-none" id="destination">
-        <h4 class="col-12">Destination</h4>
-        <div class="col-12">
+        <h4 class="col-12 my-3">Vos Destinations favoris</h4>
+        <div class="col-12 py-3 border-bottom border-top">
             {% for dest in user.userDestinations %}
                 <span class="badge badge-info mr-2 my-2 p-1" id="destination-{{ dest.id }}">
                     {{ dest.country.name|title }}
@@ -27,7 +27,7 @@
                 </span>
             {% endfor %}
         </div>
-        <div class="col-12">
+        <div class="col-12 py-3">
             {{ include('user/_form.html.twig', {'button_label': 'Ajouter', form : destinationForm }) }}
         </div>
     </div>
@@ -39,15 +39,40 @@
         (function($, window, document) {
             $(function() {
                 const $document = $(document);
-                $document.on('change', '#user_motivation_isTraveller', e => {
-                    const $this = $(e.currentTarget);
-                    const value = parseInt($this.val());
-                    if(value == 1) {
-                        $('#destination').removeClass('d-none');
-                    } else {
-                        $('#destination').addClass('d-none');
-                    }
-                });
+                if(parseInt($('#user_motivation_isTraveller').val()) == 1) {
+                    $('#destination').removeClass('d-none');
+                }
+                $document
+                    .on('change', '#user_motivation_isTraveller', e => {
+                        const $this = $(e.currentTarget);
+                        const value = parseInt($this.val());
+                        if(value == 1) {
+                            $('#destination').removeClass('d-none');
+                        } else {
+                            $('#destination').addClass('d-none');
+                        }
+                    })
+                    .on('click', '.remove-destination', e => {
+                        e.preventDefault();
+                        if(!confirm("Voulez-vous effacer cette destination ?")) return false;
+                        const $this = $(e.currentTarget);
+                        const id = $this.data('id');
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ path('user_destination_delete') }}',
+                            data: {
+                                id: id
+                            }
+                        }).done(response => {
+                            if(response.done) {
+                                $(`#destination-${response.id}`).hide('normal', function() {
+                                    $(this).remove();
+                                });
+                            }
+                        }).fail(xhr => {
+                            alert(`${xhr.status} - ${xhr.statusText}`);
+                        });
+                    });
             });
         } (window.jQuery, window, window.document));
     </script>

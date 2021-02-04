@@ -3,6 +3,7 @@
 {% set pageTitle = 'Tableau de bord' %}
 {% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Adresse utilisateur', href: ''}] %}
 {% set btnParams = { class: 'primary radius', type: 'submit', icon_class: 'fa-check', attr: [ { 'aria-hidde': 'true' } ] } %}
+{% set section_title = 'Adresse' %}
 
 {% block dashboard_content %}
     {{ form_start(form) }}
