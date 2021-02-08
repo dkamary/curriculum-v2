@@ -17,7 +17,8 @@
 {% endblock %}
 
 {% block popular %}
-    {% include "_partials/popular-post.html.twig" %}
+    {# {% include "_partials/popular-post.html.twig" %} #}
+    {{ render( path('proposal_populars') ) }}
 {% endblock %}
 
 {% block featured_category %}

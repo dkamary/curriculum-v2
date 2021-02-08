@@ -2,9 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Applier;
 use App\Entity\Proposal;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @method Proposal|null find($id, $lockMode = null, $lockVersion = null)
@@ -47,4 +50,31 @@ class ProposalRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * Get Populars Proposals
+     *
+     * @param string $min
+     * @param string|null $max
+     * @return Proposal[]
+     */
+    public function getPopulars(string $min = 'now', ?string $max = null): array
+    {
+        $min = ($min == 'now') ? date('Y-m-d') : $min;
+        $max = (is_null($max)) ? date(((int)date('Y') + 1) . '-12-31') : $max;
+        VarDumper::dump($min);
+        VarDumper::dump($max);
+        $qb = $this->createQueryBuilder('p');
+        $populars = $qb->where('(p.end IS NULL OR p.end < :max)')
+            ->andWhere('p.start <= :min')
+            ->orderBy('p.start', 'DESC')
+            ->setMaxResults(4)
+            ->setParameter('min', $min)
+            ->setParameter('max', $max)
+            ->getQuery()
+            ->getResult();
+        VarDumper::dump($populars);
+
+        return $populars;
+    }
 }

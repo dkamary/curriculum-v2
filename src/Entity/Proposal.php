@@ -7,6 +7,7 @@ use App\Entity\Base\CreatedAtEntity;
 use App\Entity\Base\DeletedAtEntity;
 use App\Entity\Base\EndEntity;
 use App\Entity\Base\LongDescriptionEntity;
+use App\Entity\Base\NameEntity;
 use App\Entity\Base\StartEntity;
 use App\Entity\Base\UpdatedAtEntity;
 use App\Repository\ProposalRepository;
@@ -22,13 +23,16 @@ use Doctrine\ORM\Mapping as ORM;
  *      @ORM\Index(name="FT_proposal_long_description", columns={"long_description"}, flags={"fulltext"}),
  *      @ORM\Index(name="IDX_proposal_start", columns={"start"}),
  *      @ORM\Index(name="IDX_proposal_end", columns={"end"}),
- *      @ORM\Index(name="IDX_proposal_start_end", columns={"start", "end"})
+ *      @ORM\Index(name="IDX_proposal_start_end", columns={"start", "end"}),
+ *      @ORM\Index(name="IDX_proposal_name", columns={"name"}),
+ *      @ORM\Index(name="IDX_proposal_name_reference", columns={"name", "reference"})
  *  }
  * )
  * @ORM\HasLifecycleCallbacks()
  */
 class Proposal
 {
+    // use NameEntity;
     use LongDescriptionEntity;
     use StartEntity;
     use EndEntity;
@@ -69,6 +73,16 @@ class Proposal
      * @ORM\OneToMany(targetEntity=Applier::class, mappedBy="proposal")
      */
     private $appliers;
+
+    /**
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $reference;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
 
     public function __construct()
     {
@@ -173,6 +187,30 @@ class Proposal
                 $applier->setProposal(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(string $reference): self
+    {
+        $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }

@@ -1,0 +1,24 @@
+{# Edit proposal template #}
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Mes annonces', href: path('proposal_index') }, { text: proposal.name, href: '' }] %}
+
+{% set section_title = proposal.name %}
+
+{% block title %}proposal.name{% endblock %}
+
+{% block dashboard_content %}
+
+    {% include "_layouts/alert.html.twig" %}
+
+	<div class="row">
+		<div class="col-12 px-3">
+            <div class="row">
+                <div class="col-12">
+                    {% include "proposal/_form.html.twig" with { button_label: 'Mettre à jour' } %}
+                </div>
+            </div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.1
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : sam. 06 fév. 2021 à 15:48
--- Version du serveur :  10.4.11-MariaDB
--- Version de PHP : 7.3.14
+-- Généré le : lun. 08 fév. 2021 à 19:26
+-- Version du serveur :  10.4.17-MariaDB
+-- Version de PHP : 7.4.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -29,13 +28,17 @@ SET time_zone = "+00:00";
 --
 
 DROP TABLE IF EXISTS `applier`;
-CREATE TABLE `applier` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `applier` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `proposal_id` int(10) UNSIGNED NOT NULL,
   `apply_date` datetime DEFAULT NULL,
   `is_validate` tinyint(1) DEFAULT NULL,
-  `validate_date` datetime DEFAULT NULL
+  `validate_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `U_applier_owner_proposal` (`owner_id`,`proposal_id`),
+  KEY `IDX_D22A42C77E3C61F9` (`owner_id`),
+  KEY `IDX_D22A42C7F4792058` (`proposal_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -45,15 +48,19 @@ CREATE TABLE `applier` (
 --
 
 DROP TABLE IF EXISTS `asset`;
-CREATE TABLE `asset` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `asset` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED DEFAULT NULL,
   `asset_type_id` smallint(5) UNSIGNED NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_2AF5A5CB548B0F` (`path`),
+  KEY `IDX_2AF5A5C7E3C61F9` (`owner_id`),
+  KEY `IDX_2AF5A5CA6A2CDC5` (`asset_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -63,14 +70,16 @@ CREATE TABLE `asset` (
 --
 
 DROP TABLE IF EXISTS `asset_type`;
-CREATE TABLE `asset_type` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `asset_type` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `mime` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `extensions` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_68BA92E15E237E06` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `asset_type`
@@ -97,10 +106,12 @@ INSERT INTO `asset_type` (`id`, `mime`, `extensions`, `name`, `description`, `is
 --
 
 DROP TABLE IF EXISTS `company_type`;
-CREATE TABLE `company_type` (
-  `id` smallint(5) UNSIGNED NOT NULL,
-  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS `company_type` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_CFB34DC75E237E06` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `company_type`
@@ -119,11 +130,13 @@ INSERT INTO `company_type` (`id`, `name`) VALUES
 --
 
 DROP TABLE IF EXISTS `contract_type`;
-CREATE TABLE `contract_type` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `contract_type` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_active` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_E4AB19415E237E06` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `contract_type`
@@ -141,12 +154,16 @@ INSERT INTO `contract_type` (`id`, `name`, `is_active`) VALUES
 --
 
 DROP TABLE IF EXISTS `country`;
-CREATE TABLE `country` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `country` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alpha2` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alpha3` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `alpha3` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_5373C9665E237E06` (`name`),
+  UNIQUE KEY `UNIQ_5373C966B762D672` (`alpha2`),
+  UNIQUE KEY `UNIQ_5373C966C065E6E4` (`alpha3`)
+) ENGINE=InnoDB AUTO_INCREMENT=245 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `country`
@@ -402,10 +419,11 @@ INSERT INTO `country` (`id`, `name`, `alpha2`, `alpha3`) VALUES
 --
 
 DROP TABLE IF EXISTS `doctrine_migration_versions`;
-CREATE TABLE `doctrine_migration_versions` (
+CREATE TABLE IF NOT EXISTS `doctrine_migration_versions` (
   `version` varchar(191) COLLATE utf8_unicode_ci NOT NULL,
   `executed_at` datetime DEFAULT NULL,
-  `execution_time` int(11) DEFAULT NULL
+  `execution_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -422,7 +440,12 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 ('DoctrineMigrations\\Version20201210114533', '2020-12-10 12:45:53', 221),
 ('DoctrineMigrations\\Version20201210122711', '2020-12-10 13:27:17', 88),
 ('DoctrineMigrations\\Version20201227231349', '2020-12-28 00:14:28', 833),
-('DoctrineMigrations\\Version20210204083136', '2021-02-04 09:31:53', 90);
+('DoctrineMigrations\\Version20210204083136', '2021-02-04 09:31:53', 90),
+('DoctrineMigrations\\Version20210208122813', '2021-02-08 13:28:25', 2631),
+('DoctrineMigrations\\Version20210208123030', '2021-02-08 13:30:36', 2006),
+('DoctrineMigrations\\Version20210208123123', '2021-02-08 13:31:32', 2054),
+('DoctrineMigrations\\Version20210208123220', '2021-02-08 13:32:24', 275),
+('DoctrineMigrations\\Version20210208123449', '2021-02-08 13:34:53', 1178);
 
 -- --------------------------------------------------------
 
@@ -431,8 +454,8 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 --
 
 DROP TABLE IF EXISTS `experience`;
-CREATE TABLE `experience` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `experience` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `company` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `start` datetime NOT NULL,
@@ -440,8 +463,14 @@ CREATE TABLE `experience` (
   `long_description` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `job_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `job_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_590C1037E3C61F9` (`owner_id`),
+  KEY `IDX_experience_start` (`start`),
+  KEY `IDX_experience_end` (`end`),
+  KEY `IDX_experience_start_end` (`start`,`end`),
+  KEY `IDX_experience_company` (`company`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `experience`
@@ -466,11 +495,15 @@ INSERT INTO `experience` (`id`, `owner_id`, `company`, `start`, `end`, `long_des
 --
 
 DROP TABLE IF EXISTS `experience_skill`;
-CREATE TABLE `experience_skill` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `experience_skill` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `experience_id` int(10) UNSIGNED NOT NULL,
-  `skill_id` smallint(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `skill_id` smallint(5) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `U_user_exp_skill` (`experience_id`,`skill_id`),
+  KEY `IDX_3D6F986146E90E27` (`experience_id`),
+  KEY `IDX_3D6F98615585C142` (`skill_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `experience_skill`
@@ -503,14 +536,19 @@ INSERT INTO `experience_skill` (`id`, `experience_id`, `skill_id`) VALUES
 --
 
 DROP TABLE IF EXISTS `language`;
-CREATE TABLE `language` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `language` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `icon_id` int(10) UNSIGNED DEFAULT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alpha2` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alpha3` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_active` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_D4DB71B55E237E06` (`name`),
+  UNIQUE KEY `UNIQ_D4DB71B5B762D672` (`alpha2`),
+  UNIQUE KEY `UNIQ_D4DB71B5C065E6E4` (`alpha3`),
+  KEY `IDX_D4DB71B554B9D732` (`icon_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `language`
@@ -535,14 +573,18 @@ INSERT INTO `language` (`id`, `icon_id`, `name`, `alpha2`, `alpha3`, `is_active`
 --
 
 DROP TABLE IF EXISTS `language_knowledge`;
-CREATE TABLE `language_knowledge` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `language_knowledge` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `language_id` smallint(5) UNSIGNED NOT NULL,
   `level_id` smallint(5) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_586755F77E3C61F9` (`owner_id`),
+  KEY `IDX_586755F75FB14BA7` (`level_id`),
+  KEY `IDX_586755F782F1BAF4` (`language_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `language_knowledge`
@@ -559,12 +601,14 @@ INSERT INTO `language_knowledge` (`id`, `owner_id`, `language_id`, `level_id`, `
 --
 
 DROP TABLE IF EXISTS `language_level`;
-CREATE TABLE `language_level` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `language_level` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `score` smallint(5) UNSIGNED NOT NULL,
-  `rank` smallint(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `rank` smallint(5) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_E5B2C8425E237E06` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `language_level`
@@ -584,11 +628,14 @@ INSERT INTO `language_level` (`id`, `name`, `score`, `rank`) VALUES
 --
 
 DROP TABLE IF EXISTS `nationality`;
-CREATE TABLE `nationality` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `nationality` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `country_id` smallint(5) UNSIGNED NOT NULL,
-  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_8AC58B705E237E06` (`name`),
+  KEY `IDX_8AC58B70F92F3E70` (`country_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=242 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `nationality`
@@ -844,12 +891,14 @@ INSERT INTO `nationality` (`id`, `country_id`, `name`) VALUES
 --
 
 DROP TABLE IF EXISTS `other`;
-CREATE TABLE `other` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `other` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_D95835207E3C61F9` (`owner_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `other`
@@ -871,12 +920,16 @@ INSERT INTO `other` (`id`, `owner_id`, `created_at`, `updated_at`) VALUES
 --
 
 DROP TABLE IF EXISTS `other_skill`;
-CREATE TABLE `other_skill` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `other_skill` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `other_id` int(10) UNSIGNED NOT NULL,
   `skill_id` smallint(5) UNSIGNED NOT NULL,
-  `level_id` smallint(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `level_id` smallint(5) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_368913D9998D9879` (`other_id`),
+  KEY `IDX_368913D95585C142` (`skill_id`),
+  KEY `IDX_368913D95FB14BA7` (`level_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `other_skill`
@@ -898,8 +951,8 @@ INSERT INTO `other_skill` (`id`, `other_id`, `skill_id`, `level_id`) VALUES
 --
 
 DROP TABLE IF EXISTS `proposal`;
-CREATE TABLE `proposal` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `proposal` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `featured_image_id` int(10) UNSIGNED DEFAULT NULL,
   `banner_image_id` int(10) UNSIGNED DEFAULT NULL,
@@ -909,8 +962,30 @@ CREATE TABLE `proposal` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_active` tinyint(1) NOT NULL,
+  `reference` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_BFE59472AEA34913` (`reference`),
+  KEY `IDX_BFE594727E3C61F9` (`owner_id`),
+  KEY `IDX_BFE594723569D950` (`featured_image_id`),
+  KEY `IDX_BFE594723F9CEB4E` (`banner_image_id`),
+  KEY `IDX_proposal_start` (`start`),
+  KEY `IDX_proposal_end` (`end`),
+  KEY `IDX_proposal_start_end` (`start`,`end`),
+  KEY `IDX_proposal_name` (`name`),
+  KEY `IDX_proposal_name_reference` (`name`,`reference`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `proposal`
+--
+
+INSERT INTO `proposal` (`id`, `owner_id`, `featured_image_id`, `banner_image_id`, `long_description`, `start`, `end`, `created_at`, `updated_at`, `deleted_at`, `is_active`, `reference`, `name`) VALUES
+(1, 22, NULL, NULL, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus corrupti ullam voluptatibus aspernatur dolor. Aperiam obcaecati error cupiditate voluptate tempore animi, atque nemo sapiente provident, amet ullam consequuntur impedit sit.\r\n Eaque recusandae doloremque cupiditate quo veritatis nostrum similique, commodi adipisci cum repellat eveniet vitae, quasi dignissimos, iste culpa. Ducimus labore, vitae quo molestiae at asperiores facere optio repellendus beatae sequi.', '2021-02-01 00:00:00', '2021-03-31 00:00:00', '2021-02-08 15:57:14', NULL, NULL, 1, 'OFFRE_TEST_01', 'Offre test n°1'),
+(2, 22, NULL, NULL, 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eligendi beatae commodi recusandae in, ipsum ut consequatur minus ratione ipsa non distinctio quo sequi at fugiat, facilis quos autem aut? Officia.\r\nNatus facilis officia voluptatem nesciunt blanditiis itaque aut, dolorem voluptates expedita nam? Qui maxime quam sit vero adipisci? Numquam, laboriosam aspernatur velit illo quod consequuntur dignissimos fugiat molestiae veritatis voluptates?\r\nQui libero ut blanditiis doloribus. Ipsam omnis ducimus architecto repellendus sunt quasi, fugiat consectetur labore animi incidunt possimus doloremque distinctio ipsa minus itaque porro a, atque ratione beatae quidem inventore.\r\nQuo, ut! Veritatis inventore ab recusandae omnis odio aperiam molestias ea earum quaerat, consequatur nostrum quisquam voluptates iusto repellat sequi obcaecati modi iste. Nisi aliquam soluta quo quod neque consectetur.', '2021-02-10 00:00:00', NULL, '2021-02-08 16:09:46', '2021-02-08 16:23:31', '2021-02-08 16:23:31', 1, 'OFFRE_TEST_02', 'Offre test n°2'),
+(3, 22, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consectetur turpis mi, in ultricies est rutrum vel. Etiam lorem augue, ultricies ut facilisis ac, dignissim et odio. Aliquam rutrum tortor augue, vel condimentum erat imperdiet in. Curabitur sodales justo nec ante lobortis tempus. In hac habitasse platea dictumst. Integer aliquam nulla sed feugiat mattis. Aliquam vulputate purus at sodales blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus eget egestas velit, sed eleifend eros. Etiam lacinia molestie libero a malesuada.\r\n\r\nInteger viverra eu quam vel efficitur. Aenean quis pretium odio, at elementum urna. Duis ac est vitae dolor sollicitudin vestibulum at vel nisl. Nulla commodo sem ut tellus porttitor viverra. Ut tempus, diam eget tincidunt eleifend, velit dolor ultrices arcu, ac scelerisque est tortor nec magna. Sed convallis vel nibh quis porta. Cras ac bibendum arcu. In vel erat porttitor, sollicitudin velit at, porta diam. Sed eu gravida ex, pulvinar sodales arcu. Suspendisse sed commodo justo. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque ante dui, gravida eget tincidunt a, aliquet eu turpis. Nam eu dolor vehicula, placerat ligula a, rutrum lacus.', '2021-01-04 00:00:00', NULL, '2021-02-08 17:08:15', NULL, NULL, 1, 'OFT_003', 'Offre d\'emploi #3'),
+(4, 22, NULL, NULL, 'Nulla facilisi. Sed at posuere nunc. Donec vitae quam sem. Quisque pharetra non ante nec posuere. Etiam accumsan ex quis nisl egestas, non auctor libero bibendum. Quisque egestas a neque sed finibus. Mauris aliquam massa et sapien sodales ultrices.', '2021-03-01 00:00:00', '2021-04-02 00:00:00', '2021-02-08 17:10:56', NULL, NULL, 1, 'poste_fictif_123', 'Poste fictif @123');
 
 -- --------------------------------------------------------
 
@@ -919,11 +994,15 @@ CREATE TABLE `proposal` (
 --
 
 DROP TABLE IF EXISTS `proposal_attachment`;
-CREATE TABLE `proposal_attachment` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `proposal_attachment` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `proposal_id` int(10) UNSIGNED NOT NULL,
   `asset_id` int(10) UNSIGNED NOT NULL,
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_B6DEACD9474526C` (`comment`),
+  KEY `IDX_B6DEACDF4792058` (`proposal_id`),
+  KEY `IDX_B6DEACD5DA1941` (`asset_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -933,10 +1012,13 @@ CREATE TABLE `proposal_attachment` (
 --
 
 DROP TABLE IF EXISTS `proposal_favorite`;
-CREATE TABLE `proposal_favorite` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `proposal_favorite` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
-  `proposal_id` int(10) UNSIGNED NOT NULL
+  `proposal_id` int(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_899EB2F17E3C61F9` (`owner_id`),
+  KEY `IDX_899EB2F1F4792058` (`proposal_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -946,12 +1028,15 @@ CREATE TABLE `proposal_favorite` (
 --
 
 DROP TABLE IF EXISTS `skill`;
-CREATE TABLE `skill` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `skill` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `category_id` smallint(5) UNSIGNED DEFAULT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_5E3DE4775E237E06` (`name`),
+  KEY `IDX_5E3DE47712469DE2` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `skill`
@@ -1003,13 +1088,17 @@ INSERT INTO `skill` (`id`, `category_id`, `name`, `description`) VALUES
 --
 
 DROP TABLE IF EXISTS `skill_category`;
-CREATE TABLE `skill_category` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `skill_category` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `icon_id` int(10) UNSIGNED DEFAULT NULL,
   `banner_id` int(10) UNSIGNED DEFAULT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_44E474335E237E06` (`name`),
+  KEY `IDX_44E4743354B9D732` (`icon_id`),
+  KEY `IDX_44E47433684EC833` (`banner_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `skill_category`
@@ -1035,12 +1124,14 @@ INSERT INTO `skill_category` (`id`, `icon_id`, `banner_id`, `name`, `description
 --
 
 DROP TABLE IF EXISTS `skill_level`;
-CREATE TABLE `skill_level` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `skill_level` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `score` smallint(5) UNSIGNED NOT NULL,
-  `rank` smallint(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `rank` smallint(5) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_BFC25F2F5E237E06` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `skill_level`
@@ -1059,8 +1150,8 @@ INSERT INTO `skill_level` (`id`, `name`, `score`, `rank`) VALUES
 --
 
 DROP TABLE IF EXISTS `training`;
-CREATE TABLE `training` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `training` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `school` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `diploma` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1068,8 +1159,10 @@ CREATE TABLE `training` (
   `start` datetime NOT NULL,
   `end` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_D5128A8F7E3C61F9` (`owner_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `training`
@@ -1085,8 +1178,8 @@ INSERT INTO `training` (`id`, `owner_id`, `school`, `diploma`, `note`, `start`, 
 --
 
 DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_type_id` smallint(5) UNSIGNED DEFAULT NULL,
   `company_type_id` smallint(5) UNSIGNED DEFAULT NULL,
   `nationality_id` smallint(5) UNSIGNED DEFAULT NULL,
@@ -1111,8 +1204,24 @@ CREATE TABLE `user` (
   `is_active` tinyint(1) NOT NULL,
   `phone` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `qualities` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `interests` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `interests` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_8D93D649AA08CB10` (`login`),
+  UNIQUE KEY `UNIQ_8D93D649E7927C74` (`email`),
+  KEY `IDX_8D93D6499D419299` (`user_type_id`),
+  KEY `IDX_8D93D649E51E9644` (`company_type_id`),
+  KEY `IDX_8D93D649F92F3E70` (`country_id`),
+  KEY `IDX_8D93D64982F1BAF4` (`language_id`),
+  KEY `IDX_8D93D64986383B10` (`avatar_id`),
+  KEY `IDX_8D93D649684EC833` (`banner_id`),
+  KEY `IDX_user_login_password` (`login`,`password`,`is_active`),
+  KEY `IDX_user_email_password` (`email`,`password`,`is_active`),
+  KEY `IDX_user_login_email_password` (`login`,`email`,`password`,`is_active`),
+  KEY `IDX_user_email_login_password` (`email`,`login`,`password`,`is_active`),
+  KEY `IDX_user_login_email` (`login`,`email`,`is_active`),
+  KEY `IDX_user_email_login_` (`email`,`login`,`is_active`),
+  KEY `IDX_8D93D6491C9DA55` (`nationality_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `user`
@@ -1147,11 +1256,15 @@ INSERT INTO `user` (`id`, `user_type_id`, `company_type_id`, `nationality_id`, `
 --
 
 DROP TABLE IF EXISTS `user_attachment`;
-CREATE TABLE `user_attachment` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_attachment` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `asset_id` int(10) UNSIGNED NOT NULL,
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_DE381F579474526C` (`comment`),
+  KEY `IDX_DE381F577E3C61F9` (`owner_id`),
+  KEY `IDX_DE381F575DA1941` (`asset_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1161,11 +1274,15 @@ CREATE TABLE `user_attachment` (
 --
 
 DROP TABLE IF EXISTS `user_destination`;
-CREATE TABLE `user_destination` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_destination` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
-  `country_id` smallint(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `country_id` smallint(5) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `U_destination_user_country` (`owner_id`,`country_id`),
+  KEY `IDX_97DDF73F7E3C61F9` (`owner_id`),
+  KEY `IDX_97DDF73FF92F3E70` (`country_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `user_destination`
@@ -1182,11 +1299,15 @@ INSERT INTO `user_destination` (`id`, `owner_id`, `country_id`) VALUES
 --
 
 DROP TABLE IF EXISTS `user_favorite`;
-CREATE TABLE `user_favorite` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_favorite` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `favorite_user_id` int(10) UNSIGNED NOT NULL,
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_88486AD99474526C` (`comment`),
+  KEY `IDX_88486AD97E3C61F9` (`owner_id`),
+  KEY `IDX_88486AD9FA3A7DFB` (`favorite_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1196,13 +1317,16 @@ CREATE TABLE `user_favorite` (
 --
 
 DROP TABLE IF EXISTS `user_motivation`;
-CREATE TABLE `user_motivation` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_motivation` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `contract_id` smallint(5) UNSIGNED NOT NULL,
   `presentation` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_traveller` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_traveller` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_4707B5017E3C61F9` (`owner_id`),
+  KEY `IDX_4707B5012576E0FD` (`contract_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `user_motivation`
@@ -1218,12 +1342,14 @@ INSERT INTO `user_motivation` (`id`, `owner_id`, `contract_id`, `presentation`, 
 --
 
 DROP TABLE IF EXISTS `user_stat`;
-CREATE TABLE `user_stat` (
-  `id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_stat` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_id` int(10) UNSIGNED NOT NULL,
   `viewed` int(10) UNSIGNED NOT NULL,
   `searched` int(10) UNSIGNED NOT NULL,
-  `last_connection` datetime DEFAULT NULL
+  `last_connection` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `U_user_stat_owner` (`owner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1233,12 +1359,14 @@ CREATE TABLE `user_stat` (
 --
 
 DROP TABLE IF EXISTS `user_type`;
-CREATE TABLE `user_type` (
-  `id` smallint(5) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_type` (
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_F65F1BE05E237E06` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `user_type`
@@ -1254,432 +1382,14 @@ INSERT INTO `user_type` (`id`, `name`, `description`, `is_active`) VALUES
 --
 
 --
--- Index pour la table `applier`
---
-ALTER TABLE `applier`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `U_applier_owner_proposal` (`owner_id`,`proposal_id`),
-  ADD KEY `IDX_D22A42C77E3C61F9` (`owner_id`),
-  ADD KEY `IDX_D22A42C7F4792058` (`proposal_id`);
-
---
--- Index pour la table `asset`
---
-ALTER TABLE `asset`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_2AF5A5CB548B0F` (`path`),
-  ADD KEY `IDX_2AF5A5C7E3C61F9` (`owner_id`),
-  ADD KEY `IDX_2AF5A5CA6A2CDC5` (`asset_type_id`);
-
---
--- Index pour la table `asset_type`
---
-ALTER TABLE `asset_type`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_68BA92E15E237E06` (`name`);
-
---
--- Index pour la table `company_type`
---
-ALTER TABLE `company_type`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_CFB34DC75E237E06` (`name`);
-
---
--- Index pour la table `contract_type`
---
-ALTER TABLE `contract_type`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_E4AB19415E237E06` (`name`);
-
---
--- Index pour la table `country`
---
-ALTER TABLE `country`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_5373C9665E237E06` (`name`),
-  ADD UNIQUE KEY `UNIQ_5373C966B762D672` (`alpha2`),
-  ADD UNIQUE KEY `UNIQ_5373C966C065E6E4` (`alpha3`);
-
---
--- Index pour la table `doctrine_migration_versions`
---
-ALTER TABLE `doctrine_migration_versions`
-  ADD PRIMARY KEY (`version`);
-
---
 -- Index pour la table `experience`
 --
-ALTER TABLE `experience`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_590C1037E3C61F9` (`owner_id`),
-  ADD KEY `IDX_experience_start` (`start`),
-  ADD KEY `IDX_experience_end` (`end`),
-  ADD KEY `IDX_experience_start_end` (`start`,`end`),
-  ADD KEY `IDX_experience_company` (`company`);
 ALTER TABLE `experience` ADD FULLTEXT KEY `IDX_experience_description` (`long_description`);
-
---
--- Index pour la table `experience_skill`
---
-ALTER TABLE `experience_skill`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `U_user_exp_skill` (`experience_id`,`skill_id`),
-  ADD KEY `IDX_3D6F986146E90E27` (`experience_id`),
-  ADD KEY `IDX_3D6F98615585C142` (`skill_id`);
-
---
--- Index pour la table `language`
---
-ALTER TABLE `language`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_D4DB71B55E237E06` (`name`),
-  ADD UNIQUE KEY `UNIQ_D4DB71B5B762D672` (`alpha2`),
-  ADD UNIQUE KEY `UNIQ_D4DB71B5C065E6E4` (`alpha3`),
-  ADD KEY `IDX_D4DB71B554B9D732` (`icon_id`);
-
---
--- Index pour la table `language_knowledge`
---
-ALTER TABLE `language_knowledge`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_586755F77E3C61F9` (`owner_id`),
-  ADD KEY `IDX_586755F75FB14BA7` (`level_id`),
-  ADD KEY `IDX_586755F782F1BAF4` (`language_id`);
-
---
--- Index pour la table `language_level`
---
-ALTER TABLE `language_level`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_E5B2C8425E237E06` (`name`);
-
---
--- Index pour la table `nationality`
---
-ALTER TABLE `nationality`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_8AC58B705E237E06` (`name`),
-  ADD KEY `IDX_8AC58B70F92F3E70` (`country_id`);
-
---
--- Index pour la table `other`
---
-ALTER TABLE `other`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_D95835207E3C61F9` (`owner_id`);
-
---
--- Index pour la table `other_skill`
---
-ALTER TABLE `other_skill`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_368913D9998D9879` (`other_id`),
-  ADD KEY `IDX_368913D95585C142` (`skill_id`),
-  ADD KEY `IDX_368913D95FB14BA7` (`level_id`);
 
 --
 -- Index pour la table `proposal`
 --
-ALTER TABLE `proposal`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_BFE594727E3C61F9` (`owner_id`),
-  ADD KEY `IDX_BFE594723569D950` (`featured_image_id`),
-  ADD KEY `IDX_BFE594723F9CEB4E` (`banner_image_id`),
-  ADD KEY `IDX_proposal_start` (`start`),
-  ADD KEY `IDX_proposal_end` (`end`),
-  ADD KEY `IDX_proposal_start_end` (`start`,`end`);
 ALTER TABLE `proposal` ADD FULLTEXT KEY `FT_proposal_long_description` (`long_description`);
-
---
--- Index pour la table `proposal_attachment`
---
-ALTER TABLE `proposal_attachment`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_B6DEACD9474526C` (`comment`),
-  ADD KEY `IDX_B6DEACDF4792058` (`proposal_id`),
-  ADD KEY `IDX_B6DEACD5DA1941` (`asset_id`);
-
---
--- Index pour la table `proposal_favorite`
---
-ALTER TABLE `proposal_favorite`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_899EB2F17E3C61F9` (`owner_id`),
-  ADD KEY `IDX_899EB2F1F4792058` (`proposal_id`);
-
---
--- Index pour la table `skill`
---
-ALTER TABLE `skill`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_5E3DE4775E237E06` (`name`),
-  ADD KEY `IDX_5E3DE47712469DE2` (`category_id`);
-
---
--- Index pour la table `skill_category`
---
-ALTER TABLE `skill_category`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_44E474335E237E06` (`name`),
-  ADD KEY `IDX_44E4743354B9D732` (`icon_id`),
-  ADD KEY `IDX_44E47433684EC833` (`banner_id`);
-
---
--- Index pour la table `skill_level`
---
-ALTER TABLE `skill_level`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_BFC25F2F5E237E06` (`name`);
-
---
--- Index pour la table `training`
---
-ALTER TABLE `training`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_D5128A8F7E3C61F9` (`owner_id`);
-
---
--- Index pour la table `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_8D93D649AA08CB10` (`login`),
-  ADD UNIQUE KEY `UNIQ_8D93D649E7927C74` (`email`),
-  ADD KEY `IDX_8D93D6499D419299` (`user_type_id`),
-  ADD KEY `IDX_8D93D649E51E9644` (`company_type_id`),
-  ADD KEY `IDX_8D93D649F92F3E70` (`country_id`),
-  ADD KEY `IDX_8D93D64982F1BAF4` (`language_id`),
-  ADD KEY `IDX_8D93D64986383B10` (`avatar_id`),
-  ADD KEY `IDX_8D93D649684EC833` (`banner_id`),
-  ADD KEY `IDX_user_login_password` (`login`,`password`,`is_active`),
-  ADD KEY `IDX_user_email_password` (`email`,`password`,`is_active`),
-  ADD KEY `IDX_user_login_email_password` (`login`,`email`,`password`,`is_active`),
-  ADD KEY `IDX_user_email_login_password` (`email`,`login`,`password`,`is_active`),
-  ADD KEY `IDX_user_login_email` (`login`,`email`,`is_active`),
-  ADD KEY `IDX_user_email_login_` (`email`,`login`,`is_active`),
-  ADD KEY `IDX_8D93D6491C9DA55` (`nationality_id`);
-
---
--- Index pour la table `user_attachment`
---
-ALTER TABLE `user_attachment`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_DE381F579474526C` (`comment`),
-  ADD KEY `IDX_DE381F577E3C61F9` (`owner_id`),
-  ADD KEY `IDX_DE381F575DA1941` (`asset_id`);
-
---
--- Index pour la table `user_destination`
---
-ALTER TABLE `user_destination`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `U_destination_user_country` (`owner_id`,`country_id`),
-  ADD KEY `IDX_97DDF73F7E3C61F9` (`owner_id`),
-  ADD KEY `IDX_97DDF73FF92F3E70` (`country_id`);
-
---
--- Index pour la table `user_favorite`
---
-ALTER TABLE `user_favorite`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_88486AD99474526C` (`comment`),
-  ADD KEY `IDX_88486AD97E3C61F9` (`owner_id`),
-  ADD KEY `IDX_88486AD9FA3A7DFB` (`favorite_user_id`);
-
---
--- Index pour la table `user_motivation`
---
-ALTER TABLE `user_motivation`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_4707B5017E3C61F9` (`owner_id`),
-  ADD KEY `IDX_4707B5012576E0FD` (`contract_id`);
-
---
--- Index pour la table `user_stat`
---
-ALTER TABLE `user_stat`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `U_user_stat_owner` (`owner_id`);
-
---
--- Index pour la table `user_type`
---
-ALTER TABLE `user_type`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_F65F1BE05E237E06` (`name`);
-
---
--- AUTO_INCREMENT pour les tables déchargées
---
-
---
--- AUTO_INCREMENT pour la table `applier`
---
-ALTER TABLE `applier`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `asset`
---
-ALTER TABLE `asset`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `asset_type`
---
-ALTER TABLE `asset_type`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT pour la table `company_type`
---
-ALTER TABLE `company_type`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT pour la table `contract_type`
---
-ALTER TABLE `contract_type`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT pour la table `country`
---
-ALTER TABLE `country`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=245;
-
---
--- AUTO_INCREMENT pour la table `experience`
---
-ALTER TABLE `experience`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT pour la table `experience_skill`
---
-ALTER TABLE `experience_skill`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
-
---
--- AUTO_INCREMENT pour la table `language`
---
-ALTER TABLE `language`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT pour la table `language_knowledge`
---
-ALTER TABLE `language_knowledge`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT pour la table `language_level`
---
-ALTER TABLE `language_level`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT pour la table `nationality`
---
-ALTER TABLE `nationality`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=242;
-
---
--- AUTO_INCREMENT pour la table `other`
---
-ALTER TABLE `other`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT pour la table `other_skill`
---
-ALTER TABLE `other_skill`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT pour la table `proposal`
---
-ALTER TABLE `proposal`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `proposal_attachment`
---
-ALTER TABLE `proposal_attachment`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `proposal_favorite`
---
-ALTER TABLE `proposal_favorite`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `skill`
---
-ALTER TABLE `skill`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
-
---
--- AUTO_INCREMENT pour la table `skill_category`
---
-ALTER TABLE `skill_category`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT pour la table `skill_level`
---
-ALTER TABLE `skill_level`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT pour la table `training`
---
-ALTER TABLE `training`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT pour la table `user`
---
-ALTER TABLE `user`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-
---
--- AUTO_INCREMENT pour la table `user_attachment`
---
-ALTER TABLE `user_attachment`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `user_destination`
---
-ALTER TABLE `user_destination`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT pour la table `user_favorite`
---
-ALTER TABLE `user_favorite`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `user_motivation`
---
-ALTER TABLE `user_motivation`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT pour la table `user_stat`
---
-ALTER TABLE `user_stat`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `user_type`
---
-ALTER TABLE `user_type`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Contraintes pour les tables déchargées

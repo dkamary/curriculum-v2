@@ -1,0 +1,113 @@
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Mes annonces', href: ''}] %}
+
+{% set section_title = 'Mes annonces' %}
+
+{% block title %}Mes annonces{% endblock %}
+
+{% block dashboard_content %}
+
+    {% include "_layouts/alert.html.twig" %}
+
+	<div class="row">
+		<div class="col-12 px-3">
+            {% for prop in user.proposals %}
+                {% if prop.isActive %}
+                    <div class="row my-3" id="proposal-{{ prop.id }}">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-sm-8 col-12">
+                                            <h4 class="text-primary">{{ prop.name|title }}</h4>
+                                        </div>
+                                        <div class="col-sm-4 col-12 text-right">
+                                            <a href="{{ path('proposal_edit', { id: prop.id }) }}" class="genric-btn info-border small">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                            </a>
+                                            &nbsp;
+                                            <a href="#" class="genric-btn danger-border small proposal-delete" data-id="{{ prop.id }}">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        Début: <strong>{{ prop.start is not null ? prop.start|date('d/m/Y') : '' }}</strong>{% if prop.end is not null %}, Fin: <strong>{{ prop.end|date('d/m/Y') }}</strong>{% endif %}
+                                    </h6>
+                                    <p class="card-text border-top text-muted">
+                                        {{ prop.longDescription|striptags('<br><p>')|u.truncate(150, '...', true)|raw }}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row">
+                                        <p class="col-12 text-right">
+                                            Il y a <strong>{{ prop.appliers|length }}</strong> candidat(s) qui ont postulé(s)
+                                            &nbsp;
+                                            {% if prop.appliers|length > 0 %}
+                                                <a href="{{ path('proposal_appliers', { ref: prop.ref }) }}" class="generic-btn info small">
+                                                    <i class="fa fa-eye" aria-hidden="true"></i> Voir la liste
+                                                </a>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <em>Vous n'avez pas encore d'annonce publié</em>
+                    </div>
+                </div>
+            {% endfor %}
+            <hr>
+            <div class="row">
+                <div class="col-12 mt-5 mb-3">
+                    <h4 class="text-info">Ajouter un nouvel offre d'emploi</h4>
+                </div>
+                <div class="col-12">
+                    {% include "proposal/_form.html.twig" with { button_label: 'Ajouter' } %}
+                </div>
+            </div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function($, window, document) {
+            $(function () {
+                const $document = $(document);
+                $document
+                    .on('click', '.proposal-delete', e => {
+                        e.preventDefault();
+                        if(!confirm("Voulez-vous vraiment désactiver cet offre d'emploi ?")) return false;
+                        const $this = $(e.currentTarget);
+                        const id = parseInt($this.data('id'));
+                        $.ajax({
+                            type: 'post',
+                            url: '{{ path('proposal_delete') }}',
+                            data: {
+                                id: id
+                            }
+                        }).done(response => {
+                            if(response.done) {
+                                $(`#proposal-${id}`).hide('normal', function() {
+                                    $(this).remove();
+                                });
+                            }
+                        }).fail( xhr => {
+                            alert(`${xhr.status} - ${xhr.statusText}`);
+                        } );
+                    });
+            })
+        } (window.jQuery, window, window.document));
+    </script>
+{% endblock %}

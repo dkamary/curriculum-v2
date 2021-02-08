@@ -74,8 +74,8 @@
                         {% else %}
                             <hr>
                             <li>
-                                <i class="fa fa-tags{{ 'user_applies' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
-                                <a href="#" {{ 'user_applies' == route ? 'class="text-danger font-weight-bold"' : '' }}>Mes annonces</a>
+                                <i class="fa fa-tags{{ 'proposal_index' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                                <a href="{{ path('proposal_index') }}" {{ 'proposal_index' == route ? 'class="text-danger font-weight-bold"' : '' }}>Mes annonces</a>
                             </li>
                             <hr>
                         {% endif %}
