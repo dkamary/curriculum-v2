@@ -27,11 +27,14 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\VarDumper\VarDumper;
 
 /**
@@ -343,12 +346,13 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, UserPasswordEncoderInterface $encoder, User $user): Response
     {
         $form = $this->createForm(UtilisateurInfoType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('user_index');
@@ -363,16 +367,47 @@ class UserController extends AbstractController
     /**
      * @Route("/edition", name="user_edition", methods={"GET","POST"})
      */
-    public function edit2(Request $request): Response
+    public function edit2(Request $request, UserPasswordEncoderInterface $encoder, SluggerInterface $slugger): Response
     {
+        /**
+         * @var User $user
+         */
         $user = $this->getUser();
         $form = $this->createForm(UtilisateurInfoType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('user_index');
+            $avatar = $form->get('avatarPath')->getData();
+            if ($avatar) {
+                /**
+                 * @var UploadedFile $avatar
+                 */
+                $orginalFilename = pathinfo($avatar->getClientOriginalName(), PATHINFO_FILENAME);
+                $safename = $slugger->slug($orginalFilename);
+                $newFilename = $safename . '-' . uniqid() . '.' . $avatar->guessExtension();
+                try {
+                    $targetDir = $this->getParameter('upload_directory') . '/' . $user->getId();
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir);
+                        VarDumper::dump("`$targetDir` created !");
+                    } else {
+                        VarDumper::dump("`$targetDir` already exists !");
+                    }
+                    $avatar->move(
+                        $targetDir,
+                        $newFilename
+                    );
+                } catch (FileException $ex) {
+                    $this->addFlash('warning', $ex->getMessage());
+                }
+                $user->setAvatarPath($newFilename);
+                $this->getDoctrine()->getManager()->flush();
+            }
+
+            return $this->redirectToRoute('user_edition');
         }
 
         return $this->render('user/edit.html.twig', [

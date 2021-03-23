@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Asset{% endblock %}
+
+{% block body %}
+    <h1>Asset</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ asset.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ asset.title }}</td>
+            </tr>
+            <tr>
+                <th>Path</th>
+                <td>{{ asset.path }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ asset.createdAt ? asset.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ asset.updatedAt ? asset.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DeletedAt</th>
+                <td>{{ asset.deletedAt ? asset.deletedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('asset_index') }}">back to list</a>
+
+    <a href="{{ path('asset_edit', {'id': asset.id}) }}">edit</a>
+
+    {{ include('asset/_delete_form.html.twig') }}
+{% endblock %}

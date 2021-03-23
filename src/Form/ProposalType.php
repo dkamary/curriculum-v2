@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Country;
 use App\Entity\Proposal;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -43,6 +46,18 @@ class ProposalType extends AbstractType
                 ],
                 'widget' => 'single_text',
                 'required' => false,
+            ])
+            ->add('town', TextType::class, [
+                'label' => 'Ville',
+            ])
+            ->add('country', EntityType::class, [
+                'class' => Country::class,
+                'label' => 'Pays',
+                'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $entityRepository) {
+                    return $entityRepository->createQueryBuilder('c')
+                        ->orderBy('c.name', 'ASC');
+                }
             ])
             // ->add('featuredImage')
             // ->add('bannerImage')

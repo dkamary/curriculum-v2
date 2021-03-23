@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserType;
 use App\Form\UtilisateurAddressType;
 use App\Form\UtilisateurInfoType;
+use App\Repository\CompanyTypeRepository;
+use App\Repository\UserTypeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,17 +23,24 @@ class InscriptionController extends AbstractController
     /**
      * @Route("/", name="user_inscription")
      */
-    public function information(Request $request, UserPasswordEncoderInterface $encoder): Response
-    {
+    public function information(
+        Request $request,
+        UserPasswordEncoderInterface $encoder,
+        UserTypeRepository $userTypeRepository,
+        CompanyTypeRepository $companyTypeRepository
+    ): Response {
         $user = new User();
         $form = $this->createForm(UtilisateurInfoType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $this->getDoctrine()->getManager();
-            $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
+            $user
+                ->setPassword($encoder->encodePassword($user, $user->getPassword()))
+                ->setUserType($userTypeRepository->findOneBy(['id' => UserType::CANDIDAT]))
+                ->setCompanyType($companyTypeRepository->findOneBy(['id' => 4]));
             $manager->persist($user);
             $manager->flush();
-            $this->addFlash('success', 'Nouvel utilsateur créé');
+            $this->addFlash('success', 'Nouveau candidat créé');
 
             if ($user->getId()) {
                 $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());

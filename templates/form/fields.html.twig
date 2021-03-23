@@ -31,7 +31,7 @@
             {% set label_attr = label_attr|merge({'for': id}) %}
         {%- endif -%}
         {% if required -%}
-            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required' ~ sizing)|trim}) %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required ' ~ sizing)|trim}) %}
         {% else %}
             {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ sizing)|trim}) %}
         {%- endif -%}
@@ -218,3 +218,71 @@
         </label>
     {%- endif -%}
 {%- endblock checkbox_radio_label %}
+
+{% block avatar_row %}
+    {% set id = random(100) %}
+    {% set img = 'uploads/default/user.png' %}
+    {% if form.vars.value is not null %}
+        {% set img = 'uploads/' ~ form.vars.value.id ~ '/' ~ form.vars.value.avatar.path %}
+    {% endif %}
+
+    <div class="form-group row">
+        {{ form_label(form) }}
+        <div class="col-lg-8 col-md-6 col-sm-12 col-12">
+            <div class="row">
+                <div class="col-12">
+                    <img src="{{ asset(img) }}" alt="" id="img-{{ id }}" style="width: 160px; height: auto;">
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-12 text-left">
+                    <button class="genric-btn info" id="btn-{{ id }}" data-target="{{ id }}">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>&nbsp;Changer
+                    </button>
+                </div>
+                <input type="file" name="file-selector" id="file-{{ id }}" class="d-none">
+                <input type="hidden" name="avatar_custom_id" value="{{ id }}">
+            </div>
+            {% for child  in form.children|filter(child => not child.rendered) %}
+                <div class="form-group row d-none">
+                    {# {{ form_label(child) }} #}
+                    {{ form_widget(child) }}
+                    {{ form_help(child) }}
+                    {{ form_errors(child) }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const input = document.querySelector('#file-{{ id }}');
+                const btn = document.querySelector('#btn-{{ id }}');
+                const img = document.querySelector('#img-{{ id }}');
+                const path = document.querySelector('#utilisateur_info_avatar_path');
+                console.log({input, btn, img, path});
+                btn.addEventListener('click', function(e) {
+                    console.log('Click sur le bouton de changement d\'avatar');
+                    e.preventDefault();
+                    input.click();
+                });
+                input.addEventListener('click', e => {
+                    console.log('Click sur le input:file');
+                });
+                input.addEventListener('change', function(e) {
+                    console.log('Input:file a changer');
+                    console.log(input);
+                    if(input.files && input.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(input.files[0]);
+                        path.value = input.value;
+                        console.log(`Changement du path en ${path.value}`);
+                    }
+                });
+            });
+        </script>
+    </div>
+    
+{% endblock %}

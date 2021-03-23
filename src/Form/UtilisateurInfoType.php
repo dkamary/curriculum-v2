@@ -16,31 +16,41 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class UtilisateurInfoType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('userType', EntityType::class, [
-                'class' => TypeUser::class,
-                'choice_label' => 'name',
-                'query_builder' => function (EntityRepository $entityRepository) {
-                    $qb = $entityRepository->createQueryBuilder('t');
+            // ->add('userType', EntityType::class, [
+            //     'class' => TypeUser::class,
+            //     'choice_label' => 'name',
+            //     'query_builder' => function (EntityRepository $entityRepository) {
+            //         $qb = $entityRepository->createQueryBuilder('t');
 
-                    return $qb->where($qb->expr()->neq('t.id', UserType::ADMIN))->orderBy('t.name', 'ASC');
-                },
-                'label' => 'Type utilisateur',
-            ])
-            ->add('companyType', EntityType::class, [
-                'class' => CompanyType::class,
-                'choice_label' => 'name',
-                'label' => 'Type de société',
-            ])
+            //         return $qb->where($qb->expr()->neq('t.id', UserType::ADMIN))->orderBy('t.name', 'ASC');
+            //     },
+            //     'label' => 'Type utilisateur',
+            //     'attr' => [
+            //         'class' => 'd-none',
+            //     ],
+            // ])
+            // ->add('companyType', EntityType::class, [
+            //     'class' => CompanyType::class,
+            //     'choice_label' => 'name',
+            //     'label' => 'Type de société',
+            //     'attr' => [
+            //         'class' => 'd-none',
+            //     ],
+            // ])
             ->add('gender', ChoiceType::class, [
                 'label' => 'Sexe',
                 'choices' => [
@@ -60,12 +70,12 @@ class UtilisateurInfoType extends AbstractType
                     'placeholder' => 'Votre adresse email',
                 ],
             ])
-            ->add('password', PasswordType::class, [
-                'label' => 'Mot de passe',
-                'attr' => [
-                    'placeholder' => 'Votre mot de passe',
-                ],
-            ])
+            // ->add('password', PasswordType::class, [
+            //     'label' => 'Mot de passe',
+            //     'attr' => [
+            //         'placeholder' => 'Votre mot de passe',
+            //     ],
+            // ])
             ->add('firstname', TextType::class, [
                 'label' => 'Prénom',
                 'attr' => [
@@ -101,6 +111,54 @@ class UtilisateurInfoType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Langue préférée',
             ])
+            ->add('avatarPath', FileType::class, [
+                'label' => 'Avatar',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'avatar-preview',
+                ],
+                'constraints' => [
+                    new File([
+                        'mimeTypes' => [
+                            'image/jpg',
+                            'image/png',
+                            'image/gif',
+                        ],
+                        'mimeTypesMessage' => 'Veuillez telecharger un fichier image valide',
+                    ]),
+                ],
+            ])
+            // ->add('bannerPath', FileType::class, [
+            //     'label' => 'Banniere',
+            //     'mapped' => false,
+            //     'required' => false,
+            //     'attr' => [
+            //         'class' => 'banner-preview',
+            //     ],
+            //     'constraints' => [
+            //         new File([
+            //             'mimeTypes' => [
+            //                 'image/jpg',
+            //                 'image/png',
+            //                 'image/gif',
+            //             ],
+            //             'mimeTypesMessage' => 'Veuillez telecharger un fichier image valide',
+            //         ]),
+            //     ],
+            // ])
+            // ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $formEvent) {
+            //     /**
+            //      * @var User $user
+            //      */
+            //     $user = $formEvent->getData();
+            //     if ($user->getId()) {
+            //         $form = $formEvent->getForm();
+            //         $form->add('avatar', AvatarType::class, [
+            //             'label' => 'Avatar',
+            //         ]);
+            //     }
+            // })
             // ->add('avatar', EntityType::class, [
             //     'class' => Asset::class,
             //     'choice_label' => 'path',

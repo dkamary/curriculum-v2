@@ -5,6 +5,8 @@
 
 {% set section_title = 'Informations générales' %}
 
+{% set user = form.vars.value %}
+
 {% block title %}Edition utilisateur{% endblock %}
 
 {% block dashboard_content %}
@@ -13,4 +15,44 @@
     {# <a href="{{ path('user_index') }}">back to list</a> #}
 
     {# {{ include('user/_delete_form.html.twig') }} #}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function($, window, document){
+            $(function(){
+                const avatarPreview = $('.avatar-preview');
+                const bannerPreview = $('.banner-preview');
+                const previewAvatar = $('<img>', {
+                    class: '',
+                    style: 'height: 160px; width: auto;',
+                    src: '{{ user.avatarPath is not null ? asset('uploads/' ~ user.id ~ '/' ~ user.avatarPath) : asset('uploads/default/user.png') }}'
+                });
+                const previewBanner = $('<img>', {
+                    class: '',
+                    style: 'height: auto; width: 100%;',
+                    src: '{{ user.bannerPath is not null ? asset('uploads/' ~ user.id ~ '/' ~ user.bannerPath) : asset('uploads/default/banner.png') }}'
+                });
+                avatarPreview.before(previewAvatar);
+                bannerPreview.before(previewBanner);
+                avatarPreview.on('change', event => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewAvatar.attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(avatarPreview[0].files[0]);
+                    console.log(`Changement du path en ${avatarPreview[0].files[0]}`);
+                });
+                bannerPreview.on('change', event => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewBanner.attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(bannerPreview[0].files[0]);
+                    console.log(`Changement du path en ${bannerPreview[0].files[0]}`);
+                });
+            });
+        }(window.jQuery, window, window.document));
+    </script>
 {% endblock %}

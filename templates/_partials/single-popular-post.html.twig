@@ -7,7 +7,12 @@
     </div>
     <div class="details">
         <a href="#"><h4>{{ post.name|title }}</h4></a>
-        <h6>Début: <strong>{{ post.start is not null ? post.start|date('d/m/Y') : '' }}</strong>{% if post.end is not null %}, Fin: <strong>{{ post.end|date('d/m/Y') }}</strong>{% endif %}</h6>
+        <h6>
+            {{ post.town|title }}, {{ post.country is not null ? post.country.name : '<br/>'|raw }}
+        </h6>
+        <p class="text-muted">
+            Début: <strong>{{ post.start is not null ? post.start|date('d/m/Y') : '' }}</strong>{% if post.end is not null %}, Fin: <strong>{{ post.end|date('d/m/Y') }}</strong>{% endif %}
+        </p>
         <p>
             {{ post.longDescription|striptags|u.truncate(100, '...', true) }}
         </p>

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Base\DescriptionEntity;
 use App\Entity\Base\NameEntity;
+use App\Entity\Base\SlugEntity;
 use App\Repository\SkillRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,6 +15,7 @@ class Skill
 {
     use NameEntity;
     use DescriptionEntity;
+    use SlugEntity;
 
     /**
      * @ORM\Id

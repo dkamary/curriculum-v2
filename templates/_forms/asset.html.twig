@@ -1,0 +1,17 @@
+{# asset form template #}
+{% block asset_row %}
+    <div class="form-group row">
+        {{ form_label(form) }}
+        <div class="col-lg-8 col-md-6 col-sm-12 col-12">
+            {% for child  in form.children|filter(child => not child.rendered) %}
+                <div class="form-group row">
+                    {{ form_label(child) }}
+                    {{ form_widget(child) }}
+                    {{ form_help(child) }}
+                    {{ form_errors(child) }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+{% endblock %}

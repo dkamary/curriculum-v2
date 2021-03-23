@@ -59,7 +59,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=150)
      */
-    private $password;
+    private $password = '123';
 
     /**
      * @ORM\Column(type="smallint", nullable=true)
@@ -206,6 +206,16 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=512, nullable=true)
      */
     private $interests;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $avatarPath;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $bannerPath;
 
     public function __construct()
     {
@@ -893,6 +903,30 @@ class User implements UserInterface
     public function setInterests(?string $interests): self
     {
         $this->interests = $interests;
+
+        return $this;
+    }
+
+    public function getAvatarPath(): ?string
+    {
+        return $this->avatarPath;
+    }
+
+    public function setAvatarPath(?string $avatarPath): self
+    {
+        $this->avatarPath = $avatarPath;
+
+        return $this;
+    }
+
+    public function getBannerPath(): ?string
+    {
+        return $this->bannerPath;
+    }
+
+    public function setBannerPath(?string $bannerPath): self
+    {
+        $this->bannerPath = $bannerPath;
 
         return $this;
     }

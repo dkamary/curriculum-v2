@@ -8,6 +8,7 @@ use App\Entity\Base\DeletedAtEntity;
 use App\Entity\Base\EndEntity;
 use App\Entity\Base\LongDescriptionEntity;
 use App\Entity\Base\NameEntity;
+use App\Entity\Base\SlugEntity;
 use App\Entity\Base\StartEntity;
 use App\Entity\Base\UpdatedAtEntity;
 use App\Repository\ProposalRepository;
@@ -40,6 +41,7 @@ class Proposal
     use UpdatedAtEntity;
     use DeletedAtEntity;
     use ActiveEntity;
+    use SlugEntity;
 
     /**
      * @ORM\Id
@@ -83,6 +85,16 @@ class Proposal
      * @ORM\Column(type="string", length=255)
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $town;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Country::class)
+     */
+    private $country;
 
     public function __construct()
     {
@@ -211,6 +223,30 @@ class Proposal
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getTown(): ?string
+    {
+        return $this->town;
+    }
+
+    public function setTown(?string $town): self
+    {
+        $this->town = $town;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): self
+    {
+        $this->country = $country;
 
         return $this;
     }

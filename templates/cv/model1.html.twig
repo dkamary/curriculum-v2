@@ -1,4 +1,10 @@
 {# Model-1 #}
+
+{% set avatar = 'https://fakeimg.pl/250x250/' %}
+{% if user.avatarPath is not null %}
+    {% set avatar = asset('uploads/' ~ user.id ~ '/' ~ user.avatarPath) %}
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -20,7 +26,7 @@
             <header>
                 <h1>{{ (user.firstname ~ '<br>' ~ user.lastname)|raw }}</h1>
                 <div class="photo-container">
-                    <img class="photo" src="https://fakeimg.pl/250x250/" alt="{{ user.firstname }}">
+                    <img class="photo" src="{{ avatar }}" alt="{{ user.firstname }}">
                 </div>
             </header>
 
