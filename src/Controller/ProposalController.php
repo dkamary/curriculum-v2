@@ -183,7 +183,7 @@ class ProposalController extends AbstractController
      */
     public function populars(ProposalRepository $proposalRepository): Response
     {
-        $populars = $proposalRepository->getPopulars();
+        $populars = $proposalRepository->getPopulars(10);
 
         return $this->render('_partials/popular-post.html.twig', [
             'populars' => $populars,
