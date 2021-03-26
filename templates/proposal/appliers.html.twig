@@ -1,0 +1,41 @@
+{# Appliers template #}
+
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: proposal.name, href: path('proposal_edit', { id: proposal.id })}, {text: 'Candidats', href: '' }] %}
+
+{% set section_title = 'Candidats ayant postulés à l\'annonce' %}
+
+{% block title %}{{ section_title }}{% endblock %}
+
+{% block dashboard_content %}
+
+    {% include "_layouts/alert.html.twig" %}
+
+    {% for candidat in proposal.appliers %}
+        <div class="row">
+            <div class="col-12">
+                <pre>
+                    {{ dump(candidat) }}
+                </pre>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12 text-center">
+                <em>Aucun candidat n'a postulé pour cette annonce pour l'instant</em>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="row my-3">
+        <div class="col-12 text-right">
+            <a class="genric-btn primary radius" href="{{ path('proposal_edit', { id: proposal.id }) }}">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;
+                Revenir à l'annonce
+            </a>
+        </div>
+    </div>
+
+{% endblock %}

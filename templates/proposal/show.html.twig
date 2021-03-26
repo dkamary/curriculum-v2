@@ -1,0 +1,75 @@
+{# Display Proposal on front #}
+
+{% extends "_layouts/page.html.twig" %}
+
+{% set breadcrumbs = [{text: 'Annonces', href: path('home') }, {text: proposal.name, href: '' }] %}
+
+{% set section_title = proposal.name %}
+{% set pageTitle = section_title %}
+{% set user = app.user is not null ? app.user : { id: null } %}
+
+{% block title %}
+    {{ section_title }}
+{% endblock %}
+
+{% block header %}
+    {% include "_partials/section-header.html.twig" %}
+{% endblock %}
+
+{% block banner %}
+    {% include "_partials/banner-page.html.twig" %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-8 col-12">
+            <h2>Description</h2>
+            <hr>
+            <div class="py-3">
+                {{ proposal.longDescription|raw }}
+            </div>
+        </div>
+        <div class="col-sm-4 col-12">
+            <h3>Compétences requises</h3>
+            <hr>
+            {% for propSkill in proposal.skills %}
+                <span class="badge badge-info mr-2 my-2 p-1">{{ propSkill.skill.name }}</span>
+            {% else %}
+                <em>Aucune compétences particulières requises pour cette offre</em>
+            {% endfor %}
+            <h3 class="mt-5">Informations complémentaires</h3>
+            <hr>
+            <span class="text-underline">Lieu</span>: <strong>{{ proposal.town|title }}, {{ proposal.country is not null ? proposal.country.name : '<br/>'|raw }}</strong>
+            <br><span class="text-underline">Début</span>: <strong>{{ proposal.start is not null ? proposal.start|date('d/m/Y') : '' }}</strong>
+            {% if proposal.end is not null %} 
+                <br><span class="text-underline">Fin</span>: <strong>{{ proposal.end|date('d/m/Y') }}</strong>
+            {% endif %}
+            {% if user.id is null %}
+                <hr class="my-3">
+                <p class="text-center">
+                    <strong><em class="text-danger">Vous devez être identifié pour pouvoir postuler</em></strong><br>
+                    <a class="genric-btn primary my-3" href="{{ path('app_login') }}">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i> &nbsp; Connectez-vous d'abord
+                    </a>
+                </p>
+            {% elseif proposal.owner.id != user.id %}
+                <hr class="my-3">
+                {% set already = false %}
+                {% set userApplier = null %}
+                {% for apply in user.appliers %}
+                    {% if apply.proposal.id == proposal.id %}
+                        {% set already = true %}
+                        {% set userApplier = apply %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if already %}
+                    {% include "proposal/_cancel-form.html.twig" with { applier: userApplier } %}
+                {% else %}
+                    {% include "proposal/_form.html.twig" with { form: form, button_label: 'Postuler' } %}
+                    
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

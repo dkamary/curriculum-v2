@@ -96,10 +96,16 @@ class Proposal
      */
     private $country;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProposalSkill::class, mappedBy="proposal")
+     */
+    private $skills;
+
     public function __construct()
     {
         $this->proposalAttachments = new ArrayCollection();
         $this->appliers = new ArrayCollection();
+        $this->skills = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -247,6 +253,36 @@ class Proposal
     public function setCountry(?Country $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProposalSkill[]
+     */
+    public function getSkills(): Collection
+    {
+        return $this->skills;
+    }
+
+    public function addSkill(ProposalSkill $skill): self
+    {
+        if (!$this->skills->contains($skill)) {
+            $this->skills[] = $skill;
+            $skill->setProposal($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSkill(ProposalSkill $skill): self
+    {
+        if ($this->skills->removeElement($skill)) {
+            // set the owning side to null (unless already changed)
+            if ($skill->getProposal() === $this) {
+                $skill->setProposal(null);
+            }
+        }
 
         return $this;
     }

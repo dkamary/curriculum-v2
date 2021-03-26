@@ -1,0 +1,33 @@
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Emplois postulés', href: ''}] %}
+
+{% set section_title = 'Emplois postulés' %}
+
+{% block title %}{{ section_title }}{% endblock %}
+
+{% block dashboard_content %}
+
+    {% include "_layouts/alert.html.twig" %}
+
+    {% for apply in user.appliers %}
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{ apply.proposal.name }}
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ apply.proposal.reference }}</h4>
+                        <p class="card-text">{{ apply.proposal.longDescription|u.truncate(100, '&hellip;', true)|raw }}</p>
+                    </div>
+                    <div class="card-footer text-muted">
+                        {% include "proposal/_cancel-form.html.twig" with { applier: apply, route: 'applier' } %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

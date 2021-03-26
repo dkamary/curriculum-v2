@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ProposalSkill{% endblock %}
+
+{% block body %}
+    <h1>ProposalSkill</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ proposal_skill.id }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('proposal_skill_index') }}">back to list</a>
+
+    <a href="{{ path('proposal_skill_edit', {'id': proposal_skill.id}) }}">edit</a>
+
+    {{ include('proposal_skill/_delete_form.html.twig') }}
+{% endblock %}

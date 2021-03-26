@@ -54,27 +54,56 @@ class ProposalRepository extends ServiceEntityRepository
     /**
      * Get Populars Proposals
      *
+     * @param integer $count
      * @param string $min
      * @param string|null $max
      * @return Proposal[]
      */
-    public function getPopulars(string $min = 'now', ?string $max = null): array
+    public function getPopulars(int $count = 4, string $min = 'now', ?string $max = null): array
     {
         $min = ($min == 'now') ? date('Y-m-d') : $min;
         $max = (is_null($max)) ? date(((int)date('Y') + 1) . '-12-31') : $max;
-        VarDumper::dump($min);
-        VarDumper::dump($max);
+        // VarDumper::dump($min);
+        // VarDumper::dump($max);
         $qb = $this->createQueryBuilder('p');
         $populars = $qb->where('(p.end IS NULL OR p.end < :max)')
             ->andWhere('p.start <= :min')
             ->orderBy('p.start', 'DESC')
-            ->setMaxResults(4)
+            ->setMaxResults($count)
             ->setParameter('min', $min)
             ->setParameter('max', $max)
             ->getQuery()
             ->getResult();
-        VarDumper::dump($populars);
+        // VarDumper::dump($populars);
 
         return $populars;
+    }
+
+    /**
+     * Get Latest proposal
+     *
+     * @param integer $owner
+     * @param integer $count
+     * @param string $min
+     * @param string|null $max
+     * @return array
+     */
+    public function getLatest(int $owner, int $count = 4, string $min = 'now', ?string $max = null): array
+    {
+        $min = ($min == 'now') ? date('Y-m-d') : $min;
+        $max = (is_null($max)) ? date(((int)date('Y') + 1) . '-12-31') : $max;
+        $qb = $this->createQueryBuilder('p');
+        $latest = $qb->where('(p.end IS NULL OR p.end < :max)')
+            ->andWhere('p.start <= :min')
+            ->andWhere('p.owner = :owner')
+            ->orderBy('p.start', 'DESC')
+            ->setMaxResults($count)
+            ->setParameter('min', $min)
+            ->setParameter('max', $max)
+            ->setParameter('owner', $owner)
+            ->getQuery()
+            ->getResult();
+
+        return $latest;
     }
 }

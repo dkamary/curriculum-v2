@@ -6,7 +6,7 @@
 
 {% set section_title = proposal.name %}
 
-{% block title %}proposal.name{% endblock %}
+{% block title %}{{ proposal.name }}{% endblock %}
 
 {% block dashboard_content %}
 
@@ -16,9 +16,88 @@
 		<div class="col-12 px-3">
             <div class="row">
                 <div class="col-12">
-                    {% include "proposal/_form.html.twig" with { button_label: 'Mettre à jour' } %}
+                    {% include "proposal/_form.html.twig" with { button_label: 'Mettre à jour l\'annonce' } %}
                 </div>
             </div>
 		</div>
 	</div>
+
+    <hr class="my-5">
+
+    <div class="row">
+        <div class="col-12 px-3">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h3>Compétences requises</h3>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    {% for propSkill in proposal.skills %}
+                        <span class="badge badge-info mr-2 my-2 p-1" id="skill-{{ propSkill.id }}">
+                            {{ propSkill.skill.name }}
+                            &nbsp;
+                            <a href="#" class="ml-3 mr-1 remove-skill text-danger" data-id="{{ propSkill.id }}">
+                                <i class="fa fa-times-circle" aria-hidden="true"></i>
+                            </a>
+                        </span>
+                    {% else %}
+                        <em>
+                            Aucune competences requises pour cette annonce
+                        </em>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="container">
+                        {% include "proposal/_form.html.twig" with { form: skill_form, button_label: 'Ajouter la compétence' } %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts_footer %}
+    <script>
+        (function($, window, document) {
+            $(function() {
+                const $document = $(document);
+                $document
+                    .on( 'click', '.remove-skill', e => {
+                        e.preventDefault();
+                        if( !confirm("Voulez-vous vraiment effacer cette compétence de l'annonce ?") ) return false;
+
+                        const $this = $(e.currentTarget);
+                        const old = $this.html();
+                        const id = $this.data('id');
+                        const ajax = $.ajax( {
+                            type: 'post',
+                            url : '{{ path('proposal_skill_erase') }}',
+                            data: {
+                                id: id
+                            },
+                            beforeSend: () => {
+                                $this.html('<i class="fa fa-refresh rotateIn infinite animated slow" aria-hidden="true"></i>');
+                            }
+                        } );
+                        ajax.done( response => {
+                            if( response.done ) {
+                                $(`#skill-${id}`).remove();
+                                {# setTimeout(() => {
+                                    verifyExperienceSkills();
+                                }, 1000); #}
+                            }
+                        } );
+                        ajax.fail();
+                        ajax.always(() => {
+                            $this.html(old);
+                        });
+                    } )
+                    ;
+            });
+        } (window.jQuery, window, window.document));
+    </script>
 {% endblock %}

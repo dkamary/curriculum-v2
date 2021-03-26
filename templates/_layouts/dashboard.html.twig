@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col-sm-4 col-12">
             <div class="card bg-dark border-dark text-white">
-                <div class="card-header font-weight-bold fa-2x">
+                <div class="card-header font-weight-bold fa-2x" id="menu-title">
                     Menu
                 </div>
                 <div class="card-body">
@@ -54,7 +54,7 @@
                             </li>
                             <li>
                                 <i class="fa fa-star{{ 'user_others' == route or 'user_other_edit' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
-                                <a href="{{ path('user_others') }}" {{ 'user_others' == route or 'user_other_edit' == route ? 'class="text-danger font-weight-bold"' : '' }}>Autres connaissances</a>
+                                <a href="{{ path('user_others') }}" {{ 'user_others' == route or 'user_other_edit' == route ? 'class="text-danger font-weight-bold"' : '' }}>Compétences</a>
                             </li>
                             <li>
                                 <i class="fa fa-language{{ 'user_languages' == route ? 'text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
@@ -67,8 +67,8 @@
                             </li>
                             <hr>
                             <li>
-                                <i class="fa fa-tags{{ 'user_applies' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
-                                <a href="#" {{ 'user_applies' == route ? 'class="text-danger font-weight-bold"' : '' }}>Emplois postulés</a>
+                                <i class="fa fa-tags{{ 'applier' == route ? ' text-danger font-weight-bold' : '' }}" aria-hidden="true"></i>&nbsp;
+                                <a href="{{ path('applier') }}" {{ 'applier' == route ? 'class="text-danger font-weight-bold"' : '' }}>Emplois postulés</a>
                             </li>
                             <hr>
                         {% else %}
@@ -101,4 +101,16 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts_footer %}
+    <script>
+        (function($, window, document){
+            $(function(){
+                $('html, body').animate({
+                    scrollTop: $('#menu-title').offset().top - 90
+                });
+            }, 1000);
+        }(window.jQuery, window, window.document));
+    </script>
 {% endblock %}

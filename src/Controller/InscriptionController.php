@@ -35,6 +35,7 @@ class InscriptionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $this->getDoctrine()->getManager();
             $user
+                ->setLogin($user->getEmail())
                 ->setPassword($encoder->encodePassword($user, $user->getPassword()))
                 ->setUserType($userTypeRepository->findOneBy(['id' => UserType::CANDIDAT]))
                 ->setCompanyType($companyTypeRepository->findOneBy(['id' => 4]));
@@ -48,7 +49,7 @@ class InscriptionController extends AbstractController
                 $this->get('session')->set('_security_main', serialize($token));
                 $this->addFlash('info', sprintf('Vous êtes connecté en tant que <b>"%s"</b><br>Veuillez continuer à remplir vos informations', $user->getEmail()));
 
-                return $this->redirectToRoute('user_address2');
+                return $this->redirectToRoute('dashboard_index'); // Redirection to the dashboard
             }
         }
 

@@ -2,3 +2,220 @@
 
 {% set pageTitle = 'Tableau de bord' %}
 {% set breadcrumbs = [{text: 'Tableau de bord', href: '#'}] %}
+
+{% block dashboard_content %}
+    {% if user.userType.id == 2 %}
+        <div class="row">
+            {% if isInfo %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Informations <br> &nbsp;</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Les éléments suivants sont manquants :</h4>
+                            <p class="card-text">
+                                <ul class="unordered-list">
+                                    {% if user.avatarPath is null or user.avatarPath|length < 3 %}
+                                        <li>Photo de profil</li>
+                                    {% endif %}
+                                </ul>
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_edition') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% set profile = user.userMotivation %}
+            {% if isProfile or profile.contact is null or profile.presentation is null or profile.presentation|length < 3 %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Profile <br>&nbsp;</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Les éléments suivants sont manquants :</h4>
+                            <p class="card-text">
+                                <ul class="unordered-list">
+                                    {% if profile.contract is null %}
+                                        <li>Contrat recherché</li>
+                                    {% endif %}
+                                    {% if profile.presentation is null %}
+                                        <li>Présentation</li>
+                                    {% endif %}
+                                </ul>
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_profile') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if isAddress %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Adresse <br>&nbsp;</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Les éléments suivants sont manquants :</h4>
+                            <p class="card-text">
+                                <ul class="unordered-list">
+                                    {% if user.address is null or user.address|length < 3 %}
+                                        <li>Adresse</li>
+                                    {% endif %}
+                                    {% if user.zipcode is null or user.zipcode|length < 3 %}
+                                        <li>Code postal</li>
+                                    {% endif %}
+                                    {% if user.town is null or user.town|length < 3 %}
+                                        <li>Ville</li>
+                                    {% endif %}
+                                </ul>
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_address2') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if isExp %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Expériences professionnelles</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Vous n'avez pas encore saisie vos expériences professionnelles</h4>
+                            <p class="card-text">
+                                Pour plus de visibilité vous devrez en saisir plusieurs
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_experiences') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if isTrain %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Formations professionnelles</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Vous n'avez pas encore saisie vos formation professionnelles</h4>
+                            <p class="card-text">
+                                Pour plus de visibilité vous devrez en saisir plusieurs
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_training') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if isOther %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Compétences <br>&nbsp;</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Vous n'avez pas encore saisie vos compétences</h4>
+                            <p class="card-text">
+                                Pour plus de visibilité vous devrez en saisir plusieurs
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_others') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if isLang %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h3>Connaissances linguistiques</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Vous n'avez pas encore saisie vos Cconnaissances linguistiques</h4>
+                            <p class="card-text">
+                                Pour plus de visibilité vous devrez en saisir plusieurs
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('user_languages') }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% elseif user.userType.id == 3 %}
+        <div class="row">
+            {% for proposal in latest %}
+                <div class="col-md-4 col-sm-6 col-12 my-3">
+                    <div class="card border-info h-100">
+                        <div class="card-header bg-info text-white">
+                            <h3>{{ proposal.name }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Ref: <b>{{ proposal.reference }}</b></h4>
+                            <p class="card-text">
+                                {{ proposal.longDescription|u.truncate(100, '&hellip;', true)|raw }}
+                            </p>
+
+                            <p class="card-text text-muted">
+                                <a href="{{ path('proposal_appliers', { ref: proposal.reference }) }}">
+                                    <em>
+                                        <strong>{{ proposal.appliers|length }}</strong> candidat(s) qui ont postulé(s)
+                                    </em>
+                                </a>
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{{ path('proposal_edit', { id: proposal.id }) }}">
+                                <i class="fa fa-pencil-square" aria-hidden="true"></i> Mettre à jour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-header h3 {
+            font-size: 20px;
+            color: #fff;
+        }
+    </style>
+{% endblock %}

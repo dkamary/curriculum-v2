@@ -3,10 +3,10 @@
 <div class="single-popular-post d-flex flex-row">
     <div class="thumb">
         <img class="img-fluid" src="{{ asset('assets/job/img/p1.png') }}" alt="">
-        <a class="btns text-uppercase" href="#">Voir l'offre</a>
+        <a class="btns text-uppercase" href="{{ path('proposal_show', { slug: post.slug }) }}">Voir l'offre</a>
     </div>
     <div class="details">
-        <a href="#"><h4>{{ post.name|title }}</h4></a>
+        <a href="{{ path('proposal_show', { slug: post.slug }) }}"><h4>{{ post.name|title }}</h4></a>
         <h6>
             {{ post.town|title }}, {{ post.country is not null ? post.country.name : '<br/>'|raw }}
         </h6>

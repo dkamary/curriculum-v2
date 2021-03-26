@@ -48,7 +48,7 @@
                                             Il y a <strong>{{ prop.appliers|length }}</strong> candidat(s) qui ont postulé(s)
                                             &nbsp;
                                             {% if prop.appliers|length > 0 %}
-                                                <a href="{{ path('proposal_appliers', { ref: prop.ref }) }}" class="generic-btn info small">
+                                                <a href="{{ path('proposal_appliers', { ref: prop.reference }) }}" class="generic-btn info small">
                                                     <i class="fa fa-eye" aria-hidden="true"></i> Voir la liste
                                                 </a>
                                             {% endif %}
