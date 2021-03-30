@@ -14,11 +14,33 @@
     {% include "_layouts/alert.html.twig" %}
 
     {% for candidat in proposal.appliers %}
-        <div class="row">
-            <div class="col-12">
-                <pre>
-                    {{ dump(candidat) }}
-                </pre>
+        {% set avatar = candidat.owner.avatarPath is not null or candidat.owner.avatarPath|length > 3 ? candidat.owner.avatarPath : 'https://fakeimg.pl/200x200/' %}
+        {% set isEven = (loop.index % 2) == 0 %}
+        <div class="row border p-3 mb-3 {{ isEven ? 'bg-light' : 'bg-white' }}">
+            <div class="col-md-3 col-sm-6 col-12">
+                <img class="img-fluid" src="{{ avatar }}" />
+            </div>
+            <div class="col-md-9 col-sm-6 col-12    ">   
+                <h4>{{ candidat.owner.firstname ~ ' ' ~ candidat.owner.lastname }}</h4>
+                    <hr>
+                {% for motivation in candidat.owner.userMotivations %}
+                    <p>{{ motivation.presentation }}</p>
+                    <p>
+                        Contrat recherché: <strong>{{ motivation.contract.name }}</strong>
+                    </p>
+                    {% if motivation.isTraveller %}
+                        <p>
+                            Possible destination(s) pour travail à l'étranger:
+                            {% for destination in candidat.owner.userDestinations %}
+                                {{ ((not loop.first ? ', ' : '') ~ '<strong>' ~ destination.country.name ~ '</strong>' ~ (not loop.last ? '' : '.'))|raw }}
+                            {% endfor %}
+                        </p>
+                    {% else %}
+                        <p>Ne préfère pas voyager</p>
+                    {% endif %}
+                {% else %}
+                    &hellips;
+                {% endfor %}
             </div>
         </div>
     {% else %}
