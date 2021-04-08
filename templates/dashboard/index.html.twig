@@ -2,12 +2,50 @@
 
 {% set pageTitle = 'Tableau de bord' %}
 {% set breadcrumbs = [{text: 'Tableau de bord', href: '#'}] %}
+{% set column_class = 'col-md-4 col-sm-6 col-12 my-3' %}
 
 {% block dashboard_content %}
     {% if user.userType.id == 2 %}
         <div class="row">
+
+            <div class="col-md-8 col-sm-6 col-12 my-3">
+                <div class="card border-info h-100">
+                    <div class="card-header bg-info text-white d-flex justify-content-center align-items-center">
+                        <h3>Classement</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title"></h4>
+                        <p class="card-text">
+                            <table class="table">
+                                <tr>
+                                    <td>Score total</td>
+                                    <td class="text-right text-danger">
+                                        <strong>{{ user.score|number_format(0, '', ' ') }}</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Classement générale</td>
+                                    <td class="text-right">
+                                        {% if user.score == 0 %}
+                                            <em>Indisponible</em>
+                                        {% else %}
+                                            <strong>{{ rank|number_format(0, '', ' ') }}</strong>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <a href="{{ path('user_positionnement') }}">
+                            <i class="fa fa-eye" aria-hidden="true"></i> Voir son positionnement
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             {% if isInfo %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Informations <br> &nbsp;</h3>
@@ -32,8 +70,8 @@
             {% endif %}
 
             {% set profile = user.userMotivation %}
-            {% if isProfile or profile.contact is null or profile.presentation is null or profile.presentation|length < 3 %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+            {% if isProfile or profile.contract is null or profile.presentation is null or profile.presentation|length < 3 %}
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Profile <br>&nbsp;</h3>
@@ -61,7 +99,7 @@
             {% endif %}
 
             {% if isAddress %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Adresse <br>&nbsp;</h3>
@@ -92,7 +130,7 @@
             {% endif %}
 
             {% if isExp %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Expériences professionnelles</h3>
@@ -113,7 +151,7 @@
             {% endif %}
 
             {% if isTrain %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Formations professionnelles</h3>
@@ -134,7 +172,7 @@
             {% endif %}
 
             {% if isOther %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Compétences <br>&nbsp;</h3>
@@ -155,7 +193,7 @@
             {% endif %}
 
             {% if isLang %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-danger h-100">
                         <div class="card-header bg-danger text-white">
                             <h3>Connaissances linguistiques</h3>
@@ -178,7 +216,7 @@
     {% elseif user.userType.id == 3 %}
         <div class="row">
             {% for proposal in latest %}
-                <div class="col-md-4 col-sm-6 col-12 my-3">
+                <div class="{{ column_class }}">
                     <div class="card border-info h-100">
                         <div class="card-header bg-info text-white">
                             <h3>{{ proposal.name }}</h3>

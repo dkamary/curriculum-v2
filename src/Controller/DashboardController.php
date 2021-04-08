@@ -6,6 +6,7 @@ use App\Entity\Proposal;
 use App\Entity\User;
 use App\Entity\UserType;
 use App\Repository\ProposalRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,7 +19,7 @@ class DashboardController extends AbstractController
     /**
      * @Route("/", name="dashboard_index")
      */
-    public function index(): Response
+    public function index(UserRepository $userRepository): Response
     {
         /**
          * @var User $user
@@ -35,6 +36,7 @@ class DashboardController extends AbstractController
             $isTrain = count($user->getTrainings()) < 1;
             $isOther = count($user->getOthers()) < 1;
             $isLang = count($user->getLanguageKnowledges()) < 1;
+            $rank = $userRepository->getRank($user);
 
             $data = [
                 'user' => $user,
@@ -45,6 +47,7 @@ class DashboardController extends AbstractController
                 'isTrain' => $isTrain,
                 'isOther' => $isOther,
                 'isLang' => $isLang,
+                'rank' => $rank,
             ];
         } elseif ($user->getUserType()->getId() == UserType::COMPANY) {
             $proposals = $user->getProposals();
@@ -61,5 +64,13 @@ class DashboardController extends AbstractController
         }
 
         return $this->render('dashboard/index.html.twig', $data);
+    }
+
+    /**
+     * @Route("/positionnement", name="user_positionnement")
+     */
+    public function positionnement(): Response
+    {
+        return $this->render('dashboard/positionnement.html.twig');
     }
 }

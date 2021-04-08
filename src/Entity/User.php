@@ -217,6 +217,11 @@ class User implements UserInterface
      */
     private $bannerPath;
 
+    /**
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     */
+    private $score = 0;
+
     public function __construct()
     {
         $this->userFavorites = new ArrayCollection();
@@ -929,5 +934,41 @@ class User implements UserInterface
         $this->bannerPath = $bannerPath;
 
         return $this;
+    }
+
+    public function getKnowledgeScore(): int
+    {
+        $score = 0;
+        foreach ($this->getOthers() as $other) {
+            foreach ($other->getOtherSkills() as $skill) {
+                $score += $skill->getLevel()->getScore();
+            }
+        }
+
+        return $score;
+    }
+
+    public function getLanguageScore(): int
+    {
+        $score = 0;
+        foreach ($this->getLanguageKnowledges() as $language) {
+            $score += $language->getLevel()->getScore();
+        }
+
+        return $score;
+    }
+
+    public function updateScore(bool $withLanguage = false): int
+    {
+        return $this->score = $this->getKnowledgeScore() + ($withLanguage ? $this->getLanguageScore() : 0);
+    }
+
+    public function getScore(): int
+    {
+        if ($this->score == 0) {
+            return $this->updateScore();
+        }
+
+        return $this->score;
     }
 }

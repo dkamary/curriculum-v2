@@ -80,6 +80,12 @@ class UserController extends AbstractController
         return $experiences;
     }
 
+    private function updateUserScore($withLanguage = true): void
+    {
+        $this->getUser()->updateScore($withLanguage);
+        $this->getDoctrine()->getManager()->flush();
+    }
+
     /**
      * @Route("/", name="user_index", methods={"GET"})
      */
@@ -276,18 +282,19 @@ class UserController extends AbstractController
         Experience $experience,
         ?ExperienceSkill $experienceSkill = null
     ): Response {
-        VarDumper::dump($experienceSkill);
+        // VarDumper::dump($experienceSkill);
         $experienceSkill = is_null($experienceSkill) ? new ExperienceSkill() : $experienceSkill;
-        VarDumper::dump($experienceSkill);
+        // VarDumper::dump($experienceSkill);
         $form = $this->createForm(UtilisateurExperienceSkillType::class, $experienceSkill);
         $form->handleRequest($request);
-        VarDumper::dump($experienceSkill);
+        // VarDumper::dump($experienceSkill);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $experienceSkill->setExperience($experience);
             $entityManager->persist($experienceSkill);
             $entityManager->flush();
+            $this->updateUserScore();
 
             return $request->isXmlHttpRequest() ?
                 new JsonResponse([
@@ -312,6 +319,7 @@ class UserController extends AbstractController
         $id = $experienceSkill->getId();
         $manager->remove($experienceSkill);
         $manager->flush();
+        $this->updateUserScore();
 
         return $this->json([
             'done' => true,
@@ -379,6 +387,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
             $this->getDoctrine()->getManager()->flush();
+            $this->updateUserScore();
 
             $avatar = $form->get('avatarPath')->getData();
             if ($avatar) {
@@ -542,7 +551,8 @@ class UserController extends AbstractController
             $otherSkill->setOther($other);
             $manager->persist($otherSkill);
             $manager->flush();
-            $this->addFlash('success', 'Nouvelle connaissance ajoutée');
+            $this->addFlash('success', 'Nouvelle Compétence ajoutée');
+            $this->updateUserScore();
 
             return $this->redirectToRoute('user_others');
         }
@@ -565,7 +575,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $this->getDoctrine()->getManager();
             $manager->flush();
-            $this->addFlash('success', 'Connaissance mis à jour');
+            $this->addFlash('success', 'Compétence mis à jour');
+            $this->updateUserScore();
 
             return $this->redirectToRoute('user_other_edit', ['id' => $otherSkill->getId()]);
         }
@@ -585,6 +596,7 @@ class UserController extends AbstractController
         $manager->remove($otherSkill);
         $manager->remove($other);
         $manager->flush();
+        $this->updateUserScore();
 
         return $this->json([
             'done' => true,
@@ -609,9 +621,10 @@ class UserController extends AbstractController
             $manager = $this->getDoctrine()->getManager();
             $manager->persist($languageKb);
             $manager->flush();
+            $this->updateUserScore();
 
             if ($languageKb->getId()) {
-                $this->addFlash('success', 'Nouvelle connaissance linguistique ajoutée');
+                $this->addFlash('success', 'Nouvelle Compétence linguistique ajoutée');
 
                 return $this->redirectToRoute('user_languages');
             }
@@ -633,7 +646,8 @@ class UserController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('success', 'Connaissance linguistique mis à jour');
+            $this->addFlash('success', 'Compétence linguistique mis à jour');
+            $this->updateUserScore();
 
             return $this->redirectToRoute('user_language_edit', ['id' => $languageKnowledge->getId()]);
         }
@@ -652,6 +666,7 @@ class UserController extends AbstractController
         $id = $languageKnowledge->getId();
         $entityManagerInterface->remove($languageKnowledge);
         $entityManagerInterface->flush();
+        $this->updateUserScore();
 
         return $this->json([
             'done' => true,
@@ -731,5 +746,23 @@ class UserController extends AbstractController
             'done' => true,
             'id' => $id,
         ]);
+    }
+
+    /**
+     * @Route("/update-score", name="update_users_score")
+     */
+    public function updateAllScore(UserRepository $userRepository, EntityManagerInterface $entityManagerInterface): Response
+    {
+        $count = 0;
+        $message = '';
+        foreach ($userRepository->findAll() as $user) {
+            $user->updateScore(true);
+            $message .= sprintf('Mise a jour de #%d %s score : %d<br>', $user->getId(), $user->getEmail(), $user->getScore());
+            $count++;
+        }
+        $message .= "Utilisateurs mis a jour $count";
+        $entityManagerInterface->flush();
+
+        return new Response($message);
     }
 }

@@ -47,4 +47,37 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * Get Rank
+     *
+     * @param User $userId
+     * @return integer
+     */
+    public function getRank(User $user): int
+    {
+        $qb = $this->createQueryBuilder('u');
+        $count = $qb
+            ->select($qb->expr()->count('u.id'))
+            ->where($qb->expr()->eq('u.isActive', true))
+            ->andWhere($qb->expr()->gte('u.score', $user->getScore()))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $count;
+    }
+
+    /**
+     * Get Position
+     *
+     * @param User $user
+     * @return array
+     */
+    public function getPosition(User $user): array
+    {
+        $position = [];
+
+
+        return $position;
+    }
 }
