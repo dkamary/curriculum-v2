@@ -137,6 +137,9 @@ class ProposalController extends AbstractController
     {
         $proposal = $proposalRepository->findOneBy(['reference' => $ref]);
         if ($proposal) {
+            /**
+             * @var Applier[] $appliers
+             */
             $appliers = $applierRepository->findBy([
                 'proposal' => $proposal->getId(),
             ], [
