@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Other;
+use App\Entity\OtherSkill;
 use App\Entity\Skill;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,4 +50,26 @@ class SkillRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getSkills(User $user)
+    {
+        $competences = [];
+        foreach ($user->getOthers() as $other) {
+            /**
+             * @var Other $other
+             */
+            foreach ($other->getOtherSkills() as $otherSkill) {
+                /**
+                 * @var OtherSkill $otherSkill
+                 */
+                $categoryIndex = $otherSkill->getSkill()->getCategory()->getId();
+                if (!isset($competences[$categoryIndex])) {
+                    $competences[$categoryIndex] = [];
+                }
+                $competences[$categoryIndex][] = $otherSkill->getSkill();
+            }
+        }
+
+        return $competences;
+    }
 }

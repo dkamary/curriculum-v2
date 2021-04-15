@@ -1,1 +1,49 @@
 {# Positionnement #}
+{% extends "_layouts/dashboard.html.twig" %}
+
+{% set pageTitle = 'Tableau de bord' %}
+{% set breadcrumbs = [{text: 'Tableau de bord', href: path('dashboard_index') }, {text: 'Mon positionnement', href: ''}] %}
+
+{% set section_title = 'Mon positionnement' %}
+
+{% block title %}Mon positionnement{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row">
+        <div class="col-7">
+            <div class="row">
+                <div class="col-12">
+                    <h3>Mes competences</h3>
+                </div>
+            </div>
+            {% for skills in competences %}
+                {% for skill in skills %}
+                    {% if loop.first %}
+                        <h4 class="mt-3">{{ skill.category.name|title }}</h4>
+                    {% endif %}
+                    <label class="d-inline-block px-3 py-1 bg-info mr-3 text-white">
+                        <input type="checkbox" name="competences[]" value="{{ skill.id }}">
+                        {{ skill.name }}
+                    </label>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <div class="col-5 bg-info px-3 text-white">
+            <h2 class="text-white">
+                Positionnement
+            </h2>
+            <div class="row">
+                <div class="col-12">
+                    &hellip;
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+
+    </style>
+{% endblock %}

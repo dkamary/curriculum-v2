@@ -6,6 +6,7 @@ use App\Entity\Proposal;
 use App\Entity\User;
 use App\Entity\UserType;
 use App\Repository\ProposalRepository;
+use App\Repository\SkillRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,8 +70,14 @@ class DashboardController extends AbstractController
     /**
      * @Route("/positionnement", name="user_positionnement")
      */
-    public function positionnement(): Response
+    public function positionnement(SkillRepository $skillRepository): Response
     {
-        return $this->render('dashboard/positionnement.html.twig');
+        $user = $this->getUser();
+        $competences = $skillRepository->getSkills($user);
+
+        return $this->render('dashboard/positionnement.html.twig', [
+            'user' => $user,
+            'competences' => $competences,
+        ]);
     }
 }
