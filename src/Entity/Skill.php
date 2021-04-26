@@ -45,4 +45,20 @@ class Skill
 
         return $this;
     }
+
+    public function exportArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'slug' => $this->getSlug(),
+            'description' => $this->getDescription(),
+            'category' => [
+                'id' => $this->getCategory()->getId(),
+                'name' => $this->getCategory()->getName(),
+                'slug' => $this->getCategory()->getSlug(),
+                'description' => $this->getCategory()->getDescription(),
+            ],
+        ];
+    }
 }

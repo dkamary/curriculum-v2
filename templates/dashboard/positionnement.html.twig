@@ -21,8 +21,8 @@
                     {% if loop.first %}
                         <h4 class="mt-3">{{ skill.category.name|title }}</h4>
                     {% endif %}
-                    <label class="d-inline-block px-3 py-1 bg-info mr-3 text-white">
-                        <input type="checkbox" name="competences[]" value="{{ skill.id }}">
+                    <label class="d-inline-block px-3 py-1 bg-info mr-3 text-white" title="{{ skill.id }}">
+                        <input class="skill" type="checkbox" name="skills[]" value="{{ skill.id }}">
                         {{ skill.name }}
                     </label>
                 {% endfor %}
@@ -41,9 +41,35 @@
     </div>
 {% endblock %}
 
-{% block stylesheets %}
+{% block javascripts_footer %}
     {{ parent() }}
-    <style>
-
-    </style>
+    <script>
+        (function($, window, document){
+            $(function(){
+                $(document).on('click', '.skill', e => {
+                    refresh();
+                });
+            });
+            
+            const refresh = () => {
+                let skills = [];
+                $('.skill').each((index, elt) => {
+                    const $this = $(elt);
+                    if($this.prop('checked')){
+                        skills.push($this.val());
+                    }
+                });
+                console.log(skills);
+                $.ajax({
+                    url: '{{ path('positionnement_get') }}',
+                    type: 'POST',
+                    data: { skills: skills }
+                }).done(response => {
+                    console.log(response); 
+                }).fail(xhr => {
+                    alert(`${xhr.status} - ${xhr.statusText}`);
+                });
+            };
+        }(window.jQuery, window, window.document));
+    </script>
 {% endblock %}

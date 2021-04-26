@@ -7,6 +7,7 @@ use App\Entity\OtherSkill;
 use App\Entity\Skill;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -71,5 +72,60 @@ class SkillRepository extends ServiceEntityRepository
         }
 
         return $competences;
+    }
+
+    /**
+     * Get Skill by ID
+     *
+     * @param array $skillId
+     * @return array|Skill[]
+     */
+    public function getSkillList(array $skillId = []): array
+    {
+        if ([] == $skillId) {
+            return $this->findAll();
+        } else {
+            $qb = $this->createQueryBuilder('s');
+
+            return $qb
+                ->where($qb->expr()->in('s.id', $skillId))
+                ->getQuery()
+                ->getResult();
+        }
+    }
+
+    /**
+     * Get Count
+     *
+     * @param array $array
+     * @return integer
+     */
+    public function getCount(array $array): int
+    {
+        $qb = $this->createQueryBuilder('s');
+        $count = $qb->select('COUNT(s.id)')
+            ->join(OtherSkill::class, 'os', Expr\Join::WITH, 'os.skill = s.id')
+            ->join(Other::class, 'o', Expr\Join::WITH, 'o.id = os.other')
+            ->where($qb->expr()->in('s.id', $array))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $count;
+    }
+
+    /**
+     * Get JSON Array
+     *
+     * @param array|Skill[] $skills
+     * @return array
+     */
+    public function exportArray(array $skills): array
+    {
+        $array = [];
+        foreach ($skills as $skill) {
+            $array[] = $skill->exportArray();
+        }
+
+        return $array;
     }
 }

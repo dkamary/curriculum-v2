@@ -9,6 +9,7 @@ use App\Repository\ProposalRepository;
 use App\Repository\SkillRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -79,5 +80,34 @@ class DashboardController extends AbstractController
             'user' => $user,
             'competences' => $competences,
         ]);
+    }
+
+    /**
+     * @Route("/positionnement/position/", name="positionnement_get")
+     */
+    public function getPosition(Request $request, SkillRepository $skillRepository): Response
+    {
+        $post = $request->request;
+        $skills = $skillRepository->getSkillList($post->get('skills', []));
+        // var_dump($skills);
+        $positions = [];
+        $id = [];
+        foreach ($skills as $skill) {
+            $positions[] = [
+                'skill' => [$skill->exportArray(),],
+                'is_composed' => false,
+                'count' => $skillRepository->getCount([$skill->getId()]),
+            ];
+            $id[] = $skill->getId();
+        }
+        if (count($skills) > 1) {
+            $positions[] = [
+                'skill' => $skillRepository->exportArray($skills),
+                'is_composed' => true,
+                'count' => $skillRepository->getCount([$skill->getId()]),
+            ];
+        }
+
+        return $this->json($positions);
     }
 }
