@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : ven. 05 mars 2021 à 13:47
+-- Généré le : lun. 26 avr. 2021 à 10:11
 -- Version du serveur :  10.4.11-MariaDB
 -- Version de PHP : 7.3.14
 
@@ -22,6 +22,68 @@ SET time_zone = "+00:00";
 -- Base de données : `curriculum_v2`
 --
 
+DELIMITER $$
+--
+-- Fonctions
+--
+DROP FUNCTION IF EXISTS `SLUGIFY`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `SLUGIFY` (`dirty_string` VARCHAR(255)) RETURNS VARCHAR(255) CHARSET utf8mb4 BEGIN
+	
+	DECLARE allowed_chars, new_string VARCHAR(255);
+	DECLARE found_equiv, current_char VARCHAR(5);
+	DECLARE counter, string_length, temp_table_rows INT(10);
+	DECLARE is_allowed TINYINT(1);
+	
+	SET new_string = '';
+    -- Replace all spaces and dots with a dash
+	SET dirty_string = REPLACE(TRIM(REPLACE(dirty_string, '.', '-')), ' ', '-');
+    -- Set the allowed characters to be any letter from the english alphabet, numbers or hyphens
+	SET allowed_chars = 'abcdefghijklmnopqrstuvwxyz0123456789-';
+	SET string_length = CHAR_LENGTH(dirty_string);
+	SET counter = 1;
+    
+    -- Crete a temporary table that will hold the characters replacement map
+	CREATE TEMPORARY TABLE IF NOT EXISTS slug_temp_table (bul_letter VARCHAR(5) NOT NULL, eng_equiv VARCHAR(5) NOT NULL);
+	
+    -- Comment out the following block if you don't want to use the character table
+    SELECT COUNT(*) INTO temp_table_rows FROM slug_temp_table;
+	IF temp_table_rows = 0 THEN
+		INSERT INTO slug_temp_table (bul_letter, eng_equiv) VALUES 
+            -- Replace the following line with the your preferred character map
+            ('а', 'a'), ('б', 'b'), ('в', 'v'), ('г', 'g'), ('д', 'd'), ('е', 'e'), ('ж', 'j'), ('з', 'z'), ('и', 'i'), ('й', 'j'), ('к', 'k'), ('л', 'l'), ('м', 'm'), ('н', 'n'), ('о', 'o'), ('п', 'p'), ('р', 'r'), ('с', 's'), ('т', 't'), ('у', 'u'), ('ф', 'f'), ('х', 'h'), ('ц', 'c'), ('ч', 'ch'), ('ш', 'sh'), ('щ', 'sht'), ('ъ', 'y'), ('ь', 'i'), ('ю', 'u'), ('я', 'ja')
+        ;
+	END IF;
+    
+	
+	-- Make the actual replacements character by character
+	WHILE counter <= string_length DO
+		SET current_char = SUBSTRING(dirty_string, counter, 1);
+		SET is_allowed = LOCATE(current_char, allowed_chars);
+		IF is_allowed > 0 THEN
+			SET new_string = CONCAT(new_string, LOWER(current_char));
+		ELSE
+			SELECT slug_temp_table.eng_equiv INTO found_equiv FROM slug_temp_table WHERE slug_temp_table.bul_letter = current_char;
+			IF CHAR_LENGTH(found_equiv) > 0 THEN
+				SET new_string = CONCAT(new_string, found_equiv);
+			END IF;
+		END IF;
+		
+		SET found_equiv = '';
+		SET counter = counter + 1;
+	END WHILE;
+    
+        -- Replace the double hyphens with a single hyphen
+	WHILE LOCATE('--', new_string) > 0 DO
+		SET new_string = REPLACE(new_string, '--', '-');
+	END WHILE;
+	
+    
+	RETURN new_string;
+
+END$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -37,6 +99,17 @@ CREATE TABLE `applier` (
   `is_validate` tinyint(1) DEFAULT NULL,
   `validate_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `applier`
+--
+
+INSERT INTO `applier` (`id`, `owner_id`, `proposal_id`, `apply_date`, `is_validate`, `validate_date`) VALUES
+(6, 1, 1, '2021-03-26 11:47:00', NULL, NULL),
+(7, 1, 4, '2021-03-26 13:40:05', NULL, NULL),
+(8, 1, 2, '2021-03-26 13:40:33', NULL, NULL),
+(9, 1, 5, '2021-03-26 13:40:38', NULL, NULL),
+(10, 1, 3, '2021-03-26 13:40:41', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -432,7 +505,10 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 ('DoctrineMigrations\\Version20210209113919', '2021-02-09 12:39:27', 438),
 ('DoctrineMigrations\\Version20210209114401', '2021-02-09 12:44:11', 773),
 ('DoctrineMigrations\\Version20210209124224', '2021-02-09 13:42:40', 546),
-('DoctrineMigrations\\Version20210304120644', '2021-03-04 13:07:01', 148);
+('DoctrineMigrations\\Version20210304120644', '2021-03-04 13:07:01', 148),
+('DoctrineMigrations\\Version20210325131511', '2021-03-25 14:16:24', 399),
+('DoctrineMigrations\\Version20210325131605', '2021-04-08 11:04:08', 48),
+('DoctrineMigrations\\Version20210408090203', '2021-04-08 11:04:08', 118);
 
 -- --------------------------------------------------------
 
@@ -584,11 +660,11 @@ CREATE TABLE `language_level` (
 --
 
 INSERT INTO `language_level` (`id`, `name`, `score`, `rank`) VALUES
-(1, 'débutant', 1, 1),
-(2, 'intermédiaire', 2, 2),
-(3, 'courant', 3, 3),
-(4, 'bilingue', 4, 4),
-(5, 'langue maternelle', 5, 5);
+(1, 'débutant', 0, 1),
+(2, 'intermédiaire', 10, 2),
+(3, 'courant', 100, 3),
+(4, 'bilingue', 1000, 4),
+(5, 'langue maternelle', 10000, 5);
 
 -- --------------------------------------------------------
 
@@ -876,7 +952,9 @@ INSERT INTO `other` (`id`, `owner_id`, `created_at`, `updated_at`) VALUES
 (5, 19, '2020-12-29 07:16:56', NULL),
 (6, 19, '2020-12-29 07:17:20', NULL),
 (7, 19, '2020-12-29 07:17:33', NULL),
-(8, 19, '2021-02-09 14:02:54', NULL);
+(8, 19, '2021-02-09 14:02:54', NULL),
+(11, 25, '2021-04-16 13:20:35', NULL),
+(12, 25, '2021-04-16 13:20:35', NULL);
 
 -- --------------------------------------------------------
 
@@ -904,7 +982,9 @@ INSERT INTO `other_skill` (`id`, `other_id`, `skill_id`, `level_id`) VALUES
 (5, 5, 10, 2),
 (6, 6, 44, 1),
 (7, 7, 45, 2),
-(8, 8, 28, 1);
+(8, 8, 28, 1),
+(9, 11, 8, 3),
+(10, 12, 51, 2);
 
 -- --------------------------------------------------------
 
@@ -937,11 +1017,11 @@ CREATE TABLE `proposal` (
 --
 
 INSERT INTO `proposal` (`id`, `owner_id`, `featured_image_id`, `banner_image_id`, `long_description`, `start`, `end`, `created_at`, `updated_at`, `deleted_at`, `is_active`, `reference`, `name`, `town`, `country_id`, `slug`) VALUES
-(1, 22, NULL, NULL, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus corrupti ullam voluptatibus aspernatur dolor. Aperiam obcaecati error cupiditate voluptate tempore animi, atque nemo sapiente provident, amet ullam consequuntur impedit sit.\r\n Eaque recusandae doloremque cupiditate quo veritatis nostrum similique, commodi adipisci cum repellat eveniet vitae, quasi dignissimos, iste culpa. Ducimus labore, vitae quo molestiae at asperiores facere optio repellendus beatae sequi.', '2021-02-01 00:00:00', '2021-03-31 00:00:00', '2021-02-08 15:57:14', NULL, NULL, 1, 'OFFRE_TEST_01', 'Offre test n°1', 'Antananarivo', 133, NULL),
-(2, 22, NULL, NULL, 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eligendi beatae commodi recusandae in, ipsum ut consequatur minus ratione ipsa non distinctio quo sequi at fugiat, facilis quos autem aut? Officia.\r\nNatus facilis officia voluptatem nesciunt blanditiis itaque aut, dolorem voluptates expedita nam? Qui maxime quam sit vero adipisci? Numquam, laboriosam aspernatur velit illo quod consequuntur dignissimos fugiat molestiae veritatis voluptates?\r\nQui libero ut blanditiis doloribus. Ipsam omnis ducimus architecto repellendus sunt quasi, fugiat consectetur labore animi incidunt possimus doloremque distinctio ipsa minus itaque porro a, atque ratione beatae quidem inventore.\r\nQuo, ut! Veritatis inventore ab recusandae omnis odio aperiam molestias ea earum quaerat, consequatur nostrum quisquam voluptates iusto repellat sequi obcaecati modi iste. Nisi aliquam soluta quo quod neque consectetur.', '2021-02-07 00:00:00', NULL, '2021-02-08 16:09:46', '2021-02-08 16:23:31', '2021-02-08 16:23:31', 1, 'OFFRE_TEST_02', 'Offre test n°2', 'Port Louis', 141, NULL),
-(3, 22, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consectetur turpis mi, in ultricies est rutrum vel. Etiam lorem augue, ultricies ut facilisis ac, dignissim et odio. Aliquam rutrum tortor augue, vel condimentum erat imperdiet in. Curabitur sodales justo nec ante lobortis tempus. In hac habitasse platea dictumst. Integer aliquam nulla sed feugiat mattis. Aliquam vulputate purus at sodales blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus eget egestas velit, sed eleifend eros. Etiam lacinia molestie libero a malesuada.\r\n\r\nInteger viverra eu quam vel efficitur. Aenean quis pretium odio, at elementum urna. Duis ac est vitae dolor sollicitudin vestibulum at vel nisl. Nulla commodo sem ut tellus porttitor viverra. Ut tempus, diam eget tincidunt eleifend, velit dolor ultrices arcu, ac scelerisque est tortor nec magna. Sed convallis vel nibh quis porta. Cras ac bibendum arcu. In vel erat porttitor, sollicitudin velit at, porta diam. Sed eu gravida ex, pulvinar sodales arcu. Suspendisse sed commodo justo. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque ante dui, gravida eget tincidunt a, aliquet eu turpis. Nam eu dolor vehicula, placerat ligula a, rutrum lacus.', '2021-01-04 00:00:00', NULL, '2021-02-08 17:08:15', NULL, NULL, 1, 'OFT_003', 'Offre d\'emploi #3', 'Paris', 78, NULL),
-(4, 22, NULL, NULL, 'Nulla facilisi. Sed at posuere nunc. Donec vitae quam sem. Quisque pharetra non ante nec posuere. Etiam accumsan ex quis nisl egestas, non auctor libero bibendum. Quisque egestas a neque sed finibus. Mauris aliquam massa et sapien sodales ultrices.', '2021-03-01 00:00:00', '2021-04-02 00:00:00', '2021-02-08 17:10:56', NULL, NULL, 1, 'poste_fictif_123', 'Poste fictif @123', 'Quatre Bornes', 141, NULL),
-(5, 22, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus sed tortor quis semper. Phasellus eget dolor risus. Curabitur tincidunt volutpat lorem tristique egestas. Aliquam eu ligula a mauris ultricies blandit. Phasellus tempus sagittis velit non rhoncus. Duis sed felis id arcu interdum blandit. Praesent et orci id libero semper dictum. In risus lorem, suscipit et ligula ac, egestas vulputate sem. Integer laoreet felis nec ullamcorper scelerisque. Sed sit amet quam posuere, bibendum nisi ut, condimentum urna. Morbi id mauris mattis, convallis turpis quis, ultricies tortor.', '2021-02-01 00:00:00', NULL, '2021-02-26 13:03:19', '2021-02-26 13:10:39', NULL, 1, 'Oft-354545', 'Offre d\'emploi fictif n. 354545', 'Saint Denis', 183, NULL);
+(1, 22, NULL, NULL, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus corrupti ullam voluptatibus aspernatur dolor. Aperiam obcaecati error cupiditate voluptate tempore animi, atque nemo sapiente provident, amet ullam consequuntur impedit sit.\r\n Eaque recusandae doloremque cupiditate quo veritatis nostrum similique, commodi adipisci cum repellat eveniet vitae, quasi dignissimos, iste culpa. Ducimus labore, vitae quo molestiae at asperiores facere optio repellendus beatae sequi.', '2021-02-01 00:00:00', '2021-03-31 00:00:00', '2021-02-08 15:57:14', '2021-03-25 14:04:33', NULL, 1, 'OFFRE_TEST_01', 'Offre test n°1', 'Antananarivo', 133, 'OFFRE-TEST-01'),
+(2, 22, NULL, NULL, 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eligendi beatae commodi recusandae in, ipsum ut consequatur minus ratione ipsa non distinctio quo sequi at fugiat, facilis quos autem aut? Officia.\r\nNatus facilis officia voluptatem nesciunt blanditiis itaque aut, dolorem voluptates expedita nam? Qui maxime quam sit vero adipisci? Numquam, laboriosam aspernatur velit illo quod consequuntur dignissimos fugiat molestiae veritatis voluptates?\r\nQui libero ut blanditiis doloribus. Ipsam omnis ducimus architecto repellendus sunt quasi, fugiat consectetur labore animi incidunt possimus doloremque distinctio ipsa minus itaque porro a, atque ratione beatae quidem inventore.\r\nQuo, ut! Veritatis inventore ab recusandae omnis odio aperiam molestias ea earum quaerat, consequatur nostrum quisquam voluptates iusto repellat sequi obcaecati modi iste. Nisi aliquam soluta quo quod neque consectetur.', '2021-02-07 00:00:00', NULL, '2021-02-08 16:09:46', '2021-03-25 14:04:33', '2021-02-08 16:23:31', 1, 'OFFRE_TEST_02', 'Offre test n°2', 'Port Louis', 141, 'OFFRE-TEST-02'),
+(3, 22, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consectetur turpis mi, in ultricies est rutrum vel. Etiam lorem augue, ultricies ut facilisis ac, dignissim et odio. Aliquam rutrum tortor augue, vel condimentum erat imperdiet in. Curabitur sodales justo nec ante lobortis tempus. In hac habitasse platea dictumst. Integer aliquam nulla sed feugiat mattis. Aliquam vulputate purus at sodales blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus eget egestas velit, sed eleifend eros. Etiam lacinia molestie libero a malesuada.\r\n\r\nInteger viverra eu quam vel efficitur. Aenean quis pretium odio, at elementum urna. Duis ac est vitae dolor sollicitudin vestibulum at vel nisl. Nulla commodo sem ut tellus porttitor viverra. Ut tempus, diam eget tincidunt eleifend, velit dolor ultrices arcu, ac scelerisque est tortor nec magna. Sed convallis vel nibh quis porta. Cras ac bibendum arcu. In vel erat porttitor, sollicitudin velit at, porta diam. Sed eu gravida ex, pulvinar sodales arcu. Suspendisse sed commodo justo. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque ante dui, gravida eget tincidunt a, aliquet eu turpis. Nam eu dolor vehicula, placerat ligula a, rutrum lacus.', '2021-01-04 00:00:00', NULL, '2021-02-08 17:08:15', '2021-03-25 14:04:33', NULL, 1, 'OFT_003', 'Offre d\'emploi #3', 'Paris', 78, 'OFT-003'),
+(4, 22, NULL, NULL, 'Nulla facilisi. Sed at posuere nunc. Donec vitae quam sem. Quisque pharetra non ante nec posuere. Etiam accumsan ex quis nisl egestas, non auctor libero bibendum. Quisque egestas a neque sed finibus. Mauris aliquam massa et sapien sodales ultrices.', '2021-03-01 00:00:00', '2021-04-02 00:00:00', '2021-02-08 17:10:56', '2021-03-25 14:04:33', NULL, 1, 'poste_fictif_123', 'Poste fictif @123', 'Quatre Bornes', 141, 'poste-fictif-123'),
+(5, 22, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus sed tortor quis semper. Phasellus eget dolor risus. Curabitur tincidunt volutpat lorem tristique egestas. Aliquam eu ligula a mauris ultricies blandit. Phasellus tempus sagittis velit non rhoncus. Duis sed felis id arcu interdum blandit. Praesent et orci id libero semper dictum. In risus lorem, suscipit et ligula ac, egestas vulputate sem. Integer laoreet felis nec ullamcorper scelerisque. Sed sit amet quam posuere, bibendum nisi ut, condimentum urna. Morbi id mauris mattis, convallis turpis quis, ultricies tortor.', '2021-02-01 00:00:00', NULL, '2021-02-26 13:03:19', '2021-03-25 14:04:33', NULL, 1, 'Oft-354545', 'Offre d\'emploi fictif n. 354545', 'Saint Denis', 183, 'Oft-354545');
 
 -- --------------------------------------------------------
 
@@ -973,6 +1053,27 @@ CREATE TABLE `proposal_favorite` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `proposal_skill`
+--
+
+DROP TABLE IF EXISTS `proposal_skill`;
+CREATE TABLE `proposal_skill` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `proposal_id` int(10) UNSIGNED NOT NULL,
+  `skill_id` smallint(5) UNSIGNED NOT NULL,
+  `level_id` smallint(5) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `proposal_skill`
+--
+
+INSERT INTO `proposal_skill` (`id`, `proposal_id`, `skill_id`, `level_id`) VALUES
+(2, 1, 8, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `skill`
 --
 
@@ -990,43 +1091,43 @@ CREATE TABLE `skill` (
 --
 
 INSERT INTO `skill` (`id`, `category_id`, `name`, `description`, `slug`) VALUES
-(8, 1, 'PHP', NULL, NULL),
-(9, 1, 'Javascript', NULL, NULL),
-(10, 1, 'Java', NULL, NULL),
-(11, 1, 'C sharp', NULL, NULL),
-(12, 1, 'ASP.NET', NULL, NULL),
-(13, 1, 'C/C++', NULL, NULL),
-(14, 1, 'Python', NULL, NULL),
-(22, 2, 'Symfony', NULL, NULL),
-(23, 2, 'Zend Framework', NULL, NULL),
-(24, 2, 'Laravel', NULL, NULL),
-(25, 2, 'Spring', NULL, NULL),
-(26, 2, 'Java SE', NULL, NULL),
-(27, 2, 'Java ME', NULL, NULL),
-(28, 2, 'Maven', NULL, NULL),
-(29, 3, 'Maintenance Informatique', NULL, NULL),
-(30, 3, 'Saisie Informatique', NULL, NULL),
-(34, 4, 'Microsoft Word', NULL, NULL),
-(35, 4, 'Microsoft Excel', NULL, NULL),
-(36, 4, 'Microsoft Powerpoint', NULL, NULL),
-(37, 5, 'Ciel Compta', NULL, NULL),
-(38, 5, 'Sage SAARI', NULL, NULL),
-(39, 6, 'Adobe Premiere', NULL, NULL),
-(40, 6, 'Adobe After Effect', NULL, NULL),
-(41, 7, 'Adobe Illustrator', NULL, NULL),
-(42, 7, 'Figma', NULL, NULL),
-(43, 7, 'Inkscape', NULL, NULL),
-(44, 8, 'Adobe Photoshop', NULL, NULL),
-(45, 8, 'Gimp', NULL, NULL),
-(46, 8, 'Paint', NULL, NULL),
-(47, 9, 'Audacity', NULL, NULL),
-(48, 9, 'Adobe Audition', NULL, NULL),
-(49, 10, 'UML', NULL, NULL),
-(50, 10, 'MERISE', NULL, NULL),
-(51, 11, 'WordPress', NULL, NULL),
-(52, 11, 'Joomla', NULL, NULL),
-(53, 11, 'Prestashop', NULL, NULL),
-(54, 11, 'Drupal', NULL, NULL);
+(8, 1, 'PHP', NULL, 'php'),
+(9, 1, 'Javascript', NULL, 'javascript'),
+(10, 1, 'Java', NULL, 'java'),
+(11, 1, 'C sharp', NULL, 'c-sharp'),
+(12, 1, 'ASP.NET', NULL, 'asp-net'),
+(13, 1, 'C/C++', NULL, 'cc'),
+(14, 1, 'Python', NULL, 'python'),
+(22, 2, 'Symfony', NULL, 'symfony'),
+(23, 2, 'Zend Framework', NULL, 'zend-framework'),
+(24, 2, 'Laravel', NULL, 'laravel'),
+(25, 2, 'Spring', NULL, 'spring'),
+(26, 2, 'Java SE', NULL, 'java-se'),
+(27, 2, 'Java ME', NULL, 'java-me'),
+(28, 2, 'Maven', NULL, 'maven'),
+(29, 3, 'Maintenance Informatique', NULL, 'maintenance-informatique'),
+(30, 3, 'Saisie Informatique', NULL, 'saisie-informatique'),
+(34, 4, 'Microsoft Word', NULL, 'microsoft-word'),
+(35, 4, 'Microsoft Excel', NULL, 'microsoft-excel'),
+(36, 4, 'Microsoft Powerpoint', NULL, 'microsoft-powerpoint'),
+(37, 5, 'Ciel Compta', NULL, 'ciel-compta'),
+(38, 5, 'Sage SAARI', NULL, 'sage-saari'),
+(39, 6, 'Adobe Premiere', NULL, 'adobe-premiere'),
+(40, 6, 'Adobe After Effect', NULL, 'adobe-after-effect'),
+(41, 7, 'Adobe Illustrator', NULL, 'adobe-illustrator'),
+(42, 7, 'Figma', NULL, 'figma'),
+(43, 7, 'Inkscape', NULL, 'inkscape'),
+(44, 8, 'Adobe Photoshop', NULL, 'adobe-photoshop'),
+(45, 8, 'Gimp', NULL, 'gimp'),
+(46, 8, 'Paint', NULL, 'paint'),
+(47, 9, 'Audacity', NULL, 'audacity'),
+(48, 9, 'Adobe Audition', NULL, 'adobe-audition'),
+(49, 10, 'UML', NULL, 'uml'),
+(50, 10, 'MERISE', NULL, 'merise'),
+(51, 11, 'WordPress', NULL, 'wordpress'),
+(52, 11, 'Joomla', NULL, 'joomla'),
+(53, 11, 'Prestashop', NULL, 'prestashop'),
+(54, 11, 'Drupal', NULL, 'drupal');
 
 -- --------------------------------------------------------
 
@@ -1080,10 +1181,10 @@ CREATE TABLE `skill_level` (
 --
 
 INSERT INTO `skill_level` (`id`, `name`, `score`, `rank`) VALUES
-(1, 'débutant', 1, 1),
-(2, 'intermédiaire', 2, 2),
-(3, 'avancé', 3, 3),
-(4, 'expert', 4, 4);
+(1, 'débutant', 10, 1),
+(2, 'intermédiaire', 100, 2),
+(3, 'avancé', 1000, 3),
+(4, 'expert', 10000, 4);
 
 -- --------------------------------------------------------
 
@@ -1146,35 +1247,38 @@ CREATE TABLE `user` (
   `qualities` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `interests` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `avatar_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `banner_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `banner_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `score` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `user`
 --
 
-INSERT INTO `user` (`id`, `user_type_id`, `company_type_id`, `nationality_id`, `country_id`, `language_id`, `avatar_id`, `banner_id`, `login`, `email`, `password`, `gender`, `firstname`, `lastname`, `birthdate`, `birthplace`, `address`, `zipcode`, `town`, `created_at`, `updated_at`, `deleted_at`, `is_active`, `phone`, `qualities`, `interests`, `avatar_path`, `banner_path`) VALUES
-(1, 2, 4, 131, 133, 1, NULL, NULL, 'candidate1', 'candidate1@yopmail.com', '$2y$13$7BegtLcWg7v0ZN5SfxZNCep1Nynw0IbdXydhZtFyRMhSRR1AAESq2', 1, 'Candidate #1', 'TEST', '2000-01-01', 'Lieu fictif', '123 Adresse fictive', '123456', 'Ville fictive', '2020-11-30 23:01:43', '2020-12-01 00:26:46', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(2, 2, 4, 131, 133, 1, NULL, NULL, 'candidate2', 'candidate2@yopmail.com', '$2y$13$mlb9N1kh8L3oStND17BY2O.1REE.QCDbEPb0l5H3G3L0EA2RGUTd.', 1, 'Candidate #2', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-11-30 23:24:34', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(3, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy1', 'dummy1@yopmail.com', '123', 1, 'Dummy 1', 'TESTER', '2000-12-10', 'Lieu fictif', NULL, NULL, NULL, '2020-12-07 23:14:08', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(5, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy2', 'dummy2@yopmail.com', '$2y$13$gvTUBbg8pM/uuG.Y5D.pIu3fBUNeL6csazKk8ig5WzQo85Gs.HPtW', 1, 'Dummy 2', 'TESTER', '2000-12-10', 'Lieu fictif', NULL, NULL, NULL, '2020-12-07 23:19:32', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(6, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy3', 'dummy3@yopmail.com', '$2y$13$njrvQbEndQhEFGnaV.4CrewpY.Gv.tcgPKOie.EJ2hg4AkIQLhS9u', 1, 'Dummy 3', 'TESTER', '2000-12-10', 'Lieu fictif', NULL, NULL, NULL, '2020-12-07 23:30:29', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(7, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy4', 'dummy4@yopmail.com', '$2y$13$EazRq.nGdgUc/t.74Q6xCe1sAMLbV3gZdGF9r2IpUWfIoqfBRHok.', 1, 'Dummy 4', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:02:42', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(8, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy5', 'dummy5@yopmail.com', '$2y$13$rf3KMCaHnFpeuhjQhooPp.Xuwf8q5cJx7a62r7k54tu.x34omwex.', 1, 'Dummy 5', 'TEST', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:37:19', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(9, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy6', 'dummy6@yopmail.com', '$2y$13$x4QKfLrE0EzDB1CAj8PRGetZjXVKQSZQO4lHAeuj7XXT5iCKk4CAm', 1, 'Dummy 6', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:41:32', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(10, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy7', 'dummy7@yopmail.com', '$2y$13$UAPjc1DBo8PYfo43XkRCEeyDkhUQ1eGxWyFHv2V0bZqRbXmVkF1Qu', 1, 'Dummy 7', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:49:51', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(12, 2, 4, 131, 133, 1, NULL, NULL, 'dummy8', 'dummy8@yopmail.com', '$2y$13$7voLVdDgIjcu5uD1IOH9BOp7PIdqBQ5BEUQG0pYck72/8QZAqtLOC', 1, 'Dummy 8', 'TESTER', '2000-01-01', 'Lieu fictif', '155 A bis Antanetibe Antehiroka', '105', 'Antananarivo', '2020-12-08 01:01:30', '2020-12-08 01:02:22', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(13, 2, 4, 131, 132, 1, NULL, NULL, 'dummy9', 'dummy9@yopmail.com', '$2y$13$AYGUR0VWe7Lubmr/gb6nc.yO06zyp8YB5y6WFPYQYgDGJPN1NObCe', 1, 'Dummy 9', 'TESTER', '2000-01-01', 'Lieu fictif', '155 A bis Antanetibe Antehiroka', '105', 'Antananarivo', '2020-12-08 09:43:57', '2020-12-08 09:44:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(14, 2, 4, 131, 133, 1, NULL, NULL, 'dummy10', 'dummy10@yopmail.com', '$2y$13$.yJ4i3MrIpXL2qHE8HVylO8jTpDhPp4gBgLRncEURkFrAhqwEYvZW', 1, 'Dummy 10', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 09:58:25', '2020-12-08 09:59:04', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(15, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy11', 'dummy11@yopmail.com', '$2y$13$yvtaslz3D7qyvsR60V.N9OFrQXdwqinIt6T2J/tQdxNt5XiXmFp6O', 1, 'Dummy 11', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 10:01:15', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(16, 2, 4, 131, 4, 1, NULL, NULL, 'dummy12', 'dummy12@yopmail.com', '$2y$13$uCsPlAyl5ui3zmWXMF29qOvARVRPzRRpgR4QfBZYxQ8NUkoKNTY.i', 1, 'Dummy 12', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 10:03:06', '2020-12-08 10:04:53', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(17, 2, 4, 131, 7, 1, NULL, NULL, 'dummy13', 'dummy13@yopmail.com', '$2y$13$1gWCq29oeatLJ0w1WIf0MubLW/xeVnRYC2KJCQwQKKui2GyVpX1PS', 1, 'Dummy 13', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 16:31:32', '2020-12-08 16:31:55', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(18, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy14', 'dummy14@yopmail.com', '$2y$13$cVeWmWrujqAdA2NBXvIg2elrta1NV5ifXIqbiHit45DaJP.58KiTe', 1, 'Dummy 14', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 16:51:08', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(19, 2, 4, 131, 133, 1, NULL, NULL, 'user1', 'user1@yopmail.com', '$2y$13$Nw0xi9jWc0nZRB1F87k/0u2TwdiQ/AttiaIczC/jJykDSx0ABObe2', 1, 'User One', 'TEST NUMBER ONE', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:06:08', '2021-03-05 13:17:31', NULL, 1, '+261 34 09 129 01', 'Curieux, Autonome, Réactif ', 'Basketball, Musculation, Développement de jeux vidéo', 'air-jordan-6042215a37112.png', 'uploads/default/banner.png'),
-(20, 2, 4, 131, 133, 1, NULL, NULL, 'user2', 'user2@yopmail.com', '$2y$13$gsID1.D4Mts9yBdzcV4GFeHkmYtIHkw2s1rIF9POY2/tPrZkdC3DS', 1, 'User Two', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:08:58', '2020-12-14 13:35:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(21, 2, 4, 131, 133, 1, NULL, NULL, 'user3', 'user3@yopmail.com', '$2y$13$3XyP.Gvj96tT3.5UNOMY8eseVJqGVoWwKyheMbeaxSUlYoyv.MKfO', 1, 'Candidat 3', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2021-02-03 20:34:46', '2021-02-03 20:37:55', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(22, 3, 2, 61, NULL, 2, NULL, NULL, 'moukary', 'moukary@yopmail.com', '$2y$13$MKG1wSjx1i4HazSuRQsu1..wsfodKQVrO8iML8WTfZsWAFiyfKo2a', 1, 'Matt', 'Murdock', '1970-01-01', 'Marvel Comics', NULL, NULL, NULL, '2021-02-04 13:48:24', NULL, NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png'),
-(23, 2, 4, 131, 133, 1, NULL, NULL, 'test1', 'test1@yopmail.com', '$2y$13$UqudgVrwCNBgcG/HBvG2lOGXd7L/sWeuWaH/v/3pb/wGvdQOxawd6', 1, 'toto', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '102', 'Antananarivo', '2021-02-26 13:43:16', '2021-02-26 13:43:48', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png');
+INSERT INTO `user` (`id`, `user_type_id`, `company_type_id`, `nationality_id`, `country_id`, `language_id`, `avatar_id`, `banner_id`, `login`, `email`, `password`, `gender`, `firstname`, `lastname`, `birthdate`, `birthplace`, `address`, `zipcode`, `town`, `created_at`, `updated_at`, `deleted_at`, `is_active`, `phone`, `qualities`, `interests`, `avatar_path`, `banner_path`, `score`) VALUES
+(1, 2, 4, 131, 133, 1, NULL, NULL, 'candidate1', 'candidate1@yopmail.com', '$2y$13$.chKyzRUjo.EYZ6vJ9fw4eXYbC7w0qm88/c1THlpKCntpBRZ40Jm6', 1, 'Candidate #1', 'TEST', '2000-01-01', 'Lieu fictif', '123 Adresse fictive', '123456', 'Ville fictive', '2020-11-30 23:01:43', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, '92001292-155237336030707-1960529506926067712-n-605c698258d72.png', 'uploads/default/banner.png', 0),
+(2, 2, 4, 131, 133, 1, NULL, NULL, 'candidate2', 'candidate2@yopmail.com', '$2y$13$xKtBPQ0/w9aPrKAajzNQAuJlQO4mWQpEXC9b5RlE3REFj5LPpvyri', 1, 'Candidate #2', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-11-30 23:24:34', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(3, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy1', 'dummy1@yopmail.com', '$2y$13$6cWoFhlDcNcScCgz2mwYPuMkTkPhmPu/yFqr/mEbspjeV1GomXk..', 1, 'Dummy 1', 'TESTER', '2000-12-10', 'Lieu fictif', NULL, NULL, NULL, '2020-12-07 23:14:08', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(5, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy2', 'dummy2@yopmail.com', '$2y$13$JdLtU8TosrhffGxualVN6eNBIUoatVPSvDgO6bj2CjGEljvP7I0/2', 1, 'Dummy 2', 'TESTER', '2000-12-10', 'Lieu fictif', NULL, NULL, NULL, '2020-12-07 23:19:32', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(6, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy3', 'dummy3@yopmail.com', '$2y$13$9oK0N8ZqZo8RvVBTj38SzekWl.YWhMWswobLMl.98G5frfou/4iMS', 1, 'Dummy 3', 'TESTER', '2000-12-10', 'Lieu fictif', NULL, NULL, NULL, '2020-12-07 23:30:29', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(7, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy4', 'dummy4@yopmail.com', '$2y$13$8kVnHeKtl6iHA1VkYbvMwOKXdIw3/nKGX2DfQUNXBu2XeMw7RsIXG', 1, 'Dummy 4', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:02:42', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(8, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy5', 'dummy5@yopmail.com', '$2y$13$NvwWL608rgdVSUTG/xn7NeaoEwielztSDn3Uejb.xXkbGjWK3Dzse', 1, 'Dummy 5', 'TEST', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:37:19', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(9, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy6', 'dummy6@yopmail.com', '$2y$13$k8VKCpsaR5WZJDzs1sdHke9y9AkQk/aDRELJv1mqrq4fhODixYXjW', 1, 'Dummy 6', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:41:32', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(10, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy7', 'dummy7@yopmail.com', '$2y$13$wI5ERdi8CO4pu0DouTz6QuNwAqQD2hoTptaw5bD9xkkbZfts4tacC', 1, 'Dummy 7', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 00:49:51', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(12, 2, 4, 131, 133, 1, NULL, NULL, 'dummy8', 'dummy8@yopmail.com', '$2y$13$YLz4I7KemPFc.H6AZpsLLOf/EHYmm6fsqjW13seE2BWUyCudpl5aG', 1, 'Dummy 8', 'TESTER', '2000-01-01', 'Lieu fictif', '155 A bis Antanetibe Antehiroka', '105', 'Antananarivo', '2020-12-08 01:01:30', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(13, 2, 4, 131, 132, 1, NULL, NULL, 'dummy9', 'dummy9@yopmail.com', '$2y$13$kQBs3goda9Blmr5LUvp0mO3bpp7pcilX19zPldiJtQpDcbEm/JAT6', 1, 'Dummy 9', 'TESTER', '2000-01-01', 'Lieu fictif', '155 A bis Antanetibe Antehiroka', '105', 'Antananarivo', '2020-12-08 09:43:57', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(14, 2, 4, 131, 133, 1, NULL, NULL, 'dummy10', 'dummy10@yopmail.com', '$2y$13$fePOdsR51OTy8jSZx9smzeVuQ.S8NMOmA6dw4v.rKTSajIPYq.Npi', 1, 'Dummy 10', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 09:58:25', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(15, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy11', 'dummy11@yopmail.com', '$2y$13$tbu/NKvAx9UqdwGkKkD0j.AJIqArY8/MR8SEr4QwCYmoi846DlKXG', 1, 'Dummy 11', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 10:01:15', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(16, 2, 4, 131, 4, 1, NULL, NULL, 'dummy12', 'dummy12@yopmail.com', '$2y$13$m2UGKAKIY2TVnWK05NSDFeY7HDLAR8REIs6UOMOmpfck3UFChQk/u', 1, 'Dummy 12', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 10:03:06', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(17, 2, 4, 131, 7, 1, NULL, NULL, 'dummy13', 'dummy13@yopmail.com', '$2y$13$XT7HQSnBPLNQoKdxu3r3Duy4QusqyGDCCijlZv2qXaKAdlAGFLmo2', 1, 'Dummy 13', 'TESTER', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-08 16:31:32', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(18, 2, 4, 131, NULL, 1, NULL, NULL, 'dummy14', 'dummy14@yopmail.com', '$2y$13$H.cj2y8DNMO4Eaatp57qoOYK8Y/pgMkunhxYyqg8.HluPXh7VZlVi', 1, 'Dummy 14', 'TESTER', '2000-01-01', 'Lieu fictif', NULL, NULL, NULL, '2020-12-08 16:51:08', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(19, 2, 4, 131, 133, 1, NULL, NULL, 'user1', 'user1@yopmail.com', '$2y$13$l57sTtK1FEHnHneJNV9lu.DJPed.NUpNAabCkGIg8wrat6g8vJc2S', 1, 'User One', 'TEST NUMBER ONE', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:06:08', '2021-04-08 11:08:23', NULL, 1, '+261 34 09 129 01', 'Curieux, Autonome, Réactif ', 'Basketball, Musculation, Développement de jeux vidéo', 'air-jordan-6042215a37112.png', 'uploads/default/banner.png', 4330),
+(20, 2, 4, 131, 133, 1, NULL, NULL, 'user2', 'user2@yopmail.com', '$2y$13$xq2WQ0n.3BNKuJCUXJzYdOnpU.kxfoXM4TWGdAzhTdtDTmXH5ua2e', 1, 'User Two', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2020-12-14 13:08:58', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(21, 2, 4, 131, 133, 1, NULL, NULL, 'user3', 'user3@yopmail.com', '$2y$13$EPJz7MIbdFAkgc3KIff7O.8tbX29pWYPYQ5vAWrBLWWoT6BSL/4sC', 1, 'Candidat 3', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2021-02-03 20:34:46', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(22, 3, 2, 61, NULL, 2, NULL, NULL, 'moukary', 'moukary@yopmail.com', '$2y$13$8VsdWFTZk40IgPyY1qMyQu3Aen3gGn4hKftvmTFcwErqnJnxuM.m6', 1, 'Matt', 'Murdock', '1970-01-01', 'Marvel Comics', NULL, NULL, NULL, '2021-02-04 13:48:24', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(23, 2, 4, 131, 133, 1, NULL, NULL, 'test1', 'test1@yopmail.com', '$2y$13$y4gyTrpaDvGAPmHoTIlzgOOBhuqFGpPQvmDzccyRrXZSLIp.3WOtu', 1, 'toto', 'TEST', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '102', 'Antananarivo', '2021-02-26 13:43:16', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'uploads/default/user.png', 'uploads/default/banner.png', 0),
+(24, 2, 4, 131, 133, 1, NULL, NULL, 'uservandime', 'uservandime@yopmail.com', '$2y$13$F9cl66DrsR6ZFQHDwisBUOmej3Irfsne4GoJurukFATz02nj9pdgS', 1, 'Van', 'DIME', '2000-01-01', 'Lieu fictif', 'Adresse fictive', '123456', 'Ville fictive', '2021-03-05 14:11:34', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'air-jordan-60422e3c31bb5.png', NULL, 0),
+(25, 2, 4, 131, NULL, 1, NULL, NULL, 'candidate123@yopmail.com', 'candidate123@yopmail.com', '$2y$13$9aF32g1iKBP2b5rhnH21He824QzstPgvUzjD8Xpmf1c518w5sSts.', 1, 'Candidat 123', 'TESTER', '2021-01-01', 'Lieu fictif', NULL, NULL, NULL, '2021-03-25 11:54:19', '2021-03-26 11:16:40', NULL, 1, NULL, NULL, NULL, 'cliff-house-605c6c99e3ba5.jpeg', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1450,6 +1554,15 @@ ALTER TABLE `proposal_favorite`
   ADD KEY `IDX_899EB2F1F4792058` (`proposal_id`);
 
 --
+-- Index pour la table `proposal_skill`
+--
+ALTER TABLE `proposal_skill`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_99CA2DD6F4792058` (`proposal_id`),
+  ADD KEY `IDX_99CA2DD65585C142` (`skill_id`),
+  ADD KEY `IDX_99CA2DD65FB14BA7` (`level_id`);
+
+--
 -- Index pour la table `skill`
 --
 ALTER TABLE `skill`
@@ -1560,7 +1673,7 @@ ALTER TABLE `user_type`
 -- AUTO_INCREMENT pour la table `applier`
 --
 ALTER TABLE `applier`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `asset`
@@ -1632,13 +1745,13 @@ ALTER TABLE `nationality`
 -- AUTO_INCREMENT pour la table `other`
 --
 ALTER TABLE `other`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pour la table `other_skill`
 --
 ALTER TABLE `other_skill`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `proposal`
@@ -1657,6 +1770,12 @@ ALTER TABLE `proposal_attachment`
 --
 ALTER TABLE `proposal_favorite`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `proposal_skill`
+--
+ALTER TABLE `proposal_skill`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `skill`
@@ -1686,7 +1805,7 @@ ALTER TABLE `training`
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT pour la table `user_attachment`
@@ -1811,6 +1930,14 @@ ALTER TABLE `proposal_attachment`
 ALTER TABLE `proposal_favorite`
   ADD CONSTRAINT `FK_899EB2F17E3C61F9` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`),
   ADD CONSTRAINT `FK_899EB2F1F4792058` FOREIGN KEY (`proposal_id`) REFERENCES `proposal` (`id`);
+
+--
+-- Contraintes pour la table `proposal_skill`
+--
+ALTER TABLE `proposal_skill`
+  ADD CONSTRAINT `FK_99CA2DD65585C142` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
+  ADD CONSTRAINT `FK_99CA2DD65FB14BA7` FOREIGN KEY (`level_id`) REFERENCES `skill_level` (`id`),
+  ADD CONSTRAINT `FK_99CA2DD6F4792058` FOREIGN KEY (`proposal_id`) REFERENCES `proposal` (`id`);
 
 --
 -- Contraintes pour la table `skill`
