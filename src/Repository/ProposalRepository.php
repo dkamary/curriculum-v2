@@ -160,25 +160,31 @@ class ProposalRepository extends ServiceEntityRepository
         } else {
             $qb = $this->createQueryBuilder('p');
             $qb
-                ->join(ProposalSkill::class, 'ps', Expr\Join::WITH, 'p.skills = ps.id')
+                ->join(ProposalSkill::class, 'ps', Expr\Join::WITH, 'p.id = ps.proposal')
                 ->join(Skill::class, 's', Expr\Join::WITH, 'ps.skill = s.id');
             $words = explode(' ', trim($keywords));
             $keywordsCondition = '';
             $first = true;
             $k = 0;
             foreach($words as $w){
+                if($w == '') continue;
                 $keywordsCondition .= (!$first ? ' OR ' : '') . sprintf('p.longDescription LIKE :w%d OR s.name LIKE :w%d', $k, $k);
                 $qb->setParameter('w' . $k, '%' .$w .'%s');
                 $k++;
                 $first = false;
             }
             if($keywordsCondition !== '') {
-                $qb->where($keywordsCondition);
+                $qb->where('(' .$keywordsCondition .')');
             }
+
+            VarDumper::dump($qb->getQuery()->getSQL());
+            VarDumper::dump($qb->getQuery()->getDQL());
             
             $proposals = $qb
                 ->getQuery()
                 ->getResult();
+
+            VarDumper::dump($proposals);
         }
 
         return [
