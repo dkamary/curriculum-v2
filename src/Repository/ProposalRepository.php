@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Applier;
 use App\Entity\Proposal;
+use App\Entity\ProposalSkill;
+use App\Entity\Skill;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
@@ -105,5 +107,19 @@ class ProposalRepository extends ServiceEntityRepository
             ->getResult();
 
         return $latest;
+    }
+
+    public function search(?string $keywords, int $area, int $category): array
+    {
+        $proposals = [];
+        $qb = $this->createQueryBuilder('p');
+        $qb
+            ->join(ProposalSkill::class, 'ps', Expr\Join::WITH, 'p.skills = ps.id')
+            ->join(Skill::class, 's', Expr\Join::WITH, 'ps.skill = s.id');
+        $proposals = $qb
+            ->getQuery()
+            ->getResult();
+
+        return $proposals;
     }
 }

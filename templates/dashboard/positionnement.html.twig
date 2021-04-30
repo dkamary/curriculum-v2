@@ -32,8 +32,9 @@
             <h2 class="text-white">
                 Positionnement
             </h2>
+            <hr>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12" id="rank-container">
                     &hellip;
                 </div>
             </div>
@@ -59,13 +60,49 @@
                         skills.push($this.val());
                     }
                 });
-                console.log(skills);
+
+                const rankContainer = $('#rank-container');
+                if(!skills.length) {
+                    rankContainer.html('&hellip;');
+                    return false;
+                }
+
                 $.ajax({
                     url: '{{ path('positionnement_get') }}',
                     type: 'POST',
-                    data: { skills: skills }
+                    data: { skills: skills },
+                    beforeSend: () => {
+                        rankContainer.html('Chargement en cours &hellip;');
+                    }
                 }).done(response => {
-                    console.log(response); 
+                    console.log(response);
+                    rankContainer.html('');
+                    response.forEach(position => {
+                        console.debug(position);
+                        console.log(position.skill);
+                        const row = $('<div>', {
+                            class: 'row border-bottom border-light'
+                        });
+                        const label = $('<label>', {
+                            class: 'col',
+                            html: (function(skills){
+                                let label = '';
+                                let first = true;
+                                skills.forEach(skill => {
+                                    label += (!first ? ' - ' : '') + skill.name;
+                                    first = false;
+                                });
+
+                                return label;
+                            }(position.skill))
+                        });
+                        const val = $('<div>', {
+                            class: 'col',
+                            html: `1 sur ${position.count}`
+                        });
+                        row.append(label).append(val);
+                        rankContainer.append(row);
+                    });
                 }).fail(xhr => {
                     alert(`${xhr.status} - ${xhr.statusText}`);
                 });
