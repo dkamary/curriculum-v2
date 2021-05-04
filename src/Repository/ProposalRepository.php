@@ -116,6 +116,7 @@ class ProposalRepository extends ServiceEntityRepository
         $qb
             ->join(ProposalSkill::class, 'ps', Expr\Join::WITH, 'p.skills = ps.id')
             ->join(Skill::class, 's', Expr\Join::WITH, 'ps.skill = s.id');
+        if(is_null())
         $proposals = $qb
             ->getQuery()
             ->getResult();
