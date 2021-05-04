@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProposalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,15 +16,17 @@ class SearchController extends AbstractController
     /**
      * @Route("/", name="search")
      */
-    public function index(Request $request): Response
+    public function index(Request $request, ProposalRepository $proposalRepository): Response
     {
+        $user = $this->getUser();
         $query = $request->query;
-        $keywords = $query->get('keywords');
+        $keywords = $query->get('search');
         $area = $query->get('area');
         $category = $query->get('category');
+        $results = $proposalRepository->search($user, $keywords, $area, $category);
 
         return $this->render('search/index.html.twig', [
-            'controller_name' => 'SearchController',
+            'results' => $results,
         ]);
     }
 }
