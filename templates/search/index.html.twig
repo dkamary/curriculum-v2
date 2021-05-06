@@ -1,9 +1,157 @@
-{% extends 'base.html.twig' %}
+{% extends '_layouts/page.html.twig' %}
 
-{% block title %}Hello SearchController!{% endblock %}
+{% set title = 'Résultats de recherche' %}
+{% set pageTitle = title %}
+{% set breadcrumbs = [{text: 'Recherche des termes : ' ~ (keywords is defined ? keywords : '' ), href: ''}] %}
 
-{% block body %}
-<pre>
-    {{ dump(results) }}
-</pre>
+{% block title %}
+	{{ title }}
+{% endblock %}
+
+{% block main_content %}
+	<section class="post-area section-gap">
+		<div class="container">
+			{% block content %}
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {% if results.proposals|length %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="proposal-tab" data-toggle="tab" href="#proposal" role="tab" aria-controls="proposal" aria-selected="true">Offres d'emploi</a>
+                        </li>
+                    {% endif %}
+					{% if results.users|length %}
+                        <li class="nav-item{{ results.proposals|length == 0 and results.users|length > 0 ? ' active' : '' }}" role="presentation">
+                            <a class="nav-link" id="candidate-tab" data-toggle="tab" href="#candidate" role="tab" aria-controls="candidate" aria-selected="false">Candidats</a>
+                        </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_COMPANY') and results.users|length == 0 %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="proposal-tab" data-toggle="tab" href="#proposal" role="tab" aria-controls="proposal" aria-selected="true">Aucun candidat potentiel trouvé</a>
+                        </li>
+                    {% elseif (not is_granted('ROLE_COMPANY') and results.proposals|length == 0) %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="proposal-tab" data-toggle="tab" href="#proposal" role="tab" aria-controls="proposal" aria-selected="true">Aucune offre d'emploi potentiel trouvé</a>
+                        </li>
+                    {% endif %}
+				</ul>
+				<div class="tab-content" id="myTabContent">
+					{% if results.proposals|length %}
+                        <div class="tab-pane fade show active" id="proposal" role="tabpanel" aria-labelledby="proposal-tab">
+                            {% for proposal in results.proposals %}
+                                {% set img_src = proposal.featuredImage is not null ? proposal.featuredImage.path : 'https://fakeimg.pl/350x200/?text=' ~ proposal.slug %}
+                                {% set link = path('proposal_show', { slug: proposal.slug }) %}
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="row p-0{{ (loop.index % 2) == 0 ? '' : ' bg-light' }}">
+                                            <div class="col-sm-4 col-2 proposal-image-container">
+                                                <a href="{{ link }}">
+                                                    <div class="img" style="background-image: url({{ img_src }});" title="{{ proposal.name }}"></div>
+                                                </a>
+                                            </div>
+                                            <div class="col-10 col-sm-8 py-3">
+                                                <h3>
+                                                    <a href="{{ link }}">{{ proposal.name }}</a>
+                                                </h3>
+                                                {% if proposal.town|length > 0 or proposal.country is not null %}
+                                                    <h4>
+                                                        {{ proposal.town|length > 0 ? proposal.town : '' }}{{ proposal.country is not null ? (proposal.town|length > 0 ? ', ' : '') ~ proposal.country.name : '' }}
+                                                    </h4>
+                                                {% endif %}
+                                                <p class="mt-3">
+                                                    {{ proposal.longDescription|striptags|u.truncate(300, '...', true) }}
+                                                    {% if proposal.skills %}
+                                                        <div class="row my-2">
+                                                            <div class="col-12">
+                                                                {% for ps in proposal.skills %}
+                                                                    <span class="badge badge-info">
+                                                                        {{ ps.xp > 0 ? ps.xp ~ ' année(s) d\'expérience en '  : 'connaissance en '}}
+                                                                        <strong>{{ ps.skill.name }}</strong>
+                                                                    </span>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </p>
+                                                <p class="text-right w-100">
+                                                    <a class="btn btn-link text-danger" href="{{ link }}">
+                                                        <i class="fa fa-eye" aria-hidden="true"></i>&nbsp;
+                                                        Voir l'offre
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+					{% if results.users|length %}
+                        <div class="tab-pane fade{{ results.proposals|length == 0 and results.users|length > 0 ? ' show active' : '' }}" id="candidate" role="tabpanel" aria-labelledby="candidate-tab">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        {% for user in results.users %}
+                                        <div class="col-sm-4 col-12">
+                                            <div class="card">
+                                                <img class="card-img-top" src="holder.js/100x180/" alt="">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">{{ user.name }}</h4>
+                                                    <p class="card-text">
+                                                        <p>
+                                                            <em>{{ user.userMotivation.presentation|length > 0 ? user.userMotivation.presentation : '&hellip;' }}</em>
+                                                        </p>
+                                                        <p>
+                                                            Préfère travailler à l'étranger: <strong>{{ user.userMotivation.isTraveller ? 'Oui' : 'Non' }}</strong>
+                                                            {% if user.userMotivation.isTraveller %}
+                                                                <br>
+                                                                Destinations préférentielles: 
+                                                                {% for destination in user.userDestinations %}
+                                                                    <span class="badge badge-info mr-2">{{ destination.country.name }}</span>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </p>
+                                                        <h5 class="mt-3">Compétences</h5>
+                                                        <ul>
+                                                            {% for other in user.others %}
+                                                                {% for skill in other.otherSkills %}
+                                                                    <li>
+                                                                        <span class="badge badge-info mr-2">{{ skill.skill.name }}</span> : <em>{{ skill.level.name }}</em>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if results.proposals|length == 0 and results.users|length == 0 %}
+                        <div class="tab-pane show active">
+                            <p class="text-center py-3"><em>Aucun Résultats pour votre recherche</em></p>
+                        </div>
+                    {% endif %}
+				</div>
+			{% endblock %}
+		</div>
+	</section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .proposal-image-container {
+            overflow: hidden;
+        }
+
+        .proposal-image-container .img {
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 {% endblock %}

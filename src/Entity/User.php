@@ -971,4 +971,9 @@ class User implements UserInterface
 
         return $this->score;
     }
+
+    public function getName(): string
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 }

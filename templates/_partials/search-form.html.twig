@@ -1,36 +1,98 @@
 {# Search form #}
 
 <form action="{{ path('search') }}" class="serach-form-area">
-    <div class="row justify-content-center form-wrap">
-        <div class="col-lg-4 form-cols">
-            <input type="text" class="form-control" name="search" placeholder="what are you looging for?">
-        </div>
-        <div class="col-lg-3 form-cols">
-            <div class="default-select" id="default-selects">
-                <select>
-                    <option value="1">Select area</option>
-                    <option value="2">Dhaka</option>
-                    <option value="3">Rajshahi</option>
-                    <option value="4">Barishal</option>
-                    <option value="5">Noakhali</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-lg-3 form-cols">
-            <div class="default-select" id="default-selects2">
-                <select>
-                    <option value="1">All Category</option>
-                    <option value="2">Medical</option>
-                    <option value="3">Technology</option>
-                    <option value="4">Goverment</option>
-                    <option value="5">Development</option>
-                </select>
-            </div>										
-        </div>
-        <div class="col-lg-2 form-cols">
-            <button type="submit" class="btn btn-info">
-                <span class="lnr lnr-magnifier"></span> Search
-            </button>
-        </div>								
-    </div>
-</form>	
+	<div class="row justify-content-center form-wrap">
+		<div class="col-9 form-cols pr-0">
+			<input type="text" class="form-control" name="search" id="search" placeholder="Tapez un ou plusieurs mots clés?">
+		</div>
+		<div class="col-2 form-cols pl-0">
+			<button type="submit" class="btn btn-info">
+				<span class="lnr lnr-magnifier"></span>
+				Rechercher
+			</button>
+		</div>
+		<div class="col-1">
+			<button type="button" class="btn btn-info" title="Recherche avancée" data-toggle="modal" data-target="#search-advanced">
+				<i class="fa fa-cogs" aria-hidden="true"></i>
+			</button>
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="search-advanced" tabindex="-1" aria-labelledby="search-advancedLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="search-advancedLabel">Recherche avancée</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+                        <label for="search_advanced" class="col-sm-4 col-12">
+                            Mots-clés
+                        </label>
+                        <div class="col-sm-8 col-12">
+                            <input type="text" class="form-control" name="search_advanced" id="search_advanced" placeholder="Tapez un ou plusieurs mots clés?">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <label for="knowledge" class="col-sm-4 col-12">Connaissances</label>
+                        <div class="col-sm-4 col-6 pr-0">
+                            <select name="knowledge[]" id="knowledge_0" class="form-control">
+                                <option value="">Compétence</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4 col-6 pl-0">
+                            <select name="exp[]" id="exp_0" class="form-control">
+                                <option value="">Expérience</option>
+                                <option value="1">Un an ou plus</option>
+                                <option value="2">Deux ans ou plus</option>
+                                <option value="3">Trois ans ou plus</option>
+                                <option value="4">Quatre ans ou plus</option>
+                                <option value="5">Cinq ans ou plus</option>
+                                <option value="6">Six ans ou plus</option>
+                            </select>
+                        </div>
+                    </div>
+                    {% if is_granted('ROLE_USER') %}
+                        <div class="row mt-2">
+                            <label for="language" class="col-sm-4 col-12">Langues</label>
+                            <div class="col-sm-4 col-6 pr-0">
+                                <select name="language[]" id="language" class="form-control">
+                                    <option value="">Langue</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4 col-6 pl-0">
+                                <select name="level[]" id="level" class="form-control">
+                                    <option value="">Niveau</option>
+                                </select>
+                            </div>
+                        </div>
+                    {% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fa fa-times" aria-hidden="true"></i>&nbsp;Fermer
+                    </button>
+					<button type="submit" class="btn btn-primary">
+                        <i class="fa fa-search" aria-hidden="true"></i>&nbsp;Rechercher
+                    </button>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+<script>
+    window.addEventListener('DOMContentLoaded', e => {
+        const search = document.querySelector('#search');
+        const searchAdvanced = document.querySelector('#search_advanced');
+        if(search) {
+            search.addEventListener('change', e => {
+                if(searchAdvanced) {
+                    searchAdvanced.value = search.value;
+                }
+            });
+        }
+    });
+</script>

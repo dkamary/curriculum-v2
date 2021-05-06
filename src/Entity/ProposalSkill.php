@@ -34,6 +34,11 @@ class ProposalSkill
      */
     private $level;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $xp;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +76,18 @@ class ProposalSkill
     public function setLevel(?SkillLevel $level): self
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    public function getXp(): ?float
+    {
+        return $this->xp;
+    }
+
+    public function setXp(?float $xp): self
+    {
+        $this->xp = $xp;
 
         return $this;
     }

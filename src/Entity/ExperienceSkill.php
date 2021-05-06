@@ -35,6 +35,11 @@ class ExperienceSkill
      */
     private $skill;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $xp;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,5 +76,17 @@ class ExperienceSkill
         }
 
         return '';
+    }
+
+    public function getXp(): ?float
+    {
+        return $this->xp;
+    }
+
+    public function setXp(float $xp): self
+    {
+        $this->xp = $xp;
+
+        return $this;
     }
 }

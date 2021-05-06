@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Other;
 use App\Entity\OtherSkill;
 use App\Entity\Skill;
+use App\Entity\SkillCategory;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr;
@@ -127,5 +128,25 @@ class SkillRepository extends ServiceEntityRepository
         }
 
         return $array;
+    }
+
+    /**
+     * Get Knowledges
+     *
+     * @return array
+     */
+    public function getKnowledges(): array
+    {
+        $qb = $this
+            ->createQueryBuilder('s')
+            ->join(SkillCategory::class, 'sc', Expr\Join::WITH, 's.category = sc.id');
+
+        $knowledges = $qb
+            ->orderBy('sc.name', 'ASC')
+            ->addOrderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $knowledges;
     }
 }

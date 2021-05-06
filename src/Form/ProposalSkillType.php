@@ -7,6 +7,7 @@ use App\Entity\Skill;
 use App\Entity\SkillLevel;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,6 +26,15 @@ class ProposalSkillType extends AbstractType
                 'class' => SkillLevel::class,
                 'label' => 'Niveau',
                 'choice_label' => 'name',
+            ])
+            ->add('xp', NumberType::class, [
+                'label' => 'Année d\'expérience',
+                'html5' => true,
+                'attr' => [
+                    'min' => 0,
+                    'max' => 10,
+                    'step' => 1,
+                ]
             ]);
     }
 

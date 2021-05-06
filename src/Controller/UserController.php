@@ -238,6 +238,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $experience->updateXp();
             $manager = $this->getDoctrine()->getManager();
             $manager->flush();
             $this->addFlash('success', 'Expérience professionelle mis à jour');

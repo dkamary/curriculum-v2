@@ -8,6 +8,7 @@ use App\Entity\Base\LongDescriptionEntity;
 use App\Entity\Base\StartEntity;
 use App\Entity\Base\UpdatedAtEntity;
 use App\Repository\ExperienceRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -134,6 +135,18 @@ class Experience
     public function setJobTitle(string $jobTitle): self
     {
         $this->jobTitle = $jobTitle;
+
+        return $this;
+    }
+
+    public function updateXp(): self
+    {
+        foreach ($this->getExperienceSkills() as $expSkill) {
+            $end = is_null($this->getEnd()) ? new DateTime('now') : $this->getEnd();
+            $diff = $end->diff($this->getStart());
+            $xp = $diff->y + ($diff->m / 12) + ($diff->d / 365);
+            $expSkill->setXp($xp);
+        }
 
         return $this;
     }

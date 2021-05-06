@@ -48,7 +48,7 @@
                 <hr class="my-3">
                 <p class="text-center">
                     <strong><em class="text-danger">Vous devez être identifié pour pouvoir postuler</em></strong><br>
-                    <a class="genric-btn primary my-3" href="{{ path('app_login') }}">
+                    <a class="genric-btn primary my-3" href="{{ path('app_login', {redirect: path('proposal_show', { slug: proposal.slug }) }) }}">
                         <i class="fa fa-sign-in" aria-hidden="true"></i> &nbsp; Connectez-vous d'abord
                     </a>
                 </p>

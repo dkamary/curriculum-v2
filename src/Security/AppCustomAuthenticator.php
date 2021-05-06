@@ -30,6 +30,7 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
     private $urlGenerator;
     private $csrfTokenManager;
     private $encoder;
+    private $redirect;
 
     public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $encoder)
     {
@@ -47,6 +48,7 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
 
     public function getCredentials(Request $request)
     {
+        $this->redirect = $request->request->get('redirect');
         $credentials = [
             'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
@@ -66,7 +68,7 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
         }
-        VarDumper::dump($credentials);
+        // VarDumper::dump($credentials);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
         // $qb = $this->entityManager->createQueryBuilder()
         //     ->from(User::class, 'u');
@@ -92,6 +94,10 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
     {
+        if (!is_null($this->redirect)) {
+            return new RedirectResponse($this->redirect);
+        }
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }
