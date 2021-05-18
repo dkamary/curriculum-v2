@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Country;
 use App\Entity\Proposal;
+use App\Entity\ProposalCategory;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -21,6 +22,16 @@ class ProposalType extends AbstractType
         $builder
             ->add('reference', TextType::class, [
                 'label' => 'Référence'
+            ])
+            ->add('category', EntityType::class, [
+                'label' => 'Catégorie',
+                'class' => ProposalCategory::class,
+                'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $entityRepository) {
+                    return $entityRepository
+                        ->createQueryBuilder('t')
+                        ->orderBy('t.name', 'ASC');
+                }
             ])
             ->add('name', TextType::class, [
                 'label' => 'Nom de l\'offre'

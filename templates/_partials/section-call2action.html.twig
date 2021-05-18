@@ -1,6 +1,6 @@
 {# call to action section template #}
 
-{% set title = title is defined ? title : 'Join us today without any hesitation' %}
+{% set title = title is defined ? title : 'Joignez-nous aujourd\'hui' %}
 {% set content = content is defined ? content : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore  et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.' %}
 
 <!-- Start callto-action Area -->
@@ -11,8 +11,7 @@
                 <div class="title text-center">
                     <h1 class="mb-10 text-white">{{ title }}</h1>
                     <p class="text-white">{{ content|raw }}</p>
-                    <a class="primary-btn" href="#">I am a Candidate</a>
-                    <a class="primary-btn" href="#">Request Free Demo</a>
+                    <a class="primary-btn" href="{{ path('user_inscription') }}">JE M'INSCRIT</a>
                 </div>
             </div>
         </div>

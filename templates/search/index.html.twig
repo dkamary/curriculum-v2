@@ -1,5 +1,9 @@
 {% extends '_layouts/page.html.twig' %}
 
+{% block banner %}
+    {% include "_partials/banner-search.html.twig" with  { keywords: keywords } %}
+{% endblock %}
+
 {% set title = 'Résultats de recherche' %}
 {% set pageTitle = title %}
 {% set breadcrumbs = [{text: 'Recherche des termes : ' ~ (keywords is defined ? keywords : '' ), href: ''}] %}
@@ -152,6 +156,10 @@
             width: 100%;
             background-size: cover;
             background-position: center;
+        }
+
+        .post-area.section-gap {
+            padding-top: 40px;
         }
     </style>
 {% endblock %}

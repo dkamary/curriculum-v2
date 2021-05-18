@@ -41,8 +41,12 @@ class SearchController extends AbstractController
     /**
      * @Route("/_form", name="search_form")
      */
-    public function _form(SkillRepository $skillRepository, LanguageRepository $languageRepository, LanguageLevelRepository $languageLevelRepository): Response
-    {
+    public function _form(
+        Request $request,
+        SkillRepository $skillRepository,
+        LanguageRepository $languageRepository,
+        LanguageLevelRepository $languageLevelRepository
+    ): Response {
         $knowledges = $skillRepository->getKnowledges();
         $languages = $languageRepository->findBy([], ['name' => 'ASC']);
         $languageLevel = $languageLevelRepository->findBy([], ['score' => 'ASC']);
@@ -51,6 +55,7 @@ class SearchController extends AbstractController
             'knowledges' => $knowledges,
             'languages' => $languages,
             'language_level' => $languageLevel,
+            'keywords' => $request->query->get('search'),
         ]);
     }
 }

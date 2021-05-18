@@ -101,6 +101,11 @@ class Proposal
      */
     private $skills;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ProposalCategory::class, inversedBy="proposals")
+     */
+    private $category;
+
     public function __construct()
     {
         $this->proposalAttachments = new ArrayCollection();
@@ -283,6 +288,18 @@ class Proposal
                 $skill->setProposal(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategory(): ?ProposalCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?ProposalCategory $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

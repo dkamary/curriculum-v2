@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Repository\ProposalCategoryRepository;
 use App\Repository\SkillCategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Symfony\Component\VarDumper\VarDumper;
 
 class ContentController extends AbstractController
 {
@@ -33,6 +35,20 @@ class ContentController extends AbstractController
     public function categories(SkillCategoryRepository $skillCategoryRepository): Response
     {
         $categories = $skillCategoryRepository->findBy([], ['name' => 'ASC'], 6);
+
+        return $this->render('_partials/featured-categories.html.twig', [
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * @Route("/_proposal/categories", name="proposal_categories")
+     */
+    public function proposalCategories(ProposalCategoryRepository $proposalCategoryRepository): Response
+    {
+        VarDumper::dump(__CLASS__ . '::' . __METHOD__);
+        $categories = $proposalCategoryRepository->findBy(['isActive' => true], ['name' => 'ASC'], 6);
+        VarDumper::dump($categories);
 
         return $this->render('_partials/featured-categories.html.twig', [
             'categories' => $categories,

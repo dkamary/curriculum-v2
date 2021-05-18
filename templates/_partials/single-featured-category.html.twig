@@ -4,7 +4,7 @@
     <div class="single-fcat">
         <a href="{{ path('content', { slug: cat.slug }) }}">
             {# <img src="{{ asset('assets/job/img/o' ~ loop.index ~ '.png') }}" alt=""> #}
-            <img src="https://fakeimg.pl/96x96/" alt="{{ cat.name }}">
+            <img src="{{ asset('uploads/category/' ~ cat.icon) }}" alt="{{ cat.name }}">
         </a>
         <p>{{ cat.name|title }}</p>
     </div>
