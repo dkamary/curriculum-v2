@@ -13,13 +13,13 @@ use Symfony\Component\VarDumper\VarDumper;
 class ContentController extends AbstractController
 {
     /**
-     * @Route("/category/{slug}/", name="content", requirements={ "slug" = "[a-z-_]+" })
+     * @Route("/category/{slug}/", name="content_category", requirements={ "slug" = "[a-z-_]+" })
      */
     public function category(
         string $slug,
-        SkillCategoryRepository $skillCategoryRepository
+        ProposalCategoryRepository $proposalCategoryRepository
     ): Response {
-        $category = $skillCategoryRepository->findOneBy(['slug' => $slug,]);
+        $category = $proposalCategoryRepository->findOneBy(['slug' => $slug,]);
         if (is_null($category)) {
             throw new NotFoundResourceException('La categorie avec l\'url "' . $slug . '" est introuvable');
         }
@@ -32,9 +32,9 @@ class ContentController extends AbstractController
     /**
      * @Route("/_categories", name="featured_categories")
      */
-    public function categories(SkillCategoryRepository $skillCategoryRepository): Response
+    public function categories(ProposalCategoryRepository $proposalCategoryRepository): Response
     {
-        $categories = $skillCategoryRepository->findBy([], ['name' => 'ASC'], 6);
+        $categories = $proposalCategoryRepository->findBy([], ['name' => 'ASC'], 6);
 
         return $this->render('_partials/featured-categories.html.twig', [
             'categories' => $categories,
@@ -46,7 +46,6 @@ class ContentController extends AbstractController
      */
     public function proposalCategories(ProposalCategoryRepository $proposalCategoryRepository): Response
     {
-        VarDumper::dump(__CLASS__ . '::' . __METHOD__);
         $categories = $proposalCategoryRepository->findBy(['isActive' => true], ['name' => 'ASC'], 6);
         VarDumper::dump($categories);
 

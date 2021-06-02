@@ -2,7 +2,7 @@
 
 <div class="col-lg-2 col-md-4 col-sm-6">
     <div class="single-fcat">
-        <a href="{{ path('content', { slug: cat.slug }) }}">
+        <a href="{{ path('content_category', { slug: cat.slug }) }}">
             {# <img src="{{ asset('assets/job/img/o' ~ loop.index ~ '.png') }}" alt=""> #}
             <img src="{{ asset('uploads/category/' ~ cat.icon) }}" alt="{{ cat.name }}">
         </a>

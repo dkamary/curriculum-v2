@@ -1,0 +1,119 @@
+{% extends "_layouts/page.html.twig" %}
+
+{% set breadcrumbs = [{text: 'Catégories', href: path('home') }, {text: category.name, href: '' }] %}
+
+{% set section_title = category.name %}
+{% set pageTitle = section_title %}
+{% set user = app.user is not null ? app.user : { id: null } %}
+
+{% block title %}
+    {{ section_title }}
+{% endblock %}
+
+{% block header %}
+    {% include "_partials/section-header.html.twig" %}
+{% endblock %}
+
+{% block banner %}
+    {% include "_partials/banner-page.html.twig" %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <h2>
+                <img src="{{ asset('uploads/category/' ~ category.icon) }}" alt="{{ category.name }}" style="height: 30px; width: auto;">
+                {{ category.name }}
+            </h2>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-12">
+            <p>
+                {% if category.description|length > 0 %}
+                    {{ category.description }}
+                {% else %}
+                    <em>Aucune description pour cette catégorie</em>
+                {% endif %}
+            </p>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h3>Offres d'emploi associés à cette Catégories</h3>
+        </div>
+    </div>
+    {% for proposal in category.proposals %}
+        {% set img_src = proposal.featuredImage is not null ? proposal.featuredImage.path : 'https://fakeimg.pl/350x200/?text=' ~ proposal.slug %}
+        {% set link = path('proposal_show', { slug: proposal.slug }) %}
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="row p-0{{ (loop.index % 2) == 0 ? '' : ' bg-light' }}">
+                    <div class="col-sm-4 col-2 proposal-image-container">
+                        <a href="{{ link }}">
+                            <div class="img" style="background-image: url({{ img_src }});" title="{{ proposal.name }}"></div>
+                        </a>
+                    </div>
+                    <div class="col-10 col-sm-8 py-3">
+                        <h3>
+                            <a href="{{ link }}">{{ proposal.name }}</a>
+                        </h3>
+                        {% if proposal.town|length > 0 or proposal.country is not null %}
+                            <h4>
+                                {{ proposal.town|length > 0 ? proposal.town : '' }}{{ proposal.country is not null ? (proposal.town|length > 0 ? ', ' : '') ~ proposal.country.name : '' }}
+                            </h4>
+                        {% endif %}
+                        <p class="mt-3">
+                            {{ proposal.longDescription|striptags|u.truncate(300, '...', true) }}
+                            {% if proposal.skills %}
+                                <div class="row my-2">
+                                    <div class="col-12">
+                                        {% for ps in proposal.skills %}
+                                            <span class="badge badge-info">
+                                                {{ ps.xp > 0 ? ps.xp ~ ' année(s) d\'expérience en '  : 'connaissance en '}}
+                                                <strong>{{ ps.skill.name }}</strong>
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </p>
+                        <p class="text-right w-100">
+                            <a class="btn btn-link text-danger" href="{{ link }}">
+                                <i class="fa fa-eye" aria-hidden="true"></i>&nbsp;
+                                Voir l'offre
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row mt-3">
+            <div class="col-12">
+                <em>Il n'y a pas encore d'offre pour cette catégorie</em>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .proposal-image-container {
+            overflow: hidden;
+        }
+
+        .proposal-image-container .img {
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .post-area.section-gap {
+            padding-top: 40px;
+        }
+    </style>
+{% endblock %}
